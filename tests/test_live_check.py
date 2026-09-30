@@ -235,3 +235,15 @@ async def test_the_withheld_image_check_is_skipped_without_an_ark(documented_api
             "no --withheld-image given"
         )
     }
+
+
+async def test_the_token_in_the_file_beats_a_stale_exported_one(
+    documented_api, monkeypatch, tmp_path, capsys
+):
+    """Sourcing .env exports the token it held; a refresh written later does not reach the shell."""
+    env_file = tmp_path / "fs.env"
+    env_file.write_text(f"FS_ACCESS_TOKEN={TOKEN}\n")
+    monkeypatch.setenv("FS_ENV_FILE", str(env_file))
+    monkeypatch.setenv("FS_ACCESS_TOKEN", "expired-and-exported")
+    assert await live_check.check(WITHHELD_IMAGE) == 0
+    assert "probably expired" not in capsys.readouterr().out

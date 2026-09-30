@@ -35,7 +35,7 @@ from familysearch_mcp.client import (
     GEDCOMX_JSON,
     SEARCH_URLS,
 )
-from familysearch_mcp.config import HOSTS, load_config
+from familysearch_mcp.config import HOSTS, load_config, token_from_env_file
 from familysearch_mcp.server import RECORD_TYPE_CODES
 from familysearch_mcp.shape import (
     collection_field_labels,
@@ -436,8 +436,13 @@ async def usable_token(http: httpx.AsyncClient, token: str | None, environment: 
 async def check(withheld_image: str | None = None) -> int:
     """Run the checks against the configured environment. Returns an exit status."""
     config = load_config()
+    # The file first. Sourcing an env file exports the token it held then, and
+    # a refresh written to the file afterwards does not reach that shell: the
+    # exported, expired token would win. The server recovers from that on its
+    # first 401 by re-reading the file; this reads the file to begin with.
+    fresh = token_from_env_file(config.env_file) if config.env_file else None
     async with httpx.AsyncClient(timeout=config.timeout) as http:
-        token = await usable_token(http, config.access_token, config.environment)
+        token = await usable_token(http, fresh or config.access_token, config.environment)
         live = LiveCheck(http, token, config.environment, withheld_image)
         await live.run()
     print(report(live.outcomes))
