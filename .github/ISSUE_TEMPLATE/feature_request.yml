@@ -1,0 +1,25 @@
+name: Feature request
+description: A research question the tools cannot answer yet.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tools that write to FamilySearch (tree edits, merges, uploads) will not be merged. See "Not planned" in [docs/ROADMAP.md](https://github.com/ianderso/familysearch-mcp/blob/main/docs/ROADMAP.md).
+  - type: textarea
+    id: problem
+    attributes:
+      label: The research problem
+      description: What you were trying to find or read, and where the current tools stopped you.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help
+      description: A new tool, a new parameter, or a change to what a tool returns.
+  - type: textarea
+    id: api
+    attributes:
+      label: FamilySearch route or parameter
+      description: If you know which part of the API would answer it. docs/API-NOTES.md records what is known about the undocumented parts.

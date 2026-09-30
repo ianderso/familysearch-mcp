@@ -1,0 +1,109 @@
+{
+  "auth_status": [],
+  "browse_waypoints": [
+    "collection_id",
+    "waypoint_id"
+  ],
+  "download_image": [
+    "destination",
+    "image_url"
+  ],
+  "get_ancestry": [
+    "generations",
+    "person_id"
+  ],
+  "get_collection": [
+    "collection_id"
+  ],
+  "get_collection_fields": [
+    "collection_id"
+  ],
+  "get_descendancy": [
+    "generations",
+    "person_id"
+  ],
+  "get_film_image": [
+    "film_number",
+    "image_number"
+  ],
+  "get_image_links": [
+    "image_ark"
+  ],
+  "get_matches": [
+    "collection",
+    "count",
+    "person_id"
+  ],
+  "get_person": [
+    "person_id"
+  ],
+  "get_person_changes": [
+    "person_id"
+  ],
+  "get_person_memories": [
+    "count",
+    "person_id"
+  ],
+  "get_person_relatives": [
+    "person_id"
+  ],
+  "get_person_sources": [
+    "person_id"
+  ],
+  "get_place": [
+    "place_id"
+  ],
+  "get_place_children": [
+    "place_id"
+  ],
+  "get_place_jurisdictions": [
+    "place_id"
+  ],
+  "get_record": [
+    "ark"
+  ],
+  "get_record_image": [
+    "ark"
+  ],
+  "get_records_on_image": [
+    "image_ark"
+  ],
+  "search_collections": [
+    "count",
+    "query",
+    "refresh"
+  ],
+  "search_places": [
+    "count",
+    "name"
+  ],
+  "search_places_at_date": [
+    "count",
+    "name",
+    "within_place_id",
+    "year"
+  ],
+  "search_records": [
+    "birth_place",
+    "birth_year",
+    "collection_id",
+    "count",
+    "death_place",
+    "death_year",
+    "exact",
+    "father_given",
+    "father_surname",
+    "given",
+    "loose",
+    "marriage_place",
+    "marriage_year",
+    "mother_given",
+    "mother_surname",
+    "offset",
+    "record_type",
+    "residence_place",
+    "spouse_given",
+    "spouse_surname",
+    "surname"
+  ]
+}

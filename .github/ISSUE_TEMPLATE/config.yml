@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/ianderso/familysearch-mcp/security/advisories/new
+    about: Privately, not in a public issue. See SECURITY.md.
+  - name: A problem with FamilySearch itself
+    url: https://www.familysearch.org/en/help/
+    about: This project does not operate FamilySearch. Outages, wrong records, account and developer-key questions go to FamilySearch.

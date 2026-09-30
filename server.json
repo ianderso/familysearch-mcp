@@ -1,0 +1,48 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ianderso/familysearch-mcp",
+  "title": "FamilySearch",
+  "description": "Genealogical research on FamilySearch: historical places, indexed records, page images, the tree.",
+  "repository": {
+    "url": "https://github.com/ianderso/familysearch-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "familysearch-mcp",
+      "version": "1.0.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "FS_ACCESS_TOKEN",
+          "description": "Access token from your own registered FamilySearch application. The place gazetteer and collection catalogue work without one.",
+          "isSecret": true
+        },
+        {
+          "name": "FS_ENV_FILE",
+          "description": "Env file to read settings from and to re-read a refreshed token from mid-session. Defaults to the nearest .env from the working directory upward."
+        },
+        {
+          "name": "FS_CLIENT_ID",
+          "description": "Your registered application's client id, reported by auth_status."
+        },
+        {
+          "name": "FS_ENVIRONMENT",
+          "description": "production, or integration for the FamilySearch sandbox.",
+          "default": "production"
+        },
+        {
+          "name": "FS_TIMEOUT",
+          "description": "HTTP timeout in seconds.",
+          "default": "60"
+        }
+      ]
+    }
+  ]
+}

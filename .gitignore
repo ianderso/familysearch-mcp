@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Secrets and local config. .env holds the real token; .env.example is the
+# committed template. The README suggests a familysearch.env, hence *.env.
+.env
+.env.*
+!.env.example
+*.env
+.envrc
+
+# Response cache
+.cache/
+
+# Downloaded page images are never part of this repository.
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.tif
+*.tiff
+*.pdf
+
+# Tooling
+.pytest_cache/
+.ruff_cache/
+.DS_Store
