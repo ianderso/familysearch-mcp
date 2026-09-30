@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import socket
 import tempfile
@@ -640,14 +641,43 @@ def _no_network(monkeypatch):
     Checked at teardown rather than trusted to the raise, because every tool
     catches exceptions into an error envelope -- the refusal alone would be
     swallowed and the test would still pass.
+
+    Every name lookup is refused, and so is a connection to any address that
+    is not loopback. A loopback connection is allowed because Windows'
+    asyncio builds its event loop's wake-up socket pair by connecting to a
+    port on 127.0.0.1 that it has just opened itself; refusing that stops
+    every async test before it starts. A request to FamilySearch still has
+    to resolve its host name first, so it is caught.
     """
     attempts: list = []
+    real_connect = socket.socket.connect
+    real_connect_ex = socket.socket.connect_ex
+
+    def loopback(address) -> bool:
+        host = address[0] if isinstance(address, tuple) else address
+        try:
+            return ipaddress.ip_address(host).is_loopback
+        except ValueError:
+            return False  # a name or a path, never allowed
 
     def refuse(self, address, *args, **kwargs):
+        if loopback(address):
+            return real_connect(self, address, *args, **kwargs)
         attempts.append(address)
         raise RuntimeError(f"test tried to open a real connection to {address}")
 
+    def refuse_ex(self, address, *args, **kwargs):
+        if loopback(address):
+            return real_connect_ex(self, address, *args, **kwargs)
+        attempts.append(address)
+        raise RuntimeError(f"test tried to open a real connection to {address}")
+
+    def refuse_lookup(host, *args, **kwargs):
+        attempts.append(host)
+        raise RuntimeError(f"test tried to look up {host}")
+
     monkeypatch.setattr(socket.socket, "connect", refuse)
-    monkeypatch.setattr(socket.socket, "connect_ex", refuse)
-    yield
+    monkeypatch.setattr(socket.socket, "connect_ex", refuse_ex)
+    monkeypatch.setattr(socket, "getaddrinfo", refuse_lookup)
+    yield attempts
     assert not attempts, f"test tried to reach the network: {attempts}"

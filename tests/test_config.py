@@ -163,7 +163,9 @@ def test_without_fs_env_file_the_nearest_env_upward_is_used(tmp_path, monkeypatc
 
 def test_a_tilde_in_fs_env_file_is_expanded(tmp_path, monkeypatch):
     """Client configs are JSON, and JSON does not expand ~."""
+    # ~ comes from HOME on POSIX and from USERPROFILE on Windows.
     monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path))
     _write(tmp_path / "fs.env", "from-home")
     monkeypatch.setenv("FS_ENV_FILE", "~/fs.env")
     assert load_config().access_token == "from-home"
