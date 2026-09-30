@@ -1,7 +1,7 @@
 # familysearch-mcp
 
 [![CI](https://github.com/ianderso/familysearch-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ianderso/familysearch-mcp/actions/workflows/ci.yml)
-[![PyPI](https://img.shields.io/pypi/v/familysearch-mcp)](https://pypi.org/project/familysearch-mcp/)
+[![PyPI](https://img.shields.io/pypi/v/familysearch-mcp?label=pypi)](https://pypi.org/project/familysearch-mcp/)
 
 <!-- mcp-name: io.github.ianderso/familysearch-mcp -->
 
