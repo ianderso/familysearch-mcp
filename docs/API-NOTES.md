@@ -24,11 +24,13 @@ It reads the token the way the server does, runs the anonymous checks
 without one, and skips the rest when there is none or FamilySearch rejects
 it. A FAIL names the claim below that no longer holds.
 
-Last run 2026-09-29, without a usable token: every anonymous claim held —
-the routes in the next section, the 406 for the wrong Accept type, the
-current-user 401 for no token and for a bad one, the search service's 401
-without a token, and the thin image document for no token and for a bad
-one. The token checks were last confirmed by hand on 2026-09-28.
+Last run 2026-09-29 with a fresh token: 26 checks passed and none failed.
+Every claim below held — the anonymous routes, the 406 for the wrong Accept
+type, the current-user 401 and 200, the search service's 401 without a token
+and 403 without a browser User-Agent, all eight record-type codes narrowing
+to different sets, the record read's shape, and the image resource's thin
+document for no token and for a bad one. The withheld-image check was
+skipped: it needs an ark withheld from the account running it.
 
 ## What answers without a token
 
