@@ -16,6 +16,16 @@
     "destination",
     "image_url"
   ],
+  "fulltext_search": [
+    "collection_id",
+    "count",
+    "facets",
+    "filters",
+    "image_group",
+    "name",
+    "offset",
+    "text"
+  ],
   "get_ancestry": [
     "generations",
     "person_id"

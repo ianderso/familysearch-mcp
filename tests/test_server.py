@@ -42,6 +42,7 @@ async def test_every_tool_is_registered():
         "search_places",
         "search_places_at_date",
         "search_records",
+        "fulltext_search",
         "get_collection_fields",
         "get_image_links",
         "download_image",

@@ -98,6 +98,7 @@ FamilySearch's Places API answers anonymously.
 | `get_record` | yes | Read one indexed record in full: every person on it and the labelled fields behind each. |
 | `get_record_image` | yes | Find the document image a record came from, or the film number when no image was published. |
 | `get_records_on_image` | yes | Every record indexed from one image. A census page carries forty people. |
+| `fulltext_search` | yes | Search the handwriting-recognised text of page images, mostly deeds, wills, probate and court files, for a name or phrase anywhere on the page. A machine reading: open the image and cite that. |
 | `search_collections` | no | Find a record collection by title, with its coverage. |
 | `get_collection` | no | Read one collection: what it covers and how much of it there is. |
 | `get_collection_fields` | no | Decode a collection's indexed field codes (`PR_FTHR_NAME` → "Father's Name"). |
@@ -107,7 +108,7 @@ FamilySearch's Places API answers anonymously.
 
 | Tool | Needs a token | Purpose |
 | --- | --- | --- |
-| `get_image_links` | for the page | Resolve an image ark to fetchable URLs: full page, deep zoom, thumbnails, neighbouring pages. Without a token only the navigation comes back. |
+| `get_image_links` | for the page | Resolve an image ark to fetchable URLs: full page, deep zoom, thumbnails, neighbouring pages, and with a token the film and image number a citation needs. Without a token only the navigation comes back. |
 | `get_film_image` | for the page | Reach a page by film and image number when a citation gives those instead of an ark. Checking the page exists needs no token. |
 | `download_image` | yes | Download a page image to a new local file so it can be read. |
 
@@ -161,6 +162,15 @@ description.
   instead, with your token and a browser User-Agent, which that service
   requires. It is undocumented and FamilySearch can change or close it;
   [docs/API-NOTES.md](docs/API-NOTES.md) has the comparison.
+- **Full-text search is a machine reading.** `fulltext_search` asks the
+  website's full-text service, on the same footing as record search: your
+  token, a browser User-Agent, and an undocumented route. Its text is
+  handwriting recognition, so names and numbers are often misread; each
+  hit gives the passages that matched and the page's image ark, and the
+  page is what to read and cite. Only some collections and volumes have
+  been machine-read, so no result proves nothing. Every word must match
+  unless you write OR, because the service otherwise matches any one of
+  them.
 - **Search criteria filter.** FamilySearch treats a search term as a ranking
   hint unless told otherwise, so adding a death year to a name search only
   reorders it. This server asks for every criterion to match; `loose=True`

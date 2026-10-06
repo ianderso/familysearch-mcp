@@ -1063,3 +1063,143 @@ def records_on_image(payload: dict) -> list[dict]:
             }
         )
     return out
+
+
+#: Context kept either side of a matched term in a full-text snippet.
+SNIPPET_CONTEXT = 120
+
+#: The longest a joined snippet may grow.
+SNIPPET_LIMIT = 4 * SNIPPET_CONTEXT
+
+#: Snippets kept per full-text hit.
+SNIPPETS_PER_HIT = 3
+
+#: Distinct recognised names kept per full-text hit. A probate file names
+#: dozens of people, and the list is a pointer to the page, not a summary.
+NAMES_PER_HIT = 12
+
+
+def snippets(text: str, terms: list[str]) -> list[str]:
+    """Cut the passages around matched terms out of a page transcript.
+
+    The service returns the whole page's text -- tens of thousands of
+    characters -- and the matched terms bare, with no context. This keeps
+    a few windows around the first matches, longest term first, so a
+    phrase is preferred over one of its words.
+
+    Parameters
+    ----------
+    text : str
+        The machine-read page text.
+    terms : list of str
+        The matched terms the service reported.
+
+    Returns
+    -------
+    list of str
+        Up to :data:`SNIPPETS_PER_HIT` passages, in page order, each with an
+        ellipsis where it was cut.
+    """
+    flat = " ".join((text or "").split())
+    if not flat:
+        return []
+    lowered = flat.lower()
+    spans: list[tuple[int, int]] = []
+    for term in sorted({t for t in terms if t and t.strip()}, key=len, reverse=True):
+        start = lowered.find(term.lower())
+        while start != -1 and len(spans) < SNIPPETS_PER_HIT * 3:
+            spans.append((max(0, start - SNIPPET_CONTEXT), start + len(term) + SNIPPET_CONTEXT))
+            start = lowered.find(term.lower(), start + len(term))
+    merged: list[tuple[int, int]] = []
+    for begin, end in sorted(spans):
+        # Overlapping windows join, but only up to one passage's length: a
+        # page that repeats a name every line would otherwise come back whole.
+        if merged and begin <= merged[-1][1] and end - merged[-1][0] <= SNIPPET_LIMIT:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        elif not merged or begin >= merged[-1][1]:
+            merged.append((begin, end))
+    out = []
+    for begin, end in merged[:SNIPPETS_PER_HIT]:
+        piece = flat[begin:end].strip()
+        out.append(("..." if begin > 0 else "") + piece + ("..." if end < len(flat) else ""))
+    return out
+
+
+def fulltext_hits(payload: dict) -> list[dict]:
+    """Shape full-text search entries into compact hits.
+
+    Each entry is one page image. The service sends no relevance score and
+    no snippet: ``highlightTexts`` are the matched terms, bare, and
+    ``textDocument`` is the whole page. Verified live 2026-10-05.
+
+    Parameters
+    ----------
+    payload : dict
+        A full-text search response.
+
+    Returns
+    -------
+    list of dict
+        One hit per page: the image ark and its web address, the collection,
+        the record's title, type, place and date, the matched terms, passages
+        around them, and the names recognised on the page.
+    """
+    out = []
+    for entry in payload.get("entries") or []:
+        if not isinstance(entry, dict) or not entry.get("id"):
+            continue
+        content = entry.get("content") or {}
+        matched = [t for t in content.get("highlightTexts") or [] if isinstance(t, str)]
+        names_seen: list[str] = []
+        for entity in content.get("entities") or []:
+            if (entity or {}).get("type") != "NAME":
+                continue
+            value = (entity.get("value") or "").strip()
+            if value and value not in names_seen:
+                names_seen.append(value)
+        out.append(
+            {
+                "image_ark": entry.get("id"),
+                "url": entry.get("sourceUrl"),
+                "collection": entry.get("collectionTitle"),
+                "collection_id": entry.get("collectionId"),
+                "title": content.get("title"),
+                "record_type": content.get("recordType"),
+                "place": content.get("recordPlace"),
+                "date": content.get("recordDate"),
+                "matched": matched,
+                "snippets": snippets(content.get("textDocument") or "", matched),
+                "names_on_page": names_seen[:NAMES_PER_HIT],
+            }
+        )
+    return out
+
+
+def fulltext_facets(payload: dict) -> list[dict]:
+    """Shape full-text facets, keeping the filter each bucket selects.
+
+    A bucket's ``params`` is the filter to send back to narrow to it, e.g.
+    ``c.recordPlace1=on&f.recordPlace0=10``: the ``f.`` part filters and
+    the ``c.`` part asks for the next level down. Places, record types and
+    collections are named by ids the service assigns, so this is the only
+    way to learn them.
+    """
+    out = []
+    for facet in payload.get("facets") or []:
+        if not isinstance(facet, dict):
+            continue
+        out.append(
+            {
+                "facet": facet.get("displayName"),
+                "buckets": [
+                    {
+                        "name": bucket.get("displayName"),
+                        "count": bucket.get("count"),
+                        "filter": bucket.get("params"),
+                    }
+                    for bucket in facet.get("facets") or []
+                    if isinstance(bucket, dict)
+                ],
+            }
+        )
+    return out

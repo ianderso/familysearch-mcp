@@ -2,9 +2,10 @@
 
 Everything this project set out to build is built: the anonymous gazetteer,
 record search and record reads, image resolution and download, the
-collection catalogue and film browser, the shared-tree tools, and a
-read-only comparison of your own research with a tree profile. That is 26
-tools; the [README](../README.md) is the reference for what exists, and the
+collection catalogue and film browser, full-text search of machine-read
+page images, the shared-tree tools, and a read-only comparison of your own
+research with a tree profile. That is 27 tools; the [README](../README.md)
+is the reference for what exists, and the
 [changelog](../CHANGELOG.md) for what changed.
 
 Nothing is queued. New work starts from a research question the tools cannot

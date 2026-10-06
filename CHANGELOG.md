@@ -19,6 +19,26 @@ adding one is a minor release.
   only, refuses anyone who may be living, and never proposes combining
   profiles, removing anything, replacing a relationship or changing living
   status. See [docs/COMPARE.md](docs/COMPARE.md).
+- `fulltext_search`: search the handwriting-recognised text of page images,
+  mostly deeds, wills, probate and court files, for a name or phrase
+  anywhere on a page. It uses the website's full-text service, with your
+  token and a browser User-Agent, like record search. Each hit is a page
+  image with the passages that matched, the names recognised on it, and its
+  collection and record title. Every word must match unless the query says
+  otherwise. Facets narrow by collection, century, place and record type,
+  and `image_group` searches one volume. Every result carries cautions: the
+  text is a machine reading, so open the image and cite that; coverage is
+  partial; and the citation path to the image.
+- `get_image_links` reports the page's `film_number` (image group) and
+  `image_number` when a token is set. A citation to the page needs both.
+
+### Changed
+
+- An error from a website search service now includes the service's own list
+  of validation errors, not just "Validation failed."
+- Tool descriptions are published without their source indentation on
+  Python 3.11 and 3.12, as they already were on 3.13. Every client now gets
+  the same text, about 870 characters shorter in all on those versions.
 
 ## [1.0.0] — 2026-09-29
 
