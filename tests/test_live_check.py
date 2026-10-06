@@ -12,7 +12,7 @@ import httpx
 import pytest
 import respx
 
-from familysearch_mcp.client import BROWSER_UA, SEARCH_URL
+from familysearch_mcp.client import BROWSER_UA, FULLTEXT_URL, SEARCH_URL
 from tests import live_check
 from tests.live_check import (
     BOGUS_TOKEN,
@@ -86,11 +86,31 @@ def _tree_person(request: httpx.Request) -> httpx.Response:
     return httpx.Response(200, json=body, headers={"ETag": ETAG})
 
 
+#: An image's storage-node name, answered as bare text.
+NODE_NAME_URL = "https://sg30p0.familysearch.org/service/records/storage/das/v2/n/name"
+
+
+def _fulltext(request: httpx.Request) -> httpx.Response:
+    """The full-text service: token and browser User-Agent; bare words OR'd."""
+    if not request.headers.get("Authorization"):
+        return httpx.Response(401)
+    if request.headers.get("User-Agent") != BROWSER_UA:
+        return httpx.Response(403)
+    words = request.url.params.get("q.text", "").split()
+    total = 500 if all(w.startswith("+") for w in words) else 50_000
+    entry = {
+        "id": "3:1:FULLTEXT-1",
+        "content": {"textDocument": "Smith sold to Jones", "highlightTexts": ["Smith"]},
+    }
+    return httpx.Response(200, json={"results": total, "entries": [entry]})
+
+
 def _image(request: httpx.Request, *, withheld: bool = False) -> httpx.Response:
     """The image resource: links only for a good token, never a 401."""
     rels = {"records": {"href": f"{API}/platform/records/images/x/records"}}
     if _authorised(request) and not withheld:
         rels[live_check.FULL_IMAGE] = {"href": DIST}
+        rels["image-name"] = {"href": NODE_NAME_URL}
     return httpx.Response(200, json={"links": rels})
 
 
@@ -156,6 +176,13 @@ def documented_api():
         mock.get(f"{API}/platform/tree/persons/{TREE_PERSON}").mock(side_effect=_tree_person)
         mock.head(f"{API}/platform/tree/persons/{TREE_PERSON}").mock(
             return_value=httpx.Response(200, headers={"ETag": ETAG})
+        )
+        mock.get(FULLTEXT_URL).mock(side_effect=_fulltext)
+        mock.get(f"{API}/platform/records/images/3:1:FULLTEXT-1").mock(side_effect=_image)
+        mock.get(NODE_NAME_URL).mock(
+            side_effect=lambda r: httpx.Response(
+                200 if _authorised(r) else 401, text="dgs:008190429.008190429_00580"
+            )
         )
         yield mock
 
@@ -238,6 +265,38 @@ async def test_a_tree_person_without_an_etag_is_a_failure(documented_api):
     failed = {o.name for o in live.outcomes if o.status == "FAIL"}
     assert "tree person: the GET carries a weak ETag, the same as HEAD's" in failed
     assert "tree person: personInfo says whether the profile can be changed" in failed
+
+
+async def test_a_full_text_search_that_requires_every_word_by_default_is_reported(
+    documented_api,
+):
+    """The server adds + to bare words; if the service stopped ORing, the notes are wrong."""
+    documented_api.get(FULLTEXT_URL).mock(
+        side_effect=lambda r: (
+            _fulltext(r)
+            if not _authorised(r) or r.headers.get("User-Agent") != BROWSER_UA
+            else httpx.Response(
+                200,
+                json={
+                    "results": 500,
+                    "entries": [
+                        {"id": "3:1:X", "content": {"textDocument": "t", "highlightTexts": []}}
+                    ],
+                },
+            )
+        )
+    )
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "full-text: bare words match any one of them, + words all of them" in failed
+
+
+async def test_an_image_name_that_changed_form_is_a_failure(documented_api):
+    """The film and image number are parsed out of it for citations."""
+    documented_api.get(NODE_NAME_URL).mock(return_value=httpx.Response(200, text="TH-1-2-3"))
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "image-name: bare text dgs:{film}.{film}_{image}" in failed
 
 
 def test_the_report_ends_with_a_count_of_each_status():

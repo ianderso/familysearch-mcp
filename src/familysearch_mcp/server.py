@@ -57,6 +57,8 @@ from .shape import (
     collection,
     collection_descriptions,
     collection_field_labels,
+    fulltext_facets,
+    fulltext_hits,
     jurisdiction_chain,
     links,
     match_hits,
@@ -815,6 +817,174 @@ async def search_records(
             ),
             "results": hits,
         }
+    except Exception as exc:  # noqa: BLE001 - surfaced as structured error
+        return _error(exc)
+
+
+#: Facet filters the full-text service accepts back, by parameter name.
+#: ``f.`` filters, ``c.`` asks for the next facet level. Anything else is
+#: refused rather than forwarded. Verified live 2026-10-05 from the
+#: ``params`` the service's own facets carry.
+_FULLTEXT_FILTER = re.compile(
+    r"(?:f\.(?:collectionId|recordYear0|recordPlace[0-3]|recordTypeId[0-2])"
+    r"|c\.(?:collectionId|recordYear[0-1]|recordPlace[0-4]|recordTypeId[0-2]))"
+    r"=[A-Za-z0-9 ,.'()-]+"
+)
+
+#: Words that make a full-text query explicit boolean logic. A query using
+#: them is sent as written.
+_BOOLEAN_WORDS = frozenset({"AND", "OR", "NOT", "&&", "||"})
+
+#: Returned with every full-text result, because the result is read long
+#: after the description that would have said this.
+FULLTEXT_CAUTIONS = [
+    "The text is handwriting recognition: a machine's reading of the page. "
+    "Names, dates and amounts are often misread. Open the image with "
+    "get_image_links, read it yourself, and cite the image, never this text.",
+    "Coverage is partial. Only some collections and volumes have been "
+    "machine-read, and a page can be read badly, so no result means no match "
+    "in the machine's text -- not that no record exists. Try spellings, "
+    "wildcards and the people around the person.",
+    "To cite a page: the collection, the record title (place, record type and "
+    "year), and the image -- image_ark, plus the film (image group) and image "
+    "number get_image_links reports. image_group searches that one volume.",
+]
+
+
+def _require_each(query: str) -> str:
+    """Mark every word and phrase of a full-text query as required.
+
+    The service ORs bare terms -- "Hannah Ball" matches a page with either
+    word -- so a two-word search returns the whole archive. A term already
+    marked ``+`` or ``-`` is left alone, and a query that uses AND, OR or
+    NOT is sent as written.
+    """
+    tokens = re.findall(r'[+-]?"[^"]*"|\S+', query)
+    if any(token in _BOOLEAN_WORDS for token in tokens):
+        return query.strip()
+    return " ".join(t if t[0] in "+-" else f"+{t}" for t in tokens)
+
+
+def _as_name(name: str) -> str:
+    """Send a plain name as a phrase, so its words match together."""
+    cleaned = name.strip()
+    tokens = cleaned.split()
+    explicit = '"' in cleaned or "*" in cleaned or any(t[0] in "+-" for t in tokens)
+    if explicit or set(tokens) & _BOOLEAN_WORDS:
+        return cleaned
+    return f'"{cleaned}"'
+
+
+@mcp.tool(annotations=READS_FAMILYSEARCH)
+async def fulltext_search(
+    text: str = Field(
+        default="",
+        description=(
+            "Words to find anywhere in a page's machine-read text. Every word "
+            'or "quoted phrase" must match unless you use OR; -word excludes, '
+            "and * is a wildcard after at least three letters (Will*). Words "
+            "match as spelled: try the variants a clerk might have written."
+        ),
+    ),
+    name: str = Field(
+        default="",
+        description=(
+            "A name, matched only against the names recognised on each page. "
+            "A plain name is searched as a phrase; same syntax as text."
+        ),
+    ),
+    image_group: str = Field(
+        default="",
+        description="An image group (DGS film) number, to search one volume, e.g. '008190429'.",
+    ),
+    collection_id: str = Field(
+        default="",
+        description="Restrict to one collection, by a result's or a facet's collection id.",
+    ),
+    filters: list[str] = Field(
+        default=[],
+        description=(
+            "Filters copied from a previous call's facets, e.g. "
+            "'c.recordPlace1=on&f.recordPlace0=10'. Place, record type and "
+            "century narrow only this way, and they match the collection's "
+            "description, not the page."
+        ),
+    ),
+    facets: bool = Field(
+        default=False,
+        description="Also return counts by collection, century, place and record type.",
+    ),
+    count: int = Field(default=10, description="Pages to return (1-100)."),
+    offset: int = Field(default=0, description="Pages to skip, for paging."),
+) -> dict:
+    """Search the machine-read text of page images: deeds, wills, probate, court files.
+
+    Finds a name or phrase anywhere on a page, including the witnesses,
+    heirs and neighbours no index names. Each hit is one page image, with
+    the passages that matched.
+
+    The text is handwriting recognition, a machine reading: open the image
+    with get_image_links, read it yourself, and cite the image, never the
+    text. Coverage is partial, so no result proves nothing. Each hit gives
+    the citation path: collection, record title and image ark.
+
+    Requires an access token.
+    """
+    try:
+        if not (text.strip() or name.strip() or image_group.strip()):
+            return {
+                "error": "no_criteria",
+                "message": "Pass text, a name or an image_group to search.",
+            }
+        group = image_group.strip()
+        if group and not group.isdigit():
+            return {
+                "error": "invalid_image_group",
+                "message": f"image_group must be digits, e.g. '008190429'; got {image_group!r}.",
+            }
+        params: dict[str, object] = {"m.queryRequireDefault": "on"}
+        if text.strip():
+            params["q.text"] = _require_each(text)
+        if name.strip():
+            params["q.fullName"] = _as_name(name)
+        if group:
+            params["q.groupName"] = group
+        if collection_id.strip():
+            params["f.collectionId"] = _id(collection_id, "collection_id")
+        for entry in filters:
+            for part in entry.strip().split("&"):
+                if not _FULLTEXT_FILTER.fullmatch(part.strip()):
+                    return {
+                        "error": "invalid_filter",
+                        "message": (
+                            f"{part!r} is not a filter this search takes. Copy a "
+                            "'filter' from a previous call's facets as given."
+                        ),
+                    }
+                key, value = part.strip().split("=", 1)
+                params[key] = value
+        if facets:
+            params["m.defaultFacets"] = "on"
+        params["count"] = max(1, min(count, 100))
+        if offset:
+            params["offset"] = max(0, offset)
+
+        client = await state.client_()
+        payload = await client.fulltext(params)
+        hits = fulltext_hits(payload)
+        total = payload.get("results")
+        out: dict = {
+            "query_sent": {k: v for k, v in params.items() if k.startswith(("q.", "f."))},
+            "total": total,
+            "returned": len(hits),
+            "offset": max(0, offset),
+            "has_more": bool((payload.get("links") or {}).get("next")),
+            "results": hits,
+        }
+        if facets:
+            out["facets"] = fulltext_facets(payload)
+        out["cautions"] = FULLTEXT_CAUTIONS
+        return out
     except Exception as exc:  # noqa: BLE001 - surfaced as structured error
         return _error(exc)
 
@@ -1669,7 +1839,8 @@ async def get_image_links(
 
     Also returns the neighbouring pages. A pension file or a passenger
     manifest runs to many images, and the entry you want is often not the one
-    the index pointed at.
+    the index pointed at. With a token it gives the film (image group) and
+    image number, which a citation to the page needs.
     """
     try:
         client = await state.client_()
@@ -1692,6 +1863,7 @@ async def get_image_links(
             streams = _image_streams(every)
         out = {
             "image_ark": ark,
+            **(await _film_of(client, every.get("image-name"))),
             "storage_node": every.get("image-node"),
             "full_image": streams.get("dist"),
             "deep_zoom": every.get("image-deepzoom"),
@@ -1726,6 +1898,37 @@ async def get_image_links(
         return out
     except Exception as exc:  # noqa: BLE001 - surfaced as structured error
         return _error(exc)
+
+
+#: The storage node's name: ``dgs:008190429.008190429_00580``, the film
+#: (image group) number and the image number within it. Verified live
+#: 2026-10-05 on the ``image-name`` relation of an image resource.
+_NODE_NAME = re.compile(r"dgs:(?:\d+\.)?(\d+)_(\d+)")
+
+
+async def _film_of(client: FamilySearchClient, href: str | None) -> dict:
+    """The film and image number of a page, for its citation.
+
+    A citation to a FamilySearch image names the film (image group) and
+    the image number in it. The image resource carries neither; its
+    ``image-name`` relation does, one small read away. Anything that goes
+    wrong here leaves them out rather than failing the call.
+
+    Returns
+    -------
+    dict
+        ``{"film_number", "image_number"}``, or empty.
+    """
+    if not href or not client.authenticated or not is_familysearch_url(href):
+        return {}
+    try:
+        name = await client.get_text(href)
+    except Exception:  # noqa: BLE001 - the citation detail is optional
+        return {}
+    found = _NODE_NAME.search(name)
+    if not found:
+        return {}
+    return {"film_number": found.group(1), "image_number": int(found.group(2))}
 
 
 @mcp.tool(annotations=READS_FAMILYSEARCH)

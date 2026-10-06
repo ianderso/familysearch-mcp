@@ -10,7 +10,7 @@ possible::
 
 It finds the token the way the server does: ``FS_ENV_FILE``, or the nearest
 ``.env`` from the working directory upward. Without one, the checks that need
-no token still run and the rest are skipped. About thirty-five requests, all reads.
+no token still run and the rest are skipped. About forty-five requests, all reads.
 
 Each line says PASS, FAIL or SKIP, what was expected, and what came back. A
 FAIL means ``docs/API-NOTES.md`` and the code beside the claim are out of
@@ -31,12 +31,13 @@ from familysearch_mcp.client import (
     BROWSER_UA,
     CURRENT_USER_PATH,
     FS_JSON,
+    FULLTEXT_URLS,
     GEDCOMX_ATOM_JSON,
     GEDCOMX_JSON,
     SEARCH_URLS,
 )
 from familysearch_mcp.config import HOSTS, load_config, token_from_env_file
-from familysearch_mcp.server import RECORD_TYPE_CODES
+from familysearch_mcp.server import _NODE_NAME, RECORD_TYPE_CODES
 from familysearch_mcp.shape import (
     collection_field_labels,
     links,
@@ -108,6 +109,7 @@ class LiveCheck:
         self.token = token
         self.api = HOSTS[environment]
         self.search_url = SEARCH_URLS[environment]
+        self.fulltext_url = FULLTEXT_URLS[environment]
         self.withheld_image = withheld_image
         self.outcomes: list[Outcome] = []
         #: An image ark found on a real record, for the image checks.
@@ -411,6 +413,92 @@ class LiveCheck:
             f"{len(attributed)} of {len(facts)} facts",
         )
 
+    async def fulltext(self) -> None:
+        """The full-text service: the same footing as record search, and OR by default.
+
+        Also reads the first hit's shape, which ``shape.fulltext_hits``
+        relies on: an image ark, the page text and the bare matched terms.
+        """
+        names = (
+            "full-text: a token without a browser User-Agent gets 403",
+            "full-text: a token with a browser User-Agent gets pages with their text",
+            "full-text: bare words match any one of them, + words all of them",
+        )
+        params = {"q.text": f"+{SURNAME}", "m.queryRequireDefault": "on", "count": 1}
+        await self.expect_status(
+            "full-text: a browser User-Agent without a token gets 401",
+            401,
+            await self.get(
+                self.fulltext_url, accept="application/json", user_agent=BROWSER_UA, params=params
+            ),
+        )
+        if not self.token:
+            for name in names:
+                self.skip(name, "no token")
+            return
+        await self.expect_status(
+            names[0],
+            403,
+            await self.get(
+                self.fulltext_url,
+                accept="application/json",
+                token=self.token,
+                user_agent=f"python-httpx/{httpx.__version__}",
+                params=params,
+            ),
+        )
+        response = await self.fulltext_get(params)
+        entry = (_json(response).get("entries") or [{}])[0]
+        content = entry.get("content") or {}
+        self.record(
+            names[1],
+            response.status_code == 200
+            and str(entry.get("id", "")).startswith("3:1:")
+            and bool(content.get("textDocument"))
+            and isinstance(content.get("highlightTexts"), list),
+            f"HTTP {response.status_code}; first entry {entry.get('id')!r}, "
+            f"{len(content.get('textDocument') or '')} characters of text",
+        )
+        if not self.image_ark and str(entry.get("id", "")).startswith("3:1:"):
+            self.image_ark = entry["id"]
+        bare = _json(await self.fulltext_get({**params, "q.text": f"{SURNAME} Jones"}))
+        both = _json(await self.fulltext_get({**params, "q.text": f"+{SURNAME} +Jones"}))
+        self.record(
+            names[2],
+            (bare.get("results") or 0) > (both.get("results") or 0) > 0,
+            f"'{SURNAME} Jones' {bare.get('results') or 0:,}; "
+            f"'+{SURNAME} +Jones' {both.get('results') or 0:,}",
+        )
+
+    async def fulltext_get(self, params: dict) -> httpx.Response:
+        """Search the page text the way the server does."""
+        return await self.get(
+            self.fulltext_url,
+            accept="application/json",
+            token=self.token,
+            user_agent=BROWSER_UA,
+            params=params,
+        )
+
+    async def image_name(self) -> None:
+        """An image's ``image-name`` relation answers bare text naming its film and image."""
+        name = "image-name: bare text dgs:{film}.{film}_{image}"
+        if not self.token or not self.image_ark:
+            self.skip(name, "no token" if not self.token else "no image found to ask about")
+            return
+        resource = await self.get(f"/platform/records/images/{self.image_ark}", token=self.token)
+        href = links(_json(resource)).get("image-name")
+        if not href:
+            self.record(name, False, f"{self.image_ark}: no image-name relation")
+            return
+        response = await self.get(href, accept="application/json", token=self.token)
+        text = response.text.strip()
+        self.record(
+            name,
+            response.status_code == 200 and _NODE_NAME.fullmatch(text) is not None,
+            f"HTTP {response.status_code}: {text[:60]!r}",
+        )
+
     async def run(self) -> None:
         """Run every check. The record read supplies the image checks' ark."""
         steps: list[Callable[[], Awaitable[None]]] = [
@@ -421,6 +509,8 @@ class LiveCheck:
             self.record_shape,
             self.thin_image_document,
             self.tree_person,
+            self.fulltext,
+            self.image_name,
         ]
         for step in steps:
             await step()

@@ -24,8 +24,10 @@ operate. Report problems with those to FamilySearch.
 
 - **The package never handles a password.** It takes an access token and
   sends it only to FamilySearch hosts over HTTPS: the API, the website's
-  search service, and the image hosts. `download_image` refuses any other
-  URL, and the download itself will not attach the token to one.
+  record and full-text search services, and the image hosts.
+  `download_image` refuses any other URL, and the download itself will not
+  attach the token to one. Neither will the film lookup in
+  `get_image_links`.
 - **The token is read, never written.** It comes from the environment or
   the env file, and a refreshed one is re-read from that file after a 401.
   It is not logged, cached or included in a tool result. Request URLs are

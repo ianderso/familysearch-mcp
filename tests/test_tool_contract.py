@@ -440,13 +440,14 @@ ID_ARGUMENTS = {
 async def test_every_id_argument_is_listed_here():
     """A new tool taking an id must join the refusal sweep below.
 
-    ``search_records`` is the exception: its ``collection_id`` is a query
-    parameter, which the HTTP client encodes, not part of the path.
+    ``search_records`` and ``fulltext_search`` are the exceptions: their
+    ``collection_id`` is a query parameter, which the HTTP client encodes,
+    not part of the path.
     """
     id_names = {"place_id", "within_place_id", "ark", "image_ark", "collection_id"}
     id_names |= {"waypoint_id", "person_id"}
     taking_ids = {t.name for t in await _tools() if id_names & set(_params(t))}
-    assert taking_ids - {"search_records"} == set(ID_ARGUMENTS)
+    assert taking_ids - {"search_records", "fulltext_search"} == set(ID_ARGUMENTS)
 
 
 @pytest.mark.parametrize("tool_name", sorted(ID_ARGUMENTS))

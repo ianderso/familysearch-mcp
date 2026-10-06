@@ -301,14 +301,46 @@ class FamilySearchClient:
         FamilySearchApiError
             On any status of 400 or above.
         """
+        return await self._website(SEARCH_URLS, params, "Record search")
+
+    async def fulltext(self, params: dict) -> dict:
+        """Run a search of the machine-read page text on the website's service.
+
+        Parameters
+        ----------
+        params : dict
+            Query parameters. None values are dropped.
+
+        Returns
+        -------
+        dict
+            The response: ``results``, ``index``, ``entries``, ``facets``,
+            ``links``.
+
+        Raises
+        ------
+        AuthRequiredError
+            If no token is configured.
+        FamilySearchApiError
+            On any status of 400 or above.
+        """
+        return await self._website(FULLTEXT_URLS, params, "Full-text search")
+
+    async def _website(self, urls: dict[str, str], params: dict, what: str) -> dict:
+        """GET one of the website's search services with the token.
+
+        Both services take the API's bearer token, but only alongside a
+        browser User-Agent: the token alone gets 403 and the User-Agent
+        alone gets 401.
+        """
         if not self._config.access_token:
             raise AuthRequiredError(
-                "Record search requires a FamilySearch access token. Set "
+                f"{what} requires a FamilySearch access token. Set "
                 "FS_ACCESS_TOKEN; see docs/AUTH.md."
             )
         clean = {k: v for k, v in params.items() if v is not None}
         # A sandbox token means nothing to the production website.
-        url = SEARCH_URLS[self._config.environment]
+        url = urls[self._config.environment]
         resp = await self._send(
             lambda: self._http.get(
                 url,
@@ -334,6 +366,37 @@ class FamilySearchClient:
             return resp.json()
         except ValueError:
             return {}
+
+    async def get_text(self, url: str) -> str:
+        """GET a resource that answers with bare text rather than JSON.
+
+        An image's ``image-name`` relation answers ``application/json`` with a
+        body such as ``dgs:008190429.008190429_00580`` -- not a JSON string,
+        so it cannot be decoded as one. Verified live 2026-10-05.
+
+        Parameters
+        ----------
+        url : str
+            The full URL, from a link relation.
+
+        Returns
+        -------
+        str
+            The body, stripped.
+
+        Raises
+        ------
+        FamilySearchApiError
+            On any status of 400 or above.
+        """
+        resp = await self._send(
+            lambda: self._http.get(url, headers=self._headers(url, "application/json"))
+        )
+        if resp.status_code >= 400:
+            raise FamilySearchApiError(
+                resp.status_code, _detail(resp), path=url, retry_after=_retry_after(resp)
+            )
+        return resp.text.strip()
 
     async def get(
         self,
@@ -526,6 +589,24 @@ SEARCH_URLS = {
     "integration": "https://integration.familysearch.org/service/search/hr/v2/personas",
 }
 
+#: The website's search over handwriting-recognised page text.
+#:
+#: Undocumented, like :data:`SEARCH_URL`, and on the same footing: verified
+#: live 2026-10-05, it answers the API's bearer token with a browser
+#: User-Agent (200), the token alone with 403 and the User-Agent alone with
+#: 401. Terms in ``q.text`` are OR'd unless each carries ``+``, even with
+#: ``m.queryRequireDefault=on``: "Hannah Ball" matched 19,707,871 pages and
+#: "+Hannah +Ball" 270,195.
+FULLTEXT_URL = "https://www.familysearch.org/service/search/fulltext/search"
+
+#: The same service per environment. The sandbox answers 401 to a browser
+#: User-Agent with no token, as production does -- checked 2026-10-05; not
+#: checked with a sandbox token.
+FULLTEXT_URLS = {
+    "production": FULLTEXT_URL,
+    "integration": "https://integration.familysearch.org/service/search/fulltext/search",
+}
+
 #: Storage host serving digital-artifact images.
 DAS_HOST = "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2"
 
@@ -643,7 +724,13 @@ def _detail(resp: httpx.Response) -> str:
     try:
         body = resp.json()
         if isinstance(body, dict):
-            return str(body.get("error") or body.get("message") or body)
+            message = body.get("error") or body.get("message")
+            # The full-text service explains a 400 in a list of strings:
+            # "Validation failed." alone does not say what to fix.
+            errors = [e for e in body.get("errors") or [] if isinstance(e, str)]
+            if message and errors:
+                return f"{message} {'; '.join(errors)}"
+            return str(message or body)
         return str(body)
     except Exception:
         return resp.text[:300]

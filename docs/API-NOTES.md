@@ -24,9 +24,11 @@ It reads the token the way the server does, runs the anonymous checks
 without one, and skips the rest when there is none or FamilySearch rejects
 it. A FAIL names the claim below that no longer holds.
 
-Last run 2026-10-05 with a fresh token: 29 checks passed and none failed,
-including the three tree-profile checks added for `compare_person`.
-Before that, on 2026-09-29, 26 checks passed and none failed.
+Last run 2026-10-05 with a fresh token, after `compare_person` and
+full-text search were combined: 34 checks passed and none failed, including
+the three tree-profile checks added for `compare_person` and the five added
+for full-text search and the image name. Before that, on 2026-09-29, 26
+checks passed and none failed.
 Every claim below held — the anonymous routes, the 406 for the wrong Accept
 type, the current-user 401 and 200, the search service's 401 without a token
 and 403 without a browser User-Agent, all eight record-type codes narrowing
@@ -289,6 +291,72 @@ server uses it when `FS_ENVIRONMENT=integration`. Checked 2026-09-29 without a
 token: it answers 401 to a browser User-Agent, exactly as production does,
 where a host without the service would not answer at all. It has not been
 checked with a sandbox token.
+
+## Full-text search: the website's service over machine-read page text
+
+FamilySearch has run handwriting recognition over a large part of its page
+images, heaviest on US deeds, wills, probate and court records, and the
+website searches the result. Its route is undocumented. It was first
+described in the open-source
+[PioneerAIAcademy/cowork-genealogy](https://github.com/PioneerAIAcademy/cowork-genealogy)
+(`docs/specs/fulltext-search-tool-spec.md`). Everything below was verified
+live on 2026-10-05 unless it says otherwise.
+
+```
+https://www.familysearch.org/service/search/fulltext/search
+```
+
+- **The same footing as record search.** It takes the API's bearer token,
+  but only with a browser `User-Agent`: the token alone gets 403 (a firewall
+  page) and the User-Agent alone gets 401. Same token, same header, no
+  cookie. The sandbox host answers 401 to a browser User-Agent with no
+  token; it has not been tried with a sandbox token.
+- **Bare words are OR'd.** `q.text=Hannah Ball` matched 19,707,871 pages,
+  with or without `m.queryRequireDefault=on`. `+Hannah +Ball` matched
+  270,195. So `fulltext_search` adds `+` to every bare word and phrase,
+  unless the query uses AND, OR or NOT. A quoted phrase works
+  (`"Hannah Ball"`), as do `-word` and a trailing `*`.
+- **The response** is `results` (the total), `index`, `links.next` while
+  there are more, `facets`, and `entries[]`. Each entry is one page image:
+  - `id`, a `3:1:` image ark, which `get_image_links` resolves like any other;
+  - `sourceUrl`;
+  - `collectionId` and `collectionTitle`;
+  - `content`, holding:
+    - `title` ("Fauquier, Virginia, United States Deed Book 1821"),
+      `recordType`, `recordPlace` and `recordDate`;
+    - `textDocument`, the whole page's text, 9,000 to 21,000 characters in
+      the pages seen;
+    - `entities`, typed NAME, PLACE and DATE;
+    - `highlightTexts`, the matched terms, bare.
+
+  There is no relevance score and no snippet; the server cuts its own
+  passages out of `textDocument` around the matched terms.
+- **Narrowing.**
+  - `q.fullName` matches the recognised names only.
+  - `q.groupName` takes an image group (DGS film) number and searches that
+    volume: `+Ball` in film 008190429 gave 70 pages.
+  - `f.collectionId` takes both kinds of collection id seen in results:
+    numeric (`3158846`) and the newer alphanumeric (`M9J1-S4M`).
+  - With `m.defaultFacets=on` the response carries facets by Collection,
+    Year, Place and Record Type. Each bucket's `params` is the filter that
+    selects it, e.g. `c.recordPlace1=on&f.recordPlace0=10` for the United
+    States, or `f.recordTypeId0=122797` for Legal Records. Places and record
+    types are named only by these ids.
+- **The year filter is a century.** `f.recordYear0=1800` selects the 1800s.
+  `f.recordYear1=1820` was ignored (the total did not change), and asking
+  for a facet level below (`c.recordYear2=on`) is a 400: "Unable to map
+  supplied value=record_year2 to count term". So `fulltext_search` takes no
+  year range. Its `filters` parameter accepts the facet strings above and
+  nothing else.
+- **Place filters match the collection, not the page.** Reported by
+  cowork-genealogy from measurement on 2026-09-10; not re-checked here.
+- **The page's film and image number.** The image resource's `image-name`
+  relation answers bare text with an `application/json` content type, e.g.
+  `dgs:008190429.008190429_00580`: film 008190429, image 580. A citation to
+  the page needs both, so `get_image_links` now reports them.
+
+`tests/live_check.py` re-asks the 401, the 403, the shape, the OR, and the
+image name.
 
 ## A search term is a scoring hint, not a filter
 
