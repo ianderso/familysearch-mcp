@@ -53,3 +53,8 @@ def test_the_token_is_declared_secret_but_not_required():
     token = next(v for v in PACKAGE["environmentVariables"] if v["name"] == "FS_ACCESS_TOKEN")
     assert token["isSecret"] is True
     assert not token.get("isRequired")
+
+
+def test_the_description_fits_the_registry_limit():
+    """The MCP Registry refuses a description over 100 characters, after PyPI has the release."""
+    assert len(SERVER_JSON["description"]) <= 100
