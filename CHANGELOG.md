@@ -8,6 +8,8 @@ adding one is a minor release.
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-10-06
+
 ### Added
 
 - `get_catalog_entry`: read a FamilySearch Catalog entry, the library's
@@ -104,6 +106,7 @@ The first public release.
 - Every tool declares MCP annotations: all read-only except `download_image`,
   which creates a local file.
 
-[Unreleased]: https://github.com/ianderso/familysearch-mcp/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ianderso/familysearch-mcp/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/ianderso/familysearch-mcp/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ianderso/familysearch-mcp/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/ianderso/familysearch-mcp/releases/tag/v1.0.0
