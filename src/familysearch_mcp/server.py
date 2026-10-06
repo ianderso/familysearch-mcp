@@ -24,6 +24,7 @@ confirmed by live probing instead, and a comment beside the code says when.
 
 from __future__ import annotations
 
+import inspect
 import json
 import logging
 import re
@@ -213,6 +214,33 @@ TREE_CAVEAT = (
 )
 
 
+def _tool(annotations: ToolAnnotations = READS_FAMILYSEARCH):
+    """Register a tool, publishing its docstring without the source indentation.
+
+    Python 3.13 strips a docstring's indentation when it compiles it; 3.11
+    and 3.12 keep it, and the SDK publishes ``__doc__`` as it stands. Cleaning
+    it here sends every client the same description on every Python, and
+    keeps four spaces a line from being spent on every session.
+
+    Parameters
+    ----------
+    annotations : ToolAnnotations
+        The tool's hints; reading FamilySearch and changing nothing unless
+        said otherwise.
+
+    Returns
+    -------
+    callable
+        A decorator that registers the tool and returns it.
+    """
+
+    def register(fn):
+        description = inspect.cleandoc(fn.__doc__ or "")
+        return mcp.tool(annotations=annotations, description=description)(fn)
+
+    return register
+
+
 def _tree_tool(fn):
     """Register a tree-reading tool, appending :data:`TREE_CAVEAT` to its docs.
 
@@ -220,16 +248,18 @@ def _tree_tool(fn):
     ----------
     fn : callable
         The tool coroutine. Its docstring is the published description, so
-        the caveat is appended to it before registration.
+        the caveat is appended to it before registration. The docstring is
+        cleaned first: the caveat has no indentation, and appended to an
+        indented docstring it would stop ``cleandoc`` removing any.
 
     Returns
     -------
     callable
         The registered tool.
     """
-    fn.__doc__ = f"{(fn.__doc__ or '').rstrip()}\n\n{TREE_CAVEAT}\n"
+    fn.__doc__ = f"{inspect.cleandoc(fn.__doc__ or '')}\n\n{TREE_CAVEAT}\n"
     TREE_TOOLS.add(fn.__name__)
-    return mcp.tool(annotations=READS_FAMILYSEARCH)(fn)
+    return _tool()(fn)
 
 
 def _recovery_problem(env_file: str | None) -> str | None:
@@ -399,7 +429,7 @@ async def _read_place_description(place_id: str) -> dict:
     )
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def search_places(
     name: str = Field(description="Place name to look up, e.g. 'Kaskaskia'."),
     count: int = Field(default=10, description="Maximum results to return (1-50)."),
@@ -431,7 +461,7 @@ async def search_places(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def search_places_at_date(
     name: str = Field(description="Place name as the record spells it."),
     year: int = Field(
@@ -486,7 +516,7 @@ async def search_places_at_date(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_place(
     place_id: str = Field(
         description=(
@@ -517,7 +547,7 @@ async def get_place(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_place_jurisdictions(
     place_id: str = Field(description="FamilySearch place description id to walk upward from."),
 ) -> dict:
@@ -673,7 +703,7 @@ def _record_path(record_id: str) -> str:
     return f"/platform/records/personas/{record_id}"
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def search_records(
     given: str = Field(default="", description="Given name(s) of the person sought."),
     surname: str = Field(default="", description="Surname of the person sought."),
@@ -875,7 +905,7 @@ def _as_name(name: str) -> str:
     return f'"{cleaned}"'
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def fulltext_search(
     text: str = Field(
         default="",
@@ -989,7 +1019,7 @@ async def fulltext_search(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_record(
     ark: str = Field(
         description=(
@@ -1037,7 +1067,7 @@ async def get_record(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_record_image(
     ark: str = Field(description="Record ark or id whose source image you want to reach."),
 ) -> dict:
@@ -1198,7 +1228,7 @@ async def _collection_catalogue(refresh: bool = False) -> list[dict]:
     return collected
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def search_collections(
     query: str = Field(
         default="",
@@ -1256,7 +1286,7 @@ async def search_collections(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_collection(
     collection_id: str = Field(
         description=(
@@ -1671,7 +1701,7 @@ async def compare_person(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_place_children(
     place_id: str = Field(description="Place id whose immediate children you want, e.g. '442'."),
 ) -> dict:
@@ -1699,7 +1729,7 @@ async def get_place_children(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def browse_waypoints(
     collection_id: str = Field(
         default="",
@@ -1749,7 +1779,7 @@ async def browse_waypoints(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_records_on_image(
     image_ark: str = Field(description="A DigitalArtifact ark, e.g. '3:1:33SQ-G5LD-93NY'."),
 ) -> dict:
@@ -1778,7 +1808,7 @@ async def get_records_on_image(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_collection_fields(
     collection_id: str = Field(
         description="Numeric collection id, e.g. '1417683' for the 1880 US "
@@ -1823,7 +1853,7 @@ def _image_streams(rels: dict[str, str]) -> dict[str, str]:
     }
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_image_links(
     image_ark: str = Field(
         description="A DigitalArtifact ark, e.g. '3:1:33SQ-G5LD-93NY'. Take "
@@ -1931,7 +1961,7 @@ async def _film_of(client: FamilySearchClient, href: str | None) -> dict:
     return {"film_number": found.group(1), "image_number": int(found.group(2))}
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def get_film_image(
     film_number: str = Field(
         description="Digital film (DGS) number, e.g. '004893581'. Keep the "
@@ -1995,7 +2025,7 @@ async def get_film_image(
 DOWNLOAD_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".gif", ".tif", ".tiff", ".pdf"})
 
 
-@mcp.tool(annotations=CREATES_LOCAL_FILE)
+@_tool(CREATES_LOCAL_FILE)
 async def download_image(
     image_url: str = Field(
         description="An image URL from get_image_links or get_film_image — "
@@ -2078,7 +2108,7 @@ async def download_image(
         return _error(exc)
 
 
-@mcp.tool(annotations=READS_FAMILYSEARCH)
+@_tool()
 async def auth_status() -> dict:
     """Report whether credentials are configured, and what is missing.
 

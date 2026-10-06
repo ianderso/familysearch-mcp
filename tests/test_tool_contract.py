@@ -9,6 +9,7 @@ contract without failing a single test.
 
 from __future__ import annotations
 
+import inspect
 import json
 import re
 from pathlib import Path
@@ -109,6 +110,20 @@ async def test_description_block_stays_within_budget():
     assert total <= DESCRIPTION_BUDGET, (
         f"tool descriptions total {total} chars, over the {DESCRIPTION_BUDGET} budget"
     )
+
+
+async def test_descriptions_are_published_without_source_indentation():
+    """Python 3.11 and 3.12 keep a docstring's indentation; 3.13 strips it.
+
+    Published raw, the same tool would cost more on older Pythons, and the
+    budget above would pass on one Python and fail on another.
+    """
+    indented = [
+        t.name
+        for t in await _tools()
+        if (t.description or "") != inspect.cleandoc(t.description or "")
+    ]
+    assert indented == []
 
 
 async def test_every_registered_tool_appears_in_the_readme():

@@ -36,6 +36,9 @@ adding one is a minor release.
 
 - An error from a website search service now includes the service's own list
   of validation errors, not just "Validation failed."
+- Tool descriptions are published without their source indentation on
+  Python 3.11 and 3.12, as they already were on 3.13. Every client now gets
+  the same text, about 870 characters shorter in all on those versions.
 
 ## [1.0.0] — 2026-09-29
 
