@@ -43,7 +43,7 @@ LATER = datetime(2027, 6, 1, tzinfo=UTC)
 
 
 def _fixture(person_id: str) -> dict:
-    return json.loads((FIXTURES / f"{person_id}.json").read_text())
+    return json.loads((FIXTURES / f"{person_id}.json").read_text(encoding="utf-8"))
 
 
 @pytest.fixture
@@ -634,12 +634,12 @@ async def test_the_comparison_only_reads(authenticated, at):
 def test_the_fixtures_name_no_one_who_edited_the_profiles():
     """Contributors are invented; their reasons are replaced."""
     for path in FIXTURES.glob("*.json"):
-        recorded = json.loads(path.read_text())
+        recorded = json.loads(path.read_text(encoding="utf-8"))
         for entry in recorded["changes"]["entries"]:
             for who in entry["contributors"]:
                 assert who["name"] in {"FamilySearch"} or who["name"].startswith("Contributor ")
                 assert "/agents/AGENT-" in who["uri"]
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         for line in text.splitlines():
             if '"changeMessage"' in line:
                 assert "A reason a contributor gave." in line

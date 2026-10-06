@@ -257,7 +257,7 @@ async def record(person_id: str) -> Path:
     }
     OUT.mkdir(parents=True, exist_ok=True)
     target = OUT / f"{person_id}.json"
-    target.write_text(json.dumps(fixture, indent=1, ensure_ascii=False) + "\n")
+    target.write_text(json.dumps(fixture, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     return target
 
 
