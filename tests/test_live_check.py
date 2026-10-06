@@ -14,7 +14,14 @@ import respx
 
 from familysearch_mcp.client import BROWSER_UA, SEARCH_URL
 from tests import live_check
-from tests.live_check import BOGUS_TOKEN, COLLECTION, PLACE, SAMPLE_IMAGE, LiveCheck
+from tests.live_check import (
+    BOGUS_TOKEN,
+    COLLECTION,
+    PLACE,
+    SAMPLE_IMAGE,
+    TREE_PERSON,
+    LiveCheck,
+)
 
 WITHHELD_IMAGE = "3:1:WITHHELD-1"
 
@@ -57,6 +64,26 @@ def _search(request: httpx.Request) -> httpx.Response:
     return httpx.Response(
         200, json={"results": total, "entries": [_hit("PERSONA-1", f"Collection {code}")]}
     )
+
+
+#: The weak ETag a tree person answers with, on GET and on HEAD alike.
+ETAG = 'W/"139769026020400000"'
+
+
+def _tree_person(request: httpx.Request) -> httpx.Response:
+    """A tree person read: a weak ETag, the edit flag, attributed facts."""
+    if not _authorised(request):
+        return httpx.Response(401)
+    body = {
+        "persons": [
+            {
+                "id": TREE_PERSON,
+                "personInfo": [{"canUserEdit": False}],
+                "facts": [{"id": "c-1", "attribution": {"modified": 1513017742633}}],
+            }
+        ]
+    }
+    return httpx.Response(200, json=body, headers={"ETag": ETAG})
 
 
 def _image(request: httpx.Request, *, withheld: bool = False) -> httpx.Response:
@@ -126,6 +153,10 @@ def documented_api():
             side_effect=lambda r: _image(r, withheld=True)
         )
         mock.get(f"{API}/platform/records/images/{SAMPLE_IMAGE}").mock(side_effect=_image)
+        mock.get(f"{API}/platform/tree/persons/{TREE_PERSON}").mock(side_effect=_tree_person)
+        mock.head(f"{API}/platform/tree/persons/{TREE_PERSON}").mock(
+            return_value=httpx.Response(200, headers={"ETag": ETAG})
+        )
         yield mock
 
 
@@ -196,6 +227,17 @@ async def test_a_search_that_no_longer_needs_a_browser_user_agent_is_reported(do
     live = await _run(TOKEN)
     failed = {o.name for o in live.outcomes if o.status == "FAIL"}
     assert "search: a token without a browser User-Agent gets 403" in failed
+
+
+async def test_a_tree_person_without_an_etag_is_a_failure(documented_api):
+    """compare_person reports the ETag so a stale packet can be caught."""
+    documented_api.get(f"{API}/platform/tree/persons/{TREE_PERSON}").mock(
+        return_value=httpx.Response(200, json={"persons": [{}]})
+    )
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "tree person: the GET carries a weak ETag, the same as HEAD's" in failed
+    assert "tree person: personInfo says whether the profile can be changed" in failed
 
 
 def test_the_report_ends_with_a_count_of_each_status():

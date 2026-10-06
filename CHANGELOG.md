@@ -8,6 +8,18 @@ adding one is a minor release.
 
 ## [Unreleased]
 
+### Added
+
+- `compare_person`: compare your own record of one deceased person (names,
+  events, relatives, each with its sources) with their tree profile. It
+  reports what agrees, what the profile lacks and what differs, the profile's
+  ETag, who has changed it in the last 90 days, possible duplicates and signs
+  of a conflation, and drafts packets: one proposed change each, with the
+  source, its tags and a draft reason, for you to make by hand. It reads
+  only, refuses anyone who may be living, and never proposes combining
+  profiles, removing anything, replacing a relationship or changing living
+  status. See [docs/COMPARE.md](docs/COMPARE.md).
+
 ## [1.0.0] — 2026-09-29
 
 The first public release.

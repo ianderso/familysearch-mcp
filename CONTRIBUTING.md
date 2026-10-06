@@ -30,11 +30,13 @@ fails any test that opens a real connection, and CI has no token at all.
 | `src/familysearch_mcp/server.py` | The tools. Their docstrings and `Field` descriptions *are* the published tool descriptions and schema. |
 | `src/familysearch_mcp/client.py` | The HTTP client: the anonymous-path boundary, token recovery, the throttling retry, and the image download. |
 | `src/familysearch_mcp/shape.py` | Turning uneven GEDCOM X into compact results. |
+| `src/familysearch_mcp/compare.py` | `compare_person`'s comparison and packets: pure functions, no requests. |
 | `src/familysearch_mcp/config.py` | Settings from the environment and the env file. |
 | `docs/API-NOTES.md` | What the live API actually does, where FamilySearch no longer documents it. |
 | `docs/AUTH.md` | Why the package takes a token and never a password, and how to get one. |
 | `tests/test_tool_contract.py` | Tests over the tool surface as a client sees it. |
 | `tests/live_check.py` | The one script that talks to the live API, run by hand with a token. Not collected. |
+| `tests/record_tree_fixture.py` | Records a tree profile's responses into `tests/fixtures/tree/`, with every contributor replaced. Run by hand with a token. Not collected. |
 
 ## What a change carries
 
@@ -77,7 +79,10 @@ so behaviour is only trusted once seen. When a change depends on how the live
 API answers, record what was observed and when, in `docs/API-NOTES.md` and
 beside the code that relies on it, and add a check to `tests/live_check.py`.
 Remove personal names and anything else identifying from captured payloads
-before committing them: fixtures use invented people.
+before committing them: fixtures use invented people. The one exception is a
+recorded tree profile, which may keep a long-dead public figure and their
+family by name; everyone who *edited* the profile is replaced, which
+`tests/record_tree_fixture.py` does.
 
 ## What will not be merged
 

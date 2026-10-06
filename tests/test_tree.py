@@ -328,6 +328,7 @@ async def test_every_tree_tool_is_registered_as_one():
         "get_person_memories",
         "get_person_changes",
         "get_matches",
+        "compare_person",
     }
 
 

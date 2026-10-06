@@ -75,7 +75,7 @@ claude mcp add familysearch -e FS_ENV_FILE=/path/to/familysearch.env -- uvx fami
 
 ## Tools
 
-Twenty-five tools. All of them read; `download_image` also writes the page
+Twenty-six tools. All of them read; `download_image` also writes the page
 it fetches to a local file.
 
 ### Places
@@ -126,6 +126,7 @@ description.
 | `get_person_memories` | yes | Attached photographs, documents and stories. |
 | `get_person_changes` | yes | The change log: who edited this profile, when, and why. |
 | `get_matches` | yes | FamilySearch's own duplicate and record-match candidates. |
+| `compare_person` | yes | Compare your own record of a deceased person with their profile: what agrees, what the profile lacks, what differs, and one proposed change per packet for you to make by hand. |
 
 ### Setup
 
@@ -138,6 +139,16 @@ description.
 - **The tree is not evidence.** The tree tools read profiles anyone can
   edit. Use them to find records. `get_person_sources` is the most useful of
   them because it leads out of the tree towards a document.
+- **A comparison proposes; it never changes.** `compare_person` takes your
+  own names, events, relatives and sources for one person, reads the
+  profile, and reports what agrees, what the profile lacks and what
+  differs. Each proposed change comes as a packet: the source, the facts to
+  tag it to, a draft reason with gaps for you to fill, and where on the
+  website to make it. You make the change yourself, one at a time, after
+  reading the record. It refuses anyone who may be living, and it never
+  proposes combining profiles, removing anything, replacing a
+  relationship or changing living status. See
+  [docs/COMPARE.md](docs/COMPARE.md).
 - **A persona is not the record.** A search returns one person's summary of
   what a record said; `get_record` returns the indexed fields behind it, and
   `get_record_image` the document itself. Read down that chain before citing.

@@ -4,6 +4,14 @@
     "collection_id",
     "waypoint_id"
   ],
+  "compare_person": [
+    "events",
+    "names",
+    "person_id",
+    "possibly_living",
+    "relatives",
+    "sex"
+  ],
   "download_image": [
     "destination",
     "image_url"

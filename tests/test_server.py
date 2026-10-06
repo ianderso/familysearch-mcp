@@ -24,6 +24,7 @@ async def test_every_tool_is_registered():
     names = {t.name for t in await server.mcp.list_tools()}
     assert names == {
         "auth_status",
+        "compare_person",
         "get_ancestry",
         "get_collection",
         "get_descendancy",

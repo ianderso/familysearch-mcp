@@ -2,7 +2,8 @@
 
 Everything this project set out to build is built: the anonymous gazetteer,
 record search and record reads, image resolution and download, the
-collection catalogue and film browser, and the shared-tree tools. That is 25
+collection catalogue and film browser, the shared-tree tools, and a
+read-only comparison of your own research with a tree profile. That is 26
 tools; the [README](../README.md) is the reference for what exists, and the
 [changelog](../CHANGELOG.md) for what changed.
 
@@ -31,7 +32,9 @@ tools stopped you.
 
 - **Any write.** Tree edits, memory uploads, merges. The tree is
   community-edited, a write is immediately visible to everyone, and this
-  server treats the tree as a lead rather than a source.
+  server treats the tree as a lead rather than a source. `compare_person`
+  proposes changes as packets for a person to make by hand; it never makes
+  one.
 - **A bundled client id or a password flow.** See
   [AUTH.md](AUTH.md).
 - **Managing the OAuth lifecycle.** FamilySearch issues no refresh token, so

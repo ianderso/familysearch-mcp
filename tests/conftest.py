@@ -451,6 +451,8 @@ LOCAL_VALIDATION_ERRORS = frozenset(
         "invalid_destination",
         "invalid_id",
         "not_configured",
+        "no_claims",
+        "possibly_living",
     }
 )
 
