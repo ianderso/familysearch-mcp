@@ -1,0 +1,2574 @@
+{
+ "person_id": "KNDX-MKG",
+ "validators": {
+  "etag": "W/\"139769026020400000\"",
+  "last_modified": "Thu, 11 Sep 2025 16:56:42 GMT"
+ },
+ "person": {
+  "persons": [
+   {
+    "id": "KNDX-MKG",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Male"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "President George Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "\"Father of his country\""
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "George Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "George Eskridge Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "General George Washington"
+       }
+      ]
+     }
+    ],
+    "facts": [
+     {
+      "id": "b1280f3b-8649-4ba4-98d5-0bc8d7eeb0ce",
+      "type": "http://gedcomx.org/Birth",
+      "date": {
+       "formal": "+1732-02-22",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "22 February 1732"
+        }
+       ],
+       "original": "22 February 1732"
+      },
+      "place": {
+       "description": "#395030",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Westmoreland, Virginia, British Colonial America"
+        }
+       ],
+       "original": "Westmoreland, Virginia, British Colonial America"
+      },
+      "attribution": {
+       "modified": 1513017742633,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "908da09b-be4a-404b-92ad-3316e16311d4",
+      "type": "http://gedcomx.org/Death",
+      "date": {
+       "formal": "+1799-12-14",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "14 December 1799"
+        }
+       ],
+       "original": "14 December 1799"
+      },
+      "place": {
+       "description": "#5227148",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Mount Vernon, Fairfax County, Virginia, United States"
+        }
+       ],
+       "original": "Mount Vernon, Fairfax, Virginia, United States"
+      },
+      "attribution": {
+       "modified": 1513017742633,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "538c34f6-31f2-4ff0-9859-a024c16b9a04",
+      "type": "http://gedcomx.org/Christening",
+      "date": {
+       "formal": "+1732-04-05",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "5 April 1732"
+        }
+       ],
+       "original": "5 April 1732"
+      },
+      "place": {
+       "description": "#10703974",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Virginia, British Colonial America"
+        }
+       ],
+       "original": "Virginia, British Colonial America"
+      },
+      "attribution": {
+       "modified": 1513017742633,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "0a00afdf-8b80-469d-95cc-0997c437b149",
+      "type": "http://gedcomx.org/Occupation",
+      "date": {
+       "formal": "+1749",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "1749"
+        }
+       ],
+       "original": "1749"
+      },
+      "value": "Surveyor",
+      "attribution": {
+       "modified": 1345753757758,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-002",
+        "resourceId": "AGENT-002"
+       }
+      }
+     },
+     {
+      "id": "305d628b-a1b2-42a6-8e3f-ca1c877814b8",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1752/+1758",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "from 1752 to 1758"
+        }
+       ],
+       "original": "between 1752 and 1758"
+      },
+      "place": {
+       "description": "#10703974",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Virginia, British Colonial America"
+        }
+       ],
+       "original": "Virginia, British Colonial America"
+      },
+      "value": "General",
+      "attribution": {
+       "modified": 1536685536228,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       }
+      }
+     },
+     {
+      "id": "2750b97d-9581-4801-a705-51e2be020564",
+      "type": "data:,Elected",
+      "date": {
+       "formal": "+1759/+1774",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "from 1759 to 1774"
+        }
+       ],
+       "original": "bet 1759 and 1774"
+      },
+      "value": "Member of the Virginia House of Burgesses",
+      "attribution": {
+       "modified": 1377614948221,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-002",
+        "resourceId": "AGENT-002"
+       }
+      }
+     },
+     {
+      "id": "18130472-462c-492a-b40f-e273a2f29b74",
+      "type": "data:,Elected",
+      "date": {
+       "formal": "+1774",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "1774"
+        }
+       ],
+       "original": "1774"
+      },
+      "value": "Member of the Continental Congress",
+      "attribution": {
+       "modified": 1536685466269,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       }
+      }
+     },
+     {
+      "id": "fb418a36-a816-4623-83ce-3f65d95c25f1",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1775-06-15",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "15 June 1775"
+        }
+       ],
+       "original": "15 Jun 1775"
+      },
+      "place": {
+       "description": "#4229284",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Boston, Suffolk, Massachusetts, United States"
+        }
+       ],
+       "original": "Boston, Suffolk, Massachusetts, United States"
+      },
+      "attribution": {
+       "modified": 1560977403667,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "c3cfc350-231f-4886-8029-1e01784eed48",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1775-07-25",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "25 July 1775"
+        }
+       ],
+       "original": "25 Jul 1775"
+      },
+      "place": {
+       "description": "#263",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "British Colonial America"
+        }
+       ],
+       "original": "British Colonial America"
+      },
+      "attribution": {
+       "modified": 1536685450977,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "7a3c1583-2a31-4ff7-885b-894e2b1a0dd0",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1776-05-12",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "12 May 1776"
+        }
+       ],
+       "original": "12 May 1776"
+      },
+      "place": {
+       "description": "#1",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "United States"
+        }
+       ],
+       "original": "United States"
+      },
+      "attribution": {
+       "modified": 1513017742633,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       }
+      }
+     },
+     {
+      "id": "946956cc-f263-4de9-b662-1598844c9084",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1783-01-01",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "1 January 1783"
+        }
+       ],
+       "original": "1 January 1783"
+      },
+      "place": {
+       "description": "#360",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Virginia, United States"
+        }
+       ],
+       "original": "Virginia, United States"
+      },
+      "attribution": {
+       "modified": 1552359321520,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       }
+      }
+     },
+     {
+      "id": "4d3f4995-6789-47c0-ab20-2662926cb4ce",
+      "type": "http://gedcomx.org/Occupation",
+      "date": {
+       "formal": "+1789/+1797",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "from 1789 to 1797"
+        }
+       ],
+       "original": "between 1789 and 1797"
+      },
+      "value": "President of the United States",
+      "attribution": {
+       "modified": 1513030025502,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       }
+      }
+     },
+     {
+      "id": "e11eca6c-8f44-4737-bb44-ec2b9fe9442d",
+      "type": "data:,Will",
+      "date": {
+       "formal": "+1799-07",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "July 1799"
+        }
+       ],
+       "original": "July 1799"
+      },
+      "place": {
+       "description": "#5227148",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Mount Vernon, Fairfax County, Virginia, United States"
+        }
+       ],
+       "original": "Mount Vernon, Fairfax, Virginia, United States"
+      },
+      "attribution": {
+       "modified": 1513030025502,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       }
+      }
+     },
+     {
+      "id": "24891205-480e-4b55-9407-eb7b40a42530",
+      "type": "http://gedcomx.org/Burial",
+      "date": {
+       "formal": "+1799-12-18",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "18 December 1799"
+        }
+       ],
+       "original": "18 December 1799"
+      },
+      "place": {
+       "description": "#5227148",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "Mount Vernon, Fairfax County, Virginia, United States"
+        }
+       ],
+       "original": "Mount Vernon Estate, Mount Vernon, Fairfax, Virginia, United States"
+      },
+      "attribution": {
+       "modified": 1566325521543,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "9f878055-9dfe-40f2-887c-544d6dfc0564",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1811-07-25",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "25 July 1811"
+        }
+       ],
+       "original": "25 Jul 1811"
+      },
+      "place": {
+       "description": "#1",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "United States"
+        }
+       ],
+       "original": "United States"
+      },
+      "attribution": {
+       "modified": 1513017742633,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "d5eb9bdb-fd00-4ace-ac4a-ae92c9a366a6",
+      "type": "http://gedcomx.org/MilitaryService",
+      "date": {
+       "formal": "+1812/+1815",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "from 1812 to 1815"
+        }
+       ],
+       "original": "1812-1815"
+      },
+      "place": {
+       "description": "#1",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "United States"
+        }
+       ],
+       "original": "United States"
+      },
+      "attribution": {
+       "modified": 1513017742633,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "092912f7-e4e7-4ed5-af2f-59e2ffb6951c",
+      "type": "http://gedcomx.org/Religion",
+      "value": "Episcopalian",
+      "attribution": {
+       "modified": 1513030025502,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       }
+      }
+     },
+     {
+      "id": "371e0c79-d87d-4091-95a5-7707769a096f",
+      "type": "http://familysearch.org/v1/LifeSketch",
+      "value": "George Washington life sketch: \n“George Washington (1732-99) was commander in chief of the Continental Army during the American Revolutionary War (1775-83) and served two terms as the first U.S. presi",
+      "attribution": {
+       "modified": 1513279604765,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       }
+      }
+     },
+     {
+      "id": "78d0297c-a24e-45da-93c7-4e0b5b8d7b52",
+      "type": "data:,Military",
+      "value": "Revolutionary War",
+      "attribution": {
+       "modified": 1536685490906,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       }
+      }
+     },
+     {
+      "id": "4bdb2207-8d3f-4a04-8106-385707194ea6",
+      "type": "http://gedcomx.org/Occupation",
+      "value": "Soldier, Commander, President",
+      "attribution": {
+       "modified": 1552359321520,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       }
+      }
+     },
+     {
+      "id": "82b48ed7-8ca6-443e-9b25-8a2fa4c6085f",
+      "type": "http://familysearch.org/v1/TitleOfNobility",
+      "value": "1st president",
+      "attribution": {
+       "modified": 1552359321520,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-001",
+        "resourceId": "AGENT-001"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     }
+    ],
+    "display": {
+     "name": "President George Washington",
+     "gender": "Male",
+     "lifespan": "1732-1799"
+    },
+    "personInfo": [
+     {
+      "canUserEdit": false,
+      "visibleToAll": true,
+      "visibleToAllWhenUsingFamilySearchApps": true
+     }
+    ],
+    "sources": [
+     {
+      "id": "67afbd6c-a5f0-4ae9-83f8-aac35e4b16e7",
+      "descriptionId": "7X6N-4WR",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/7X6N-4WR",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1741462797732,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "169e4c95-3ce4-4fa6-8c54-55bd16d9d4b0",
+      "descriptionId": "Q1KF-5FS",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/Q1KF-5FS",
+      "tags": [],
+      "attribution": {
+       "modified": 1719241837416,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "1f3e2c38-c475-40c6-8328-71deaf8d4312",
+      "descriptionId": "Q1KF-M19",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/Q1KF-M19",
+      "tags": [],
+      "attribution": {
+       "modified": 1719240723324,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "20825385-43cf-41a0-9bb5-40dfd88a7164",
+      "descriptionId": "QY6V-GRN",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/QY6V-GRN",
+      "tags": [],
+      "attribution": {
+       "modified": 1715801262344,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "edd6b63e-d33c-497b-97f2-bcb1759944d4",
+      "descriptionId": "QY6V-XSM",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/QY6V-XSM",
+      "tags": [],
+      "attribution": {
+       "modified": 1715801641593,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "a4794ee9-417f-4498-b8c1-d71e04960389",
+      "descriptionId": "Q7W4-HNK",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/Q7W4-HNK",
+      "tags": [],
+      "attribution": {
+       "modified": 1678137051670,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "65c56097-a8af-461e-9b70-d587f07ca1fb",
+      "descriptionId": "Q37F-MNS",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/Q37F-MNS",
+      "tags": [],
+      "attribution": {
+       "modified": 1674680829994,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "92ad3c0f-e4df-4730-9511-90bc93141f73",
+      "descriptionId": "3FGW-3M7",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/3FGW-3M7",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Burial"
+       }
+      ],
+      "attribution": {
+       "modified": 1641306871713,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "b34429ba-6327-4994-bb2b-70f6b9b2f659",
+      "descriptionId": "3FGW-94R",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/3FGW-94R",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1641306677827,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "9c38872f-9c8b-4ffe-a2d7-8a2225b09a33",
+      "descriptionId": "SFYP-NM5",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SFYP-NM5",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Burial"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1577451880912,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-005",
+        "resourceId": "AGENT-005"
+       }
+      }
+     },
+     {
+      "id": "2484a27a-3902-4a79-9835-d90cde317b0d",
+      "descriptionId": "SFYP-FRL",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SFYP-FRL",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Burial"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1577451846790,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-005",
+        "resourceId": "AGENT-005"
+       }
+      }
+     },
+     {
+      "id": "d6d566bf-291a-43b1-9b2b-26073bb00c56",
+      "descriptionId": "SFN3-RQZ",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SFN3-RQZ",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Burial"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1576278451881,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-006",
+        "resourceId": "AGENT-006"
+       }
+      }
+     },
+     {
+      "id": "7c2dc1f4-a4d1-484f-94d6-62af5d41924f",
+      "descriptionId": "SC6N-KNS",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SC6N-KNS",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1559773719199,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-007",
+        "resourceId": "AGENT-007"
+       }
+      }
+     },
+     {
+      "id": "c3823dd8-801e-4cc4-a4f7-519c766b0deb",
+      "descriptionId": "SCKR-TB2",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SCKR-TB2",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1560372709492,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-008",
+        "resourceId": "AGENT-008"
+       }
+      }
+     },
+     {
+      "id": "083b8231-d4dd-4128-9774-21a089d9ca9e",
+      "descriptionId": "S3RR-8TG",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/S3RR-8TG",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1545457280538,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-009",
+        "resourceId": "AGENT-009"
+       }
+      }
+     },
+     {
+      "id": "475cb1a4-856f-4a71-a849-5b95b61264c3",
+      "descriptionId": "S34X-3Q5",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/S34X-3Q5",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1543380060195,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-010",
+        "resourceId": "AGENT-010"
+       }
+      }
+     },
+     {
+      "id": "93b043a2-51ef-4cf7-8e45-2f66f0b8ebee",
+      "descriptionId": "SS5K-ZB3",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SS5K-ZB3",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1541953452593,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-011",
+        "resourceId": "AGENT-011"
+       }
+      }
+     },
+     {
+      "id": "2941ea5b-fd85-4558-b0ab-7156b1dcee04",
+      "descriptionId": "SS8G-YD1",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/SS8G-YD1",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1540657318234,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-012",
+        "resourceId": "AGENT-012"
+       }
+      }
+     },
+     {
+      "id": "55292e25-502b-4500-b2df-1ddaca9c5bee",
+      "descriptionId": "S977-CCK",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/S977-CCK",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1536685311033,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "68604b9b-4a43-49b2-8b58-60a53d378cfa",
+      "descriptionId": "S977-3PS",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/S977-3PS",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1536684690671,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "e416d2fb-bb07-4844-8494-dbd37d8b9b90",
+      "descriptionId": "S977-M3X",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/S977-M3X",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1536684265849,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "44807620-8c4e-4e22-a1ef-4049ff55c09a",
+      "descriptionId": "9LM6-6YR",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/9LM6-6YR",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1501801794202,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-013",
+        "resourceId": "AGENT-013"
+       }
+      }
+     },
+     {
+      "id": "e8e82e2b-4102-4cba-9d8d-708a33582af5",
+      "descriptionId": "921Q-GJQ",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/921Q-GJQ",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1501615504600,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-014",
+        "resourceId": "AGENT-014"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "125567bd-8fe5-4562-9c80-3f9232dd005d",
+      "descriptionId": "921Q-L23",
+      "description": "https://api.familysearch.org/platform/sources/descriptions/921Q-L23",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1501615413463,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-014",
+        "resourceId": "AGENT-014"
+       }
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "sources": {
+  "persons": [
+   {
+    "id": "KNDX-MKG",
+    "sources": [
+     {
+      "id": "67afbd6c-a5f0-4ae9-83f8-aac35e4b16e7",
+      "descriptionId": "7X6N-4WR",
+      "description": "#7X6N-4WR",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1741462797732,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "169e4c95-3ce4-4fa6-8c54-55bd16d9d4b0",
+      "descriptionId": "Q1KF-5FS",
+      "description": "#Q1KF-5FS",
+      "tags": [],
+      "attribution": {
+       "modified": 1719241837416,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "1f3e2c38-c475-40c6-8328-71deaf8d4312",
+      "descriptionId": "Q1KF-M19",
+      "description": "#Q1KF-M19",
+      "tags": [],
+      "attribution": {
+       "modified": 1719240723324,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "20825385-43cf-41a0-9bb5-40dfd88a7164",
+      "descriptionId": "QY6V-GRN",
+      "description": "#QY6V-GRN",
+      "tags": [],
+      "attribution": {
+       "modified": 1715801262344,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "edd6b63e-d33c-497b-97f2-bcb1759944d4",
+      "descriptionId": "QY6V-XSM",
+      "description": "#QY6V-XSM",
+      "tags": [],
+      "attribution": {
+       "modified": 1715801641593,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "a4794ee9-417f-4498-b8c1-d71e04960389",
+      "descriptionId": "Q7W4-HNK",
+      "description": "#Q7W4-HNK",
+      "tags": [],
+      "attribution": {
+       "modified": 1678137051670,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "65c56097-a8af-461e-9b70-d587f07ca1fb",
+      "descriptionId": "Q37F-MNS",
+      "description": "#Q37F-MNS",
+      "tags": [],
+      "attribution": {
+       "modified": 1674680829994,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "92ad3c0f-e4df-4730-9511-90bc93141f73",
+      "descriptionId": "3FGW-3M7",
+      "description": "#3FGW-3M7",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Burial"
+       }
+      ],
+      "attribution": {
+       "modified": 1641306871713,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "b34429ba-6327-4994-bb2b-70f6b9b2f659",
+      "descriptionId": "3FGW-94R",
+      "description": "#3FGW-94R",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1641306677827,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-004",
+        "resourceId": "AGENT-004"
+       }
+      }
+     },
+     {
+      "id": "9c38872f-9c8b-4ffe-a2d7-8a2225b09a33",
+      "descriptionId": "SFYP-NM5",
+      "description": "#SFYP-NM5",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Burial"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1577451880912,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-005",
+        "resourceId": "AGENT-005"
+       }
+      }
+     },
+     {
+      "id": "2484a27a-3902-4a79-9835-d90cde317b0d",
+      "descriptionId": "SFYP-FRL",
+      "description": "#SFYP-FRL",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Burial"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1577451846790,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-005",
+        "resourceId": "AGENT-005"
+       }
+      }
+     },
+     {
+      "id": "d6d566bf-291a-43b1-9b2b-26073bb00c56",
+      "descriptionId": "SFN3-RQZ",
+      "description": "#SFN3-RQZ",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Burial"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1576278451881,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-006",
+        "resourceId": "AGENT-006"
+       }
+      }
+     },
+     {
+      "id": "7c2dc1f4-a4d1-484f-94d6-62af5d41924f",
+      "descriptionId": "SC6N-KNS",
+      "description": "#SC6N-KNS",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1559773719199,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-007",
+        "resourceId": "AGENT-007"
+       }
+      }
+     },
+     {
+      "id": "c3823dd8-801e-4cc4-a4f7-519c766b0deb",
+      "descriptionId": "SCKR-TB2",
+      "description": "#SCKR-TB2",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1560372709492,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-008",
+        "resourceId": "AGENT-008"
+       }
+      }
+     },
+     {
+      "id": "083b8231-d4dd-4128-9774-21a089d9ca9e",
+      "descriptionId": "S3RR-8TG",
+      "description": "#S3RR-8TG",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1545457280538,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-009",
+        "resourceId": "AGENT-009"
+       }
+      }
+     },
+     {
+      "id": "475cb1a4-856f-4a71-a849-5b95b61264c3",
+      "descriptionId": "S34X-3Q5",
+      "description": "#S34X-3Q5",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1543380060195,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-010",
+        "resourceId": "AGENT-010"
+       }
+      }
+     },
+     {
+      "id": "93b043a2-51ef-4cf7-8e45-2f66f0b8ebee",
+      "descriptionId": "SS5K-ZB3",
+      "description": "#SS5K-ZB3",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1541953452593,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-011",
+        "resourceId": "AGENT-011"
+       }
+      }
+     },
+     {
+      "id": "2941ea5b-fd85-4558-b0ab-7156b1dcee04",
+      "descriptionId": "SS8G-YD1",
+      "description": "#SS8G-YD1",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1540657318234,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-012",
+        "resourceId": "AGENT-012"
+       }
+      }
+     },
+     {
+      "id": "55292e25-502b-4500-b2df-1ddaca9c5bee",
+      "descriptionId": "S977-CCK",
+      "description": "#S977-CCK",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       }
+      ],
+      "attribution": {
+       "modified": 1536685311033,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "68604b9b-4a43-49b2-8b58-60a53d378cfa",
+      "descriptionId": "S977-3PS",
+      "description": "#S977-3PS",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1536684690671,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "e416d2fb-bb07-4844-8494-dbd37d8b9b90",
+      "descriptionId": "S977-M3X",
+      "description": "#S977-M3X",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Gender"
+       },
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1536684265849,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "44807620-8c4e-4e22-a1ef-4049ff55c09a",
+      "descriptionId": "9LM6-6YR",
+      "description": "#9LM6-6YR",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       },
+       {
+        "resource": "http://gedcomx.org/Death"
+       },
+       {
+        "resource": "http://gedcomx.org/Birth"
+       }
+      ],
+      "attribution": {
+       "modified": 1501801794202,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-013",
+        "resourceId": "AGENT-013"
+       }
+      }
+     },
+     {
+      "id": "e8e82e2b-4102-4cba-9d8d-708a33582af5",
+      "descriptionId": "921Q-GJQ",
+      "description": "#921Q-GJQ",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1501615504600,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-014",
+        "resourceId": "AGENT-014"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     },
+     {
+      "id": "125567bd-8fe5-4562-9c80-3f9232dd005d",
+      "descriptionId": "921Q-L23",
+      "description": "#921Q-L23",
+      "tags": [
+       {
+        "resource": "http://gedcomx.org/Name"
+       }
+      ],
+      "attribution": {
+       "modified": 1501615413463,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-014",
+        "resourceId": "AGENT-014"
+       }
+      }
+     }
+    ]
+   }
+  ],
+  "sourceDescriptions": [
+   {
+    "id": "7X6N-4WR",
+    "about": "https://familysearch.org/ark:/61903/1:1:QRHS-D1T2",
+    "titles": [
+     {
+      "value": "George Washington, \"United States, Rosters of Revolutionary War Soldiers and Sailors, 1775-1966\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "Q1KF-5FS",
+    "about": "https://www.mountvernon.org/library/",
+    "titles": [
+     {
+      "value": "George Washington's Presidential Library "
+     }
+    ],
+    "resourceType": "DEFAULT"
+   },
+   {
+    "id": "Q1KF-M19",
+    "about": "https://www.whitehouse.gov/about-the-white-house/presidents/george-washington/",
+    "titles": [
+     {
+      "value": "The White House - George Washington"
+     }
+    ],
+    "resourceType": "DEFAULT"
+   },
+   {
+    "id": "QY6V-GRN",
+    "about": "https://familysearch.org/ark:/61903/3:1:3Q9M-C9TC-H9BP-T?view=explore",
+    "titles": [
+     {
+      "value": "Transcribed will of George Washington - Miscellaneous Court Records, Fairfax County, Virginia"
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "QY6V-XSM",
+    "about": "https://familysearch.org/ark:/61903/3:1:3QS7-89PC-QN9Q?view=explore",
+    "titles": [
+     {
+      "value": "Will of George Washington - Will Book H Part 1 with Inventories and Accounts, 1799-1801, Fairfax County, Virginia"
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "Q7W4-HNK",
+    "about": "https://familysearch.org/ark:/61903/3:1:3Q9M-CSNL-S98H-M",
+    "titles": [
+     {
+      "value": "Deed books, 1781-1886; deed index, 1781-1924"
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "Q37F-MNS",
+    "about": "https://www.loc.gov/item/74692581/",
+    "titles": [
+     {
+      "value": "Library of Congress Map with annotations from George Washington"
+     }
+    ],
+    "resourceType": "DEFAULT"
+   },
+   {
+    "id": "3FGW-3M7",
+    "about": "https://familysearch.org/ark:/61903/1:1:ZN9X-HBMM",
+    "titles": [
+     {
+      "value": "General George Washington, \"Pennsylvania, Cemetery Records, ca. 1700-ca. 1950\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "3FGW-94R",
+    "about": "https://familysearch.org/ark:/61903/1:1:H57R-KSN2",
+    "titles": [
+     {
+      "value": "George Washington, \"Pennsylvania, Deaths and Burials, 1720-1999\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "SFYP-NM5",
+    "about": "https://familysearch.org/ark:/61903/1:1:QVVM-MQKK",
+    "titles": [
+     {
+      "value": "George Washington, \"Find a Grave Index\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "SFYP-FRL",
+    "about": "https://familysearch.org/ark:/61903/1:1:QPZP-Y6G4",
+    "titles": [
+     {
+      "value": "President George Washington, \"BillionGraves Index\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "SFN3-RQZ",
+    "about": "https://search.ancestry.com/collections/6961/records/32476",
+    "titles": [
+     {
+      "value": "U.S., Dutch Reformed Church Records in Selected States, 1639-1989 Deaths and Burials"
+     }
+    ],
+    "resourceType": "DEFAULT"
+   },
+   {
+    "id": "SC6N-KNS",
+    "about": "https://familysearch.org/ark:/61903/1:1:QPSD-PD4Q",
+    "titles": [
+     {
+      "value": "George Washington, \"Historical Register of Officers of the Continental Army During the War of the Revolution\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "SCKR-TB2",
+    "about": "https://search.ancestry.com/collections/7836/records/1286820",
+    "titles": [
+     {
+      "value": "U.S. and International Marriage Records, 1560-1900"
+     }
+    ],
+    "resourceType": "DEFAULT"
+   },
+   {
+    "id": "S3RR-8TG",
+    "about": "https://familysearch.org/ark:/61903/1:1:QGXT-9YQQ",
+    "titles": [
+     {
+      "value": "George A Washington, \"United States, Revolutionary War Rolls, 1775-1783\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "S34X-3Q5",
+    "about": "https://familysearch.org/ark:/61903/1:1:F74Z-J4S",
+    "titles": [
+     {
+      "value": "Connecticut Births and Christenings, 1649-1906"
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "SS5K-ZB3",
+    "about": "https://familysearch.org/ark:/61903/1:1:QVSF-KB91",
+    "titles": [
+     {
+      "value": "President George Washington, \"Utah... Newspapers, 1850-2005\" \"The Dead Presidents\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "SS8G-YD1",
+    "about": "https://familysearch.org/ark:/61903/1:1:QG2M-8K9P",
+    "titles": [
+     {
+      "value": "George Washington, \"Historical Register of Virginians in the Revolution\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "S977-CCK",
+    "about": "https://www.familysearch.org/photos/artifacts/65678586",
+    "titles": [
+     {
+      "value": "Tobias Lear's Eyewitness Account of George Washington's Death"
+     }
+    ],
+    "resourceType": "USER_UPLOADED"
+   },
+   {
+    "id": "S977-3PS",
+    "about": "https://www.familysearch.org/photos/artifacts/65668940",
+    "titles": [
+     {
+      "value": "Founders Online Washington Genealogy"
+     }
+    ],
+    "resourceType": "USER_UPLOADED"
+   },
+   {
+    "id": "S977-M3X",
+    "about": "https://www.familysearch.org/photos/artifacts/45310989",
+    "titles": [
+     {
+      "value": "George Washington's Family Bible - Birth "
+     }
+    ],
+    "resourceType": "USER_UPLOADED"
+   },
+   {
+    "id": "9LM6-6YR",
+    "about": "https://familysearch.org/ark:/61903/1:1:Q23F-YJVY",
+    "titles": [
+     {
+      "value": "George Washington, \"Iowa, Grand Army of the Republic Membership Records, 1861-1949\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "921Q-GJQ",
+    "about": "https://familysearch.org/ark:/61903/1:1:Q2DG-WBG6",
+    "titles": [
+     {
+      "value": "George Washington, \"United States Revolutionary War Rolls, 1775-1783\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   },
+   {
+    "id": "921Q-L23",
+    "about": "https://familysearch.org/ark:/61903/1:1:Q2DG-4M6F",
+    "titles": [
+     {
+      "value": "George Washington, \"United States Revolutionary War Rolls, 1775-1783\""
+     }
+    ],
+    "resourceType": "FSREADONLY"
+   }
+  ]
+ },
+ "changes": {
+  "entries": [
+   {
+    "id": "4a8c5b80-8f30-11f0-b62f-330fa7ec9f0a_2_0",
+    "title": "Person Evidence Reference Added",
+    "updated": 1757609802040,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Create",
+      "objectType": "http://familysearch.org/v1/EvidenceReference"
+     }
+    ]
+   },
+   {
+    "id": "4a8c5b80-8f30-11f0-b62f-330fa7ec9f0a_0_0",
+    "title": "Person Merged",
+    "updated": 1757609802040,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Merge",
+      "objectType": "http://gedcomx.org/Person"
+     }
+    ]
+   },
+   {
+    "id": "1dfd1640-fc55-11ef-b3d6-c75bdacc4817_0_0",
+    "title": "Person Source Reference Added",
+    "updated": 1741462797732,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Create",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "598d6fd0-323d-11ef-8946-d7521e491435_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719242454861,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "fc29f750-323c-11ef-8946-d7521e491435_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719242298181,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "e986ce80-323b-11ef-aa99-3939221d3759_0_0",
+    "title": "Person Source Reference Added",
+    "updated": 1719241837416,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Create",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "5179dbc0-3239-11ef-8584-ef154d695f6e_0_0",
+    "title": "Person Source Reference Added",
+    "updated": 1719240723324,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Create",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "28011920-3239-11ef-9be6-1f81f219c472_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719240653746,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "142c31a0-3239-11ef-bbe8-215d9bd423ae_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719240620474,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "11783530-3239-11ef-8e73-5b1439c6b930_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719240615939,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "0defd1c0-3239-11ef-8fc0-73f3813a6a01_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719240610012,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   },
+   {
+    "id": "0898c8d0-3239-11ef-8fc0-73f3813a6a01_0_0",
+    "title": "Person Source Reference Removed",
+    "updated": 1719240601053,
+    "contributors": [
+     {
+      "name": "FamilySearch",
+      "uri": "https://api.familysearch.org/platform/users/agents/AGENT-004"
+     }
+    ],
+    "changeInfo": [
+     {
+      "operation": "http://familysearch.org/v1/Delete",
+      "objectType": "http://gedcomx.org/SourceReference"
+     }
+    ]
+   }
+  ]
+ },
+ "families": {
+  "persons": [
+   {
+    "id": "KNDX-MKG",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Male"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "President George Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "\"Father of his country\""
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "George Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "George Eskridge Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "General George Washington"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "President George Washington",
+     "gender": "Male",
+     "lifespan": "1732-1799"
+    }
+   },
+   {
+    "id": "L8S6-24S",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Male"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "John Parke Custis"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "John Parke Custis"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/Nickname",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Jacky Custis"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "John Parke Custis",
+     "gender": "Male",
+     "lifespan": "1754-1781"
+    }
+   },
+   {
+    "id": "LZN2-GDW",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Female"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Martha Parke Custis"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "Martha Parke Custis"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/Nickname",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Patsy Custis"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "Martha Parke Custis",
+     "gender": "Female",
+     "lifespan": "1756-1773"
+    }
+   },
+   {
+    "id": "L84W-SFK",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Female"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Eleanor Parke Custis"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "Eleanor Parke Custis"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/Nickname",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Nelly or Nellie Custis"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "Eleanor Parke Custis",
+     "gender": "Female",
+     "lifespan": "1779-1852"
+    }
+   },
+   {
+    "id": "KNDX-MFX",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Male"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Captain Augustine Washington Sr."
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/Nickname",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Gus Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Lawrence Washignton"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "Augustine Washington"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "Augustine Washington",
+     "gender": "Male",
+     "lifespan": "1694-1743"
+    }
+   },
+   {
+    "id": "KNDD-GXQ",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Female"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "Mary Ball"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Mary Ball"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Mary Eskridge"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/AlsoKnownAs",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Mary Johnson Ball"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "Mary Ball",
+     "gender": "Female",
+     "lifespan": "1708-1789"
+    }
+   },
+   {
+    "id": "KNZC-6QV",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Female"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Martha Dandridge"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/Nickname",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Patsy Dandridge"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/MarriedName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "Martha Dandridge Custis Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "Martha Dandridge"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "Martha Dandridge",
+     "gender": "Female",
+     "lifespan": "1731-1802"
+    }
+   },
+   {
+    "id": "L7GM-Y82",
+    "living": false,
+    "gender": {
+     "type": "http://gedcomx.org/Male"
+    },
+    "names": [
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": false,
+      "nameForms": [
+       {
+        "fullText": "George Washington Custis Washington"
+       }
+      ]
+     },
+     {
+      "type": "http://gedcomx.org/BirthName",
+      "preferred": true,
+      "nameForms": [
+       {
+        "fullText": "George Washington Parke Custis"
+       }
+      ]
+     }
+    ],
+    "display": {
+     "name": "George Washington Parke Custis",
+     "gender": "Male",
+     "lifespan": "1781-1857"
+    }
+   }
+  ],
+  "relationships": [
+   {
+    "id": "MCDG-G9L",
+    "type": "http://gedcomx.org/Couple",
+    "person1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "person2": {
+     "resource": "#KNZC-6QV",
+     "resourceId": "KNZC-6QV"
+    },
+    "facts": [
+     {
+      "id": "c2548be5-44c9-49c5-ae5a-d0a959a813e6",
+      "type": "http://gedcomx.org/Marriage",
+      "date": {
+       "formal": "+1759-01-06",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "6 January 1759"
+        }
+       ],
+       "original": "6 January 1759"
+      },
+      "place": {
+       "description": "#394979",
+       "normalized": [
+        {
+         "lang": "en-US",
+         "value": "New Kent, Virginia, British Colonial America"
+        }
+       ],
+       "original": "New Kent, Virginia, British Colonial America"
+      },
+      "attribution": {
+       "modified": 1513101048118,
+       "contributor": {
+        "resource": "https://api.familysearch.org/platform/users/agents/AGENT-003",
+        "resourceId": "AGENT-003"
+       },
+       "changeMessage": "A reason a contributor gave."
+      }
+     }
+    ]
+   },
+   {
+    "id": "P1MCQV-KG4",
+    "type": "http://gedcomx.org/ParentChild",
+    "person1": {
+     "resource": "#KNDX-MFX",
+     "resourceId": "KNDX-MFX"
+    },
+    "person2": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "facts": []
+   },
+   {
+    "id": "P2MCQV-KG4",
+    "type": "http://gedcomx.org/ParentChild",
+    "person1": {
+     "resource": "#KNDD-GXQ",
+     "resourceId": "KNDD-GXQ"
+    },
+    "person2": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "facts": []
+   },
+   {
+    "id": "P199J1-DJ9",
+    "type": "http://gedcomx.org/ParentChild",
+    "person1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "person2": {
+     "resource": "#L8S6-24S",
+     "resourceId": "L8S6-24S"
+    },
+    "facts": []
+   },
+   {
+    "id": "P199J1-DNP",
+    "type": "http://gedcomx.org/ParentChild",
+    "person1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "person2": {
+     "resource": "#LZN2-GDW",
+     "resourceId": "LZN2-GDW"
+    },
+    "facts": []
+   },
+   {
+    "id": "P199J1-5ZG",
+    "type": "http://gedcomx.org/ParentChild",
+    "person1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "person2": {
+     "resource": "#L84W-SFK",
+     "resourceId": "L84W-SFK"
+    },
+    "facts": []
+   },
+   {
+    "id": "P199J1-5ZP",
+    "type": "http://gedcomx.org/ParentChild",
+    "person1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "person2": {
+     "resource": "#L7GM-Y82",
+     "resourceId": "L7GM-Y82"
+    },
+    "facts": []
+   }
+  ],
+  "childAndParentsRelationships": [
+   {
+    "id": "MCQV-KG4",
+    "child": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "parent1": {
+     "resource": "#KNDX-MFX",
+     "resourceId": "KNDX-MFX"
+    },
+    "parent2": {
+     "resource": "#KNDD-GXQ",
+     "resourceId": "KNDD-GXQ"
+    }
+   },
+   {
+    "id": "99J1-DJ9",
+    "child": {
+     "resource": "#L8S6-24S",
+     "resourceId": "L8S6-24S"
+    },
+    "parent1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "parent2": {
+     "resource": "#KNZC-6QV",
+     "resourceId": "KNZC-6QV"
+    }
+   },
+   {
+    "id": "99J1-DNP",
+    "child": {
+     "resource": "#LZN2-GDW",
+     "resourceId": "LZN2-GDW"
+    },
+    "parent1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "parent2": {
+     "resource": "#KNZC-6QV",
+     "resourceId": "KNZC-6QV"
+    }
+   },
+   {
+    "id": "99J1-5ZG",
+    "child": {
+     "resource": "#L84W-SFK",
+     "resourceId": "L84W-SFK"
+    },
+    "parent1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "parent2": {
+     "resource": "#KNZC-6QV",
+     "resourceId": "KNZC-6QV"
+    }
+   },
+   {
+    "id": "99J1-5ZP",
+    "child": {
+     "resource": "#L7GM-Y82",
+     "resourceId": "L7GM-Y82"
+    },
+    "parent1": {
+     "resource": "#KNDX-MKG",
+     "resourceId": "KNDX-MKG"
+    },
+    "parent2": {
+     "resource": "#KNZC-6QV",
+     "resourceId": "KNZC-6QV"
+    }
+   }
+  ]
+ },
+ "matches": {
+  "entries": []
+ }
+}

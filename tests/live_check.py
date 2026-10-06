@@ -10,7 +10,7 @@ possible::
 
 It finds the token the way the server does: ``FS_ENV_FILE``, or the nearest
 ``.env`` from the working directory upward. Without one, the checks that need
-no token still run and the rest are skipped. About thirty requests, all reads.
+no token still run and the rest are skipped. About thirty-five requests, all reads.
 
 Each line says PASS, FAIL or SKIP, what was expected, and what came back. A
 FAIL means ``docs/API-NOTES.md`` and the code beside the claim are out of
@@ -64,6 +64,10 @@ FULL_IMAGE = "image-stream-image-dist"
 
 #: A token FamilySearch cannot accept.
 BOGUS_TOKEN = "live-check-not-a-token"
+
+#: A long-dead public figure's tree profile, for the reads compare_person
+#: relies on: George Washington, whose profile FamilySearch keeps read-only.
+TREE_PERSON = "KNDX-MKG"
 
 
 @dataclass
@@ -361,6 +365,52 @@ class LiveCheck:
             f"{self.withheld_image}: {_saw(response)}; users/current HTTP {current.status_code}",
         )
 
+    async def tree_person(self) -> None:
+        """What compare_person reads off a tree profile.
+
+        A weak ETag on the GET itself (so no HEAD is needed) that matches the
+        HEAD's; a ``personInfo.canUserEdit`` flag; and conclusions that carry
+        their id and an attribution with a modified time.
+        """
+        names = (
+            "tree person: the GET carries a weak ETag, the same as HEAD's",
+            "tree person: personInfo says whether the profile can be changed",
+            "tree person: each fact carries its conclusion id and when it changed",
+        )
+        if not self.token:
+            for name in names:
+                self.skip(name, "no token")
+            return
+        path = f"/platform/tree/persons/{TREE_PERSON}"
+        got = await self.get(path, token=self.token)
+        head = await self.http.head(
+            f"{self.api}{path}",
+            headers={"Accept": GEDCOMX_JSON, "Authorization": f"Bearer {self.token}"},
+        )
+        etag = got.headers.get("ETag") or ""
+        self.record(
+            names[0],
+            got.status_code == 200 and etag.startswith("W/") and etag == head.headers.get("ETag"),
+            f"GET HTTP {got.status_code} ETag {etag or 'absent'}; HEAD HTTP "
+            f"{head.status_code} ETag {head.headers.get('ETag') or 'absent'}",
+        )
+        person = (_json(got).get("persons") or [{}])[0]
+        info = (person.get("personInfo") or [{}])[0]
+        self.record(
+            names[1],
+            isinstance(info.get("canUserEdit"), bool),
+            f"canUserEdit = {info.get('canUserEdit')!r}",
+        )
+        facts = person.get("facts") or []
+        attributed = [
+            f for f in facts if f.get("id") and (f.get("attribution") or {}).get("modified")
+        ]
+        self.record(
+            names[2],
+            bool(facts) and len(attributed) == len(facts),
+            f"{len(attributed)} of {len(facts)} facts",
+        )
+
     async def run(self) -> None:
         """Run every check. The record read supplies the image checks' ark."""
         steps: list[Callable[[], Awaitable[None]]] = [
@@ -370,6 +420,7 @@ class LiveCheck:
             self.record_types,
             self.record_shape,
             self.thin_image_document,
+            self.tree_person,
         ]
         for step in steps:
             await step()

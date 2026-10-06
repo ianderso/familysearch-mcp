@@ -24,7 +24,9 @@ It reads the token the way the server does, runs the anonymous checks
 without one, and skips the rest when there is none or FamilySearch rejects
 it. A FAIL names the claim below that no longer holds.
 
-Last run 2026-09-29 with a fresh token: 26 checks passed and none failed.
+Last run 2026-10-05 with a fresh token: 29 checks passed and none failed,
+including the three tree-profile checks added for `compare_person`.
+Before that, on 2026-09-29, 26 checks passed and none failed.
 Every claim below held — the anonymous routes, the 406 for the wrong Accept
 type, the current-user 401 and 200, the search service's 401 without a token
 and 403 without a browser User-Agent, all eight record-type codes narrowing
@@ -315,6 +317,46 @@ query parameter, so a title search means holding the whole list: 3,443
 collections across about 38 pages, around ninety seconds. It is cached in
 memory and on disk for thirty days; `search_collections(refresh=True)`
 rebuilds it.
+
+## Tree profiles, as `compare_person` reads them
+
+Verified live on 2026-10-05 against two long-dead public profiles: George
+Washington (`KNDX-MKG`) and his great-grandmother Hannah Atherold
+(`L1M1-8GY`).
+
+- **The GET carries the version.** `GET /platform/tree/persons/{id}`
+  answers with a weak `ETag` (`W/"139769026020400000"`) and a
+  `Last-Modified`, and `HEAD` on the same path answers the same ETag. So
+  the comparison reads both from the GET and no HEAD is sent. The change
+  log carries an ETag of its own, which is not the profile's.
+- **Whether you may change it.** `persons[0].personInfo[0].canUserEdit` is
+  false for Washington, whom FamilySearch keeps read-only, and true for
+  Hannah Atherold. `compare_person` drafts no packets when it is false.
+- **Who last changed each conclusion.** Every fact, name and gender carries
+  its conclusion `id` and an `attribution`: the contributor's agent id
+  (`contributor.resourceId`), `modified` in epoch milliseconds, and the
+  `changeMessage` they typed, if any. The person read has no contributor
+  *names*; the change log does, as `contributors[].name` with the agent id
+  at the end of `contributors[].uri`. `compare_person` maps one to the other
+  and falls back to the agent id for anyone not on the log's first page.
+- **Tags name a conclusion two ways.** A source reference's `tags[]` hold
+  either `{"resource": "http://gedcomx.org/Birth"}` or, for one of several
+  facts of a kind, `{"conclusionId": "..."}`.
+- **User-defined facts** carry their type as a `data:` URI, e.g.
+  `data:,Will+Proved`.
+- **The change log ignores `count`.** For Hannah Atherold's profile, being
+  edited that week, one page held 116 entries and about 960 KB, with or
+  without `count=10`; a `next` link pages further back. The comparison reads
+  the first page only, which is enough to see the last 90 days on any
+  profile seen so far.
+- **No duplicates is a 204.** `GET .../matches?collection=tree` answered 204
+  with no body for both profiles.
+- **Families** carry the subject's `Couple` relationships with their
+  `Marriage` facts, `ParentChild` relationships, and
+  `childAndParentsRelationships`, for the subject and their parents' other
+  children.
+
+`tests/live_check.py` re-asks the first three, against Washington's profile.
 
 ## Throttling
 

@@ -433,6 +433,7 @@ ID_ARGUMENTS = {
     "get_person_memories": "person_id",
     "get_person_changes": "person_id",
     "get_matches": "person_id",
+    "compare_person": "person_id",
 }
 
 

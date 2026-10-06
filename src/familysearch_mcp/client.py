@@ -370,13 +370,55 @@ class FamilySearchClient:
         FamilySearchApiError
             On any status of 400 or above.
         """
+        body, _ = await self.get_with_validators(path, accept=accept, params=params, **kwargs)
+        return body
+
+    async def get_with_validators(
+        self,
+        path: str,
+        *,
+        accept: str = GEDCOMX_JSON,
+        params: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> tuple[dict, dict[str, str | None]]:
+        """Send a GET, returning the body and the resource's cache validators.
+
+        A tree person carries a weak ``ETag`` and a ``Last-Modified`` that
+        change whenever anyone edits the profile. A comparison reports them so
+        a later reader can tell whether the profile has changed since. The GET
+        itself carries both, so no separate HEAD is needed -- verified live
+        2026-10-05: ``GET /platform/tree/persons/{id}`` and ``HEAD`` on the
+        same path answered the same weak ETag.
+
+        Parameters
+        ----------
+        path, accept, params, **kwargs
+            As for :meth:`get`.
+
+        Returns
+        -------
+        tuple of (dict, dict)
+            The decoded body (empty for a 204), and ``{"etag",
+            "last_modified"}``, either of which may be None.
+
+        Raises
+        ------
+        AuthRequiredError
+            If the path needs a token and none is configured.
+        FamilySearchApiError
+            On any status of 400 or above.
+        """
         merged = {**(params or {}), **kwargs}
         clean = {k: v for k, v in merged.items() if v is not None}
         resp = await self._send(
             lambda: self._http.get(path, params=clean, headers=self._headers(path, accept))
         )
+        validators = {
+            "etag": resp.headers.get("ETag"),
+            "last_modified": resp.headers.get("Last-Modified"),
+        }
         if resp.status_code == 204:
-            return {}
+            return {}, validators
         if resp.status_code >= 400:
             raise FamilySearchApiError(
                 resp.status_code,
@@ -385,9 +427,9 @@ class FamilySearchClient:
                 retry_after=_retry_after(resp),
             )
         try:
-            return resp.json()
+            return resp.json(), validators
         except ValueError:
-            return {}
+            return {}, validators
 
 
 def _retry_after(resp: httpx.Response) -> int | None:
