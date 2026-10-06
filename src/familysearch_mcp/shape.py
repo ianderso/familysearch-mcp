@@ -7,6 +7,7 @@ reads and reduce the URIs to their last segment.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 
@@ -1203,3 +1204,156 @@ def fulltext_facets(payload: dict) -> list[dict]:
             }
         )
     return out
+
+
+def _as_list(value: Any) -> list:
+    """A catalog field as a list: the service sends one item bare, several as a list."""
+    if value is None or value == "":
+        return []
+    return value if isinstance(value, list) else [value]
+
+
+def _plain(text: Any) -> str:
+    """Catalog text with its HTML markup removed and its spacing collapsed."""
+    return " ".join(re.sub(r"<[^>]+>", " ", str(text or "")).split())
+
+
+def pad_dgs(value: Any) -> str | None:
+    """A DGS number as the storage host takes it: nine digits, zeros kept.
+
+    The catalog sends some as numbers and some as strings without their
+    leading zeros (``7529219``). The storage host answers ``dgs:007529219``
+    and not ``dgs:7529219`` (404) -- verified live 2026-10-05.
+    """
+    digits = str(value or "").strip()
+    return digits.zfill(9) if digits.isdigit() and int(digits) else None
+
+
+def _texts(values: Any, key: str = "text") -> list[str]:
+    """The non-empty plain text of one key across a catalog field's entries."""
+    found = (_plain(v.get(key)) for v in _as_list(values) if isinstance(v, dict))
+    return [t for t in found if t]
+
+
+def catalog_entry(source: dict) -> dict:
+    """Shape a catalog entry's description: everything but its films.
+
+    Parameters
+    ----------
+    source : dict
+        The ``source`` object of a catalog item read.
+
+    Returns
+    -------
+    dict
+        Title, dates, format, authors with their roles, subjects and the
+        places they name, notes as plain text, language and publisher. A
+        field the entry does not have is left out.
+    """
+    places: list[str] = []
+    for subject in _as_list(source.get("subject")):
+        # A subject tied to the place authority reads "Place - Topic".
+        if isinstance(subject, dict) and subject.get("geo_name"):
+            place = _plain(subject.get("text")).split(" - ")[0]
+            if place and place not in places:
+                places.append(place)
+    authors = [
+        {"name": _plain(a.get("display_text") or a.get("fullname")), "role": _plain(a.get("type"))}
+        for a in _as_list(source.get("author"))
+        if isinstance(a, dict) and (a.get("display_text") or a.get("fullname"))
+    ]
+    publishers = [
+        ", ".join(part for part in (_plain(p.get(k)) for k in ("name", "place", "date")) if part)
+        for p in _as_list(source.get("publisher"))
+        if isinstance(p, dict)
+    ]
+    shaped = {
+        "title": _plain(source.get("display_title") or source.get("title")),
+        "dates": _plain(source.get("inclusive_dates")),
+        "format": _plain(source.get("format_addendum") or source.get("format")),
+        "authors": authors,
+        "places": places,
+        "subjects": _texts(source.get("subject")),
+        "notes": _texts(source.get("note")),
+        "physical": _texts(source.get("physical"), "display_text"),
+        "languages": _texts(source.get("language")),
+        "publishers": [p for p in publishers if p],
+        "online": source.get("available_online") == "Y",
+    }
+    return {k: v for k, v in shaped.items() if v not in ("", [])}
+
+
+def catalog_items(source: dict) -> list[dict]:
+    """Shape a catalog entry's films: one per ``film_note``, in catalog order.
+
+    Parameters
+    ----------
+    source : dict
+        The ``source`` object of a catalog item read.
+
+    Returns
+    -------
+    list of dict
+        Each with its ``dgs`` number (nine digits; None when the film was
+        never digitised), its ``description``, and where present the
+        microfilm ``film`` number, the ``item`` on a film holding several,
+        the image it starts at, and the catalog's own rights code.
+    """
+    out = []
+    for note in _as_list(source.get("film_note")):
+        if not isinstance(note, dict):
+            continue
+        item: dict = {
+            "dgs": pad_dgs(note.get("digital_film_no")),
+            "description": _plain(note.get("text")),
+        }
+        film = str(note.get("filmno") or "").strip()
+        if film:
+            item["film"] = film
+        if _plain(note.get("items")):
+            item["item_on_film"] = _plain(note.get("items"))
+        start = str(note.get("item_image_start_no") or "").strip()
+        if start.isdigit() and int(start) > 0:
+            item["first_image"] = int(start)
+        if _plain(note.get("digital_film_rights")):
+            item["catalog_rights"] = _plain(note.get("digital_film_rights"))
+        if not item["dgs"]:
+            location = _plain(note.get("location"))
+            if location:
+                item["location"] = location
+        out.append(item)
+    return out
+
+
+def _term_pattern(term: str) -> re.Pattern:
+    """A filter word as a pattern: a number matches only whole, so 250 is not 1250."""
+    pattern = re.escape(term)
+    if term[:1].isdigit():
+        pattern = r"(?<!\d)" + pattern
+    if term[-1:].isdigit():
+        pattern += r"(?!\d)"
+    return re.compile(pattern, re.IGNORECASE)
+
+
+#: Two numbers joined by a dash: a span of years or of case numbers.
+_RANGE = re.compile(r"(\d+)\s*-\s*#?(\d+)")
+
+
+def description_matches(description: str, words: list[str]) -> bool:
+    """Whether a film's description holds every one of ``words``.
+
+    Case is ignored. A number matches only as a whole number, and also
+    matches a span that contains it: 1885 matches "1880-1890", and 250
+    matches "#200-300".
+    """
+    for word in words:
+        if _term_pattern(word).search(description):
+            continue
+        number = word.lstrip("#")
+        if number.isdigit() and any(
+            int(low) <= int(number) <= int(high) and int(low) < int(high)
+            for low, high in _RANGE.findall(description)
+        ):
+            continue
+        return False
+    return True

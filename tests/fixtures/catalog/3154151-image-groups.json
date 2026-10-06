@@ -1,0 +1,113 @@
+{
+ "106063174": {
+  "status": 200,
+  "body": {
+   "name": "106063174",
+   "apid": "TH-909-86817-26925-29",
+   "childCount": 26,
+   "lastMod": 1786320462590,
+   "link": [
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29",
+     "rel": "node",
+     "type": "application/json"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/parents",
+     "rel": "parents",
+     "type": "application/json"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/children",
+     "rel": "children",
+     "type": "application/json"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/permission",
+     "rel": "permission",
+     "type": "application/json"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/name",
+     "rel": "name",
+     "type": "application/json"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/_X_MANIFEST.XML",
+     "rel": "stream-unknown-_X_MANIFEST",
+     "type": "application/octet-stream"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/dor.xml",
+     "rel": "stream-meta-dor",
+     "type": "application/xml"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/operationalMetadata.xml",
+     "rel": "stream-meta-operationalMetadata",
+     "type": "application/xml"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/106063174_thumbs_16.zip",
+     "rel": "stream-zip-106063174_thumbs_16",
+     "type": "application/octet-stream"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/106063174_thumbs_32.zip",
+     "rel": "stream-zip-106063174_thumbs_32",
+     "type": "application/octet-stream"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/106063174_thumbs_64.zip",
+     "rel": "stream-zip-106063174_thumbs_64",
+     "type": "application/octet-stream"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/106063174_thumbs_128.zip",
+     "rel": "stream-zip-106063174_thumbs_128",
+     "type": "application/octet-stream"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/106063174_thumbs_p200.zip",
+     "rel": "stream-zip-106063174_thumbs_p200",
+     "type": "application/octet-stream"
+    },
+    {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/TH-909-86817-26925-29/ingestversion",
+     "rel": "stream-unknown-ingestversion",
+     "type": "application/octet-stream"
+    }
+   ],
+   "streamCount": 9,
+   "templates": [
+    {
+     "name": "das-image",
+     "template": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/{id}/{image}"
+    },
+    {
+     "name": "dz-image",
+     "template": "https://sg30p0.familysearch.org/service/records/storage/deepzoomcloud/dz/v1/{id}/{image}"
+    },
+    {
+     "name": "external-das-image",
+     "template": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/{id}/{image}"
+    },
+    {
+     "name": "external-dz-image",
+     "template": "https://sg30p0.familysearch.org/service/records/storage/deepzoomcloud/dz/v1/{id}/{image}"
+    }
+   ]
+  }
+ },
+ "106063176": {
+  "status": 403,
+  "body": {
+   "error": "Forbidden",
+   "message": "Access to artifact denied",
+   "path": null,
+   "status": 403,
+   "timestamp": "2026-10-06 04:04:41.577",
+   "trace": null
+  }
+ }
+}

@@ -8,6 +8,30 @@ adding one is a minor release.
 
 ## [Unreleased]
 
+### Added
+
+- `get_catalog_entry`: read a FamilySearch Catalog entry, the library's
+  description of a set of films: title, authors, places, notes, and each
+  film or DGS with its description (volume, case numbers, years), its image
+  count and whether your account may view it. `contains` keeps the items
+  holding every word given, a number matching only whole or inside a span,
+  and `count` and `offset` page through an entry of thousands. It reads the
+  service the website's catalog page reads, with your token and a browser
+  User-Agent, like record search, and asks the image store for each
+  returned film. Every result carries cautions: an entry describes
+  holdings, not the record; a film may be restricted or never digitised;
+  and a DGS is not the microfilm number.
+
+### Changed
+
+- The tool descriptions are shorter, to make room for the new tool within
+  the same budget: the shared-tree warning every tree tool carries is said
+  in fewer words, and repetition in `get_film_image`, `search_collections`,
+  `get_person_relatives` and `get_person_changes` is gone. The existing
+  descriptions fell from 15,667 characters to 14,787; with the new tool the
+  block is 15,409 of 16,000.
+- The README counts 28 tools; it had said 26 since 1.1.0 added two.
+
 ## [1.1.0] — 2026-10-05
 
 ### Added

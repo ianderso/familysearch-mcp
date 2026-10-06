@@ -10,7 +10,7 @@ possible::
 
 It finds the token the way the server does: ``FS_ENV_FILE``, or the nearest
 ``.env`` from the working directory upward. Without one, the checks that need
-no token still run and the rest are skipped. About forty-five requests, all reads.
+no token still run and the rest are skipped. About fifty requests, all reads.
 
 Each line says PASS, FAIL or SKIP, what was expected, and what came back. A
 FAIL means ``docs/API-NOTES.md`` and the code beside the claim are out of
@@ -29,7 +29,9 @@ import httpx
 
 from familysearch_mcp.client import (
     BROWSER_UA,
+    CATALOG_URLS,
     CURRENT_USER_PATH,
+    DAS_HOST,
     FS_JSON,
     FULLTEXT_URLS,
     GEDCOMX_ATOM_JSON,
@@ -39,6 +41,7 @@ from familysearch_mcp.client import (
 from familysearch_mcp.config import HOSTS, load_config, token_from_env_file
 from familysearch_mcp.server import _NODE_NAME, RECORD_TYPE_CODES
 from familysearch_mcp.shape import (
+    catalog_items,
     collection_field_labels,
     links,
     record_fields,
@@ -69,6 +72,14 @@ BOGUS_TOKEN = "live-check-not-a-token"
 #: A long-dead public figure's tree profile, for the reads compare_person
 #: relies on: George Washington, whose profile FamilySearch keeps read-only.
 TREE_PERSON = "KNDX-MKG"
+
+#: A large FamilySearch Catalog entry: one county's probate files, some three
+#: thousand of them, each its own DGS, some viewable and some not.
+CATALOG = "3154151"
+
+#: A DGS number that starts with zeros: a French parish register film, from
+#: catalog 104590.
+ZERO_PADDED_DGS = "008126335"
 
 
 @dataclass
@@ -110,6 +121,7 @@ class LiveCheck:
         self.api = HOSTS[environment]
         self.search_url = SEARCH_URLS[environment]
         self.fulltext_url = FULLTEXT_URLS[environment]
+        self.catalog_url = CATALOG_URLS[environment]
         self.withheld_image = withheld_image
         self.outcomes: list[Outcome] = []
         #: An image ark found on a real record, for the image checks.
@@ -499,6 +511,82 @@ class LiveCheck:
             f"HTTP {response.status_code}: {text[:60]!r}",
         )
 
+    async def catalog(self) -> None:
+        """The catalog entry service, and the storage host's answer for a DGS.
+
+        The service stands where record search does. The entry's shape is
+        what ``shape.catalog_items`` reads. The storage host gives a film's
+        image count to a token that may view it, with no browser
+        User-Agent, 403 to one that may not, and 404 to a DGS number
+        without its leading zeros.
+        """
+        names = (
+            "catalog: a token without a browser User-Agent gets 403",
+            "catalog: a token with a browser User-Agent gets the entry and its films",
+            "catalog: a viewable DGS answers its image count on the storage host",
+            "catalog: a DGS this account may not view gets 403 there",
+            "catalog: a DGS without its leading zeros gets 404 there",
+        )
+        url = f"{self.catalog_url}/{CATALOG}"
+        await self.expect_status(
+            "catalog: a browser User-Agent without a token gets 401",
+            401,
+            await self.get(url, accept="application/json", user_agent=BROWSER_UA),
+        )
+        if not self.token:
+            for name in names:
+                self.skip(name, "no token")
+            return
+        await self.expect_status(
+            names[0],
+            403,
+            await self.get(
+                url,
+                accept="application/json",
+                token=self.token,
+                user_agent=f"python-httpx/{httpx.__version__}",
+            ),
+        )
+        response = await self.get(
+            url, accept="application/json", token=self.token, user_agent=BROWSER_UA
+        )
+        source = _json(response).get("source")
+        items = catalog_items(source) if isinstance(source, dict) else []
+        self.record(
+            names[1],
+            response.status_code == 200
+            and bool((source or {}).get("display_title"))
+            and bool(items)
+            and all(i["dgs"] and i["description"] for i in items),
+            f"HTTP {response.status_code}; {len(items):,} films",
+        )
+        rights = {i["dgs"]: i.get("catalog_rights") for i in items if i["dgs"]}
+        viewable = next((d for d, r in rights.items() if r == "UNREST"), None)
+        group = await self.image_group(viewable or ZERO_PADDED_DGS)
+        count = _json(group).get("childCount")
+        self.record(
+            names[2],
+            group.status_code == 200 and isinstance(count, int) and count > 0,
+            f"dgs:{viewable or ZERO_PADDED_DGS} HTTP {group.status_code}, childCount {count!r}",
+        )
+        restricted = next((d for d, r in rights.items() if r == "NO_ACC"), None)
+        if restricted:
+            await self.expect_status(names[3], 403, await self.image_group(restricted))
+        else:
+            self.skip(names[3], f"catalog {CATALOG} lists no film marked NO_ACC")
+        unpadded = await self.image_group(ZERO_PADDED_DGS.lstrip("0"))
+        padded = await self.image_group(ZERO_PADDED_DGS)
+        self.record(
+            names[4],
+            unpadded.status_code == 404 and padded.status_code in (200, 403),
+            f"dgs:{ZERO_PADDED_DGS.lstrip('0')} HTTP {unpadded.status_code}; "
+            f"dgs:{ZERO_PADDED_DGS} HTTP {padded.status_code}",
+        )
+
+    async def image_group(self, dgs: str) -> httpx.Response:
+        """Ask the storage host about one image group, as the server does."""
+        return await self.get(f"{DAS_HOST}/dgs:{dgs}", accept="application/json", token=self.token)
+
     async def run(self) -> None:
         """Run every check. The record read supplies the image checks' ark."""
         steps: list[Callable[[], Awaitable[None]]] = [
@@ -511,6 +599,7 @@ class LiveCheck:
             self.tree_person,
             self.fulltext,
             self.image_name,
+            self.catalog,
         ]
         for step in steps:
             await step()

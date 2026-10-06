@@ -30,6 +30,12 @@
     "generations",
     "person_id"
   ],
+  "get_catalog_entry": [
+    "catalog_id",
+    "contains",
+    "count",
+    "offset"
+  ],
   "get_collection": [
     "collection_id"
   ],
