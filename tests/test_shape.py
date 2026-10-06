@@ -18,6 +18,7 @@ def test_person_is_flattened(gedcomx_person):
     assert out["sex"] == "Male"
     assert out["facts"][0] == {
         "type": "Birth",
+        "value": None,
         "date": "23 April 1751",
         "place": "Kaskaskia, Randolph, Illinois",
     }

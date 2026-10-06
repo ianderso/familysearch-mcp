@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 from typing import Any
+from urllib.parse import unquote
 
 
 def humanize(type_uri: str | None) -> str | None:
@@ -87,24 +88,72 @@ def person_name(person: dict) -> str | None:
     return form.get("fullText") or None
 
 
-def fact(entry: dict) -> dict:
-    """Flatten one GEDCOM X fact.
+def _original_values(entry: dict) -> dict[str, str]:
+    """The values an indexer transcribed for one fact, keyed by field label.
 
-    Parameters
-    ----------
-    entry : dict
-        A fact, carrying ``type``, ``date`` and ``place``.
+    A record's fact carries indexed ``fields`` of its own, and so do its
+    ``date`` and ``place``. Each value is typed ``Original`` (as written,
+    labelled ``..._ORIG``) or ``Interpreted`` (FamilySearch's reading of it).
+    Verified live 2026-10-06 on death index personas: a marital status fact
+    gave ``value`` "Single" with ``PR_MARITAL_STATUS_ORIG`` "S", and a death
+    place shown as "Paducah, McCracken, Kentucky, United States" was written
+    "Paducah, Kentucky".
 
     Returns
     -------
     dict
-        ``{"type", "date", "place"}`` with display values.
+        Label to text, for the original values only. Empty for a tree fact,
+        which carries no fields.
     """
-    return {
+    out: dict[str, str] = {}
+    for holder in (entry, entry.get("date"), entry.get("place")):
+        if not isinstance(holder, dict):
+            continue
+        for field in holder.get("fields") or []:
+            for value in (field or {}).get("values") or []:
+                if not isinstance(value, dict) or value.get("text") is None:
+                    continue
+                label = value.get("labelId") or ""
+                if label.endswith("_ORIG") or (value.get("type") or "").endswith("/Original"):
+                    out[label or humanize(field.get("type")) or "?"] = value["text"]
+    return out
+
+
+def fact(entry: dict) -> dict:
+    """Flatten one GEDCOM X fact.
+
+    A fact such as a marital status, a race or an occupation holds its
+    content in ``value`` rather than in a date or place. Reported from real
+    use: leaving it out made a "Married" in the index read as an empty fact,
+    and nobody could tell whether FamilySearch or this server had lost it.
+    So the value is always reported, as None when FamilySearch sent none.
+
+    Parameters
+    ----------
+    entry : dict
+        A fact, carrying ``type`` and any of ``value``, ``date``, ``place``
+        and indexed ``fields``.
+
+    Returns
+    -------
+    dict
+        ``{"type", "value", "date", "place"}`` with display values; on a
+        record's fact, ``original`` holds what the indexer transcribed, by
+        field label. A fact FamilySearch sent with nothing in it is marked
+        ``sent_empty``.
+    """
+    out: dict[str, Any] = {
         "type": humanize(entry.get("type")),
+        "value": entry.get("value"),
         "date": (entry.get("date") or {}).get("original"),
         "place": (entry.get("place") or {}).get("original"),
     }
+    original = _original_values(entry)
+    if original:
+        out["original"] = original
+    elif out["value"] in (None, "") and out["date"] is None and out["place"] is None:
+        out["sent_empty"] = True
+    return out
 
 
 #: What a caller should understand when FamilySearch withholds a living person.
@@ -842,6 +891,40 @@ def collection_descriptions(payload: dict) -> list[dict]:
     return out
 
 
+def catalogue_collections(payload: dict) -> list[dict]:
+    """Shape one page of the collection catalogue, each with its real id.
+
+    The listing names each collection ``sd_c_2110820``, an id local to the
+    document; the collection's own id, the one every other route and the
+    search filter take, is the end of its ``about``. Verified live
+    2026-10-06: ``f.collectionId=sd_c_2110820`` is a 400 and
+    ``/platform/records/collections/sd_c_2110820`` a 400, where ``2110820``
+    works. Each page also repeats the container the collections sit in,
+    which is not a collection and is left out.
+
+    Parameters
+    ----------
+    payload : dict
+        A ``/platform/records/collections`` page.
+
+    Returns
+    -------
+    list of dict
+        As :func:`collection_descriptions`, with ``id`` the collection id.
+    """
+    out = []
+    for shaped in collection_descriptions(payload):
+        if shaped.get("resource_type") == "Container":
+            continue
+        about = shaped.get("about") or ""
+        if "/records/collections/" in about:
+            shaped["id"] = about.rstrip("/").rsplit("/", 1)[-1]
+        elif str(shaped.get("id") or "").startswith("sd_c_"):
+            shaped["id"] = shaped["id"][len("sd_c_") :]
+        out.append(shaped)
+    return out
+
+
 def record_fields(entry: dict) -> list[dict]:
     """Flatten the indexed fields of a record.
 
@@ -993,41 +1076,130 @@ def record_type_facet(payload: dict) -> list[dict]:
     return sorted(out, key=lambda e: -(e["count"] or 0))
 
 
-def waypoints(payload: dict, collection_id: str | None = None) -> list[dict]:
-    """Extract the child waypoints of a collection or waypoint.
+def place_buckets(payload: dict, term: str) -> list[dict]:
+    """Flatten a record search's place facet into jurisdictions with counts.
 
-    A waypoint response returns everything as ``sourceDescriptions``: the
-    node itself first, then its children. The children of a collection are
-    its volumes or date ranges; the children of a waypoint are eventually
-    image arks.
+    Asked for with ``c.{term}1=on&c.{term}2=on``, the facet nests three
+    levels: a region (``United States of America``), a state or country
+    (``Arkansas``) and a county (``White``). Each bucket's ``params`` holds
+    the filter that selects it, e.g. ``f.residencePlace2=10,Arkansas,White``.
+    Verified live 2026-10-06; a fourth level is refused with a 400.
 
     Parameters
     ----------
     payload : dict
-        A waypoints response.
-    collection_id : str, optional
-        The node being browsed, so its own entries can be filtered out.
+        A search response.
+    term : str
+        The place term without its ``q.`` prefix, e.g. ``residencePlace``.
 
     Returns
     -------
     list of dict
-        One ``{"id", "title", "kind", "about"}`` per child, in order.
+        ``{"names", "count", "filter"}`` per bucket at every level, ``names``
+        from the region down and ``filter`` a ``(parameter, value)`` pair.
     """
     out: list[dict] = []
-    skip = {f"sd_c_{collection_id}", f"sd_cr_{collection_id}"} if collection_id else set()
-    for entry in payload.get("sourceDescriptions") or []:
-        if not isinstance(entry, dict) or entry.get("id") in skip:
-            continue
-        kind = humanize(entry.get("resourceType"))
-        out.append(
-            {
-                "id": entry.get("id"),
-                "title": (_first(entry.get("titles")) or {}).get("value"),
-                "kind": kind,
-                "about": entry.get("about"),
-            }
-        )
+
+    def walk(buckets: Any, above: list[str]) -> None:
+        for bucket in buckets or []:
+            if not isinstance(bucket, dict):
+                continue
+            names = [*above, str(bucket.get("displayName") or "")]
+            selector = next(
+                (
+                    part.split("=", 1)
+                    for part in str(bucket.get("params") or "").split("&")
+                    if part.startswith(f"f.{term}") and "=" in part
+                ),
+                None,
+            )
+            if selector and isinstance(bucket.get("count"), int):
+                out.append({"names": names, "count": bucket["count"], "filter": tuple(selector)})
+            walk(bucket.get("facets"), names)
+
+    for facet in payload.get("facets") or []:
+        if isinstance(facet, dict) and facet.get("params") == f"c.{term}0=on":
+            walk(facet.get("facets"), [])
     return out
+
+
+def _waypoint_id(about: str) -> str | None:
+    """The waypoint id inside a waypoint's ``about`` URL, unquoted."""
+    if "/waypoints/" not in about:
+        return None
+    return unquote(about.split("/waypoints/", 1)[1].split("?", 1)[0]) or None
+
+
+def _image_ark(about: str) -> str | None:
+    """The ``3:1:`` ark inside an image's ``about`` URL."""
+    if "ark:/61903/" not in about:
+        return None
+    return about.split("ark:/61903/", 1)[1].split("?", 1)[0] or None
+
+
+def waypoints(payload: dict, start: int = 0) -> dict:
+    """Read a waypoint response: the node, the path down to it, and its children.
+
+    Everything arrives as ``sourceDescriptions``. The document's own
+    ``description`` names the node; each child points at it with
+    ``componentOf``, and the node points up through its parents to the
+    collection. Verified live 2026-10-06 on collection 1909088: a county
+    lists its volumes, and a volume its images. The ``sd_`` ids are local to
+    the document; the id to descend by is the one inside each child's
+    ``about``, and a volume's id holds a comma (``M6QS-124:179638101,179638102``).
+
+    Parameters
+    ----------
+    payload : dict
+        A collection-waypoints or waypoint response.
+    start : int, optional
+        The offset the page was asked for, so images are numbered from it.
+
+    Returns
+    -------
+    dict
+        ``title`` and ``path`` (titles from the collection down to the node),
+        ``total`` (the children FamilySearch counts, when it says), and
+        ``children``: ``{"waypoint_id", "title"}`` for a volume or range,
+        ``{"position", "image_ark"}`` for an image, in order.
+    """
+    entries = [e for e in payload.get("sourceDescriptions") or [] if isinstance(e, dict)]
+    by_ref = {f"#{e.get('id')}": e for e in entries if e.get("id")}
+    node_ref = payload.get("description") or ""
+
+    path: list[str] = []
+    seen: set[str] = set()
+    current = by_ref.get(node_ref)
+    while current is not None and current.get("id") not in seen:
+        seen.add(current.get("id"))
+        title = (_first(current.get("titles")) or {}).get("value")
+        if title and (not path or path[0] != title):
+            path.insert(0, title)
+        current = by_ref.get((current.get("componentOf") or {}).get("description") or "")
+
+    children: list[dict] = []
+    images = 0
+    for entry in entries:
+        if not node_ref or (entry.get("componentOf") or {}).get("description") != node_ref:
+            continue
+        about = entry.get("about") or ""
+        if (entry.get("resourceType") or "").endswith("DigitalArtifact"):
+            images += 1
+            children.append({"position": start + images, "image_ark": _image_ark(about)})
+        else:
+            children.append(
+                {
+                    "waypoint_id": _waypoint_id(about),
+                    "title": (_first(entry.get("titles")) or {}).get("value"),
+                }
+            )
+    total = ((payload.get("links") or {}).get("self") or {}).get("results")
+    return {
+        "title": path[-1] if path else None,
+        "path": path,
+        "total": total if isinstance(total, int) else None,
+        "children": children,
+    }
 
 
 def records_on_image(payload: dict) -> list[dict]:

@@ -24,8 +24,11 @@ It reads the token the way the server does, runs the anonymous checks
 without one, and skips the rest when there is none or FamilySearch rejects
 it. A FAIL names the claim below that no longer holds.
 
-Last run 2026-10-06 with a fresh token: 40 checks passed and none failed,
-including the six added for the FamilySearch Catalog. On 2026-10-05, after
+Last run 2026-10-06, later that day, with a fresh token: 50 checks passed,
+none failed and one was skipped, including the ten added for waypoints, the
+catalogue's windows, how search applies a year and a place, and a record's
+fact values. Earlier on 2026-10-06, 40 passed, including the six added for
+the FamilySearch Catalog. On 2026-10-05, after
 `compare_person` and full-text search were combined, 34 passed and none
 failed; on 2026-09-29, 26.
 Every claim below held — the anonymous routes, the 406 for the wrong Accept
@@ -83,8 +86,9 @@ SDKs and still drives `/platform/places/search`, but it is not how the records
 search works.
 
 - `count` defaults to 20, maximum 100.
-- `offset` is 0-based, maximum 4999. The search returns only the first 5,000
-  results; a larger offset is a bad request.
+- `offset` is 0-based. The API host's search documented a maximum of 4,999;
+  the website's is not dependable that far (see "Paging the website search"
+  below).
 
 Verified query terms: `q.givenName`, `q.surname`, `q.sex`, `q.birthLikeDate`,
 `q.birthLikePlace`, `q.deathLikeDate`, `q.deathLikePlace`,
@@ -93,8 +97,10 @@ Verified query terms: `q.givenName`, `q.surname`, `q.sex`, `q.birthLikeDate`,
 `q.fatherGivenName`, `q.fatherSurname`, `q.motherGivenName`,
 `q.motherSurname`, `q.miscKeyword`. Filter: `f.collectionId`.
 
-Modifiers are `.exact`, `.require`, `.from`, `.to`, each taking the value
-`on`. Dates are `+YYYY` form and only the year is honoured.
+Modifiers are `.exact`, `.require`, `.from`, `.to`. `.exact` and `.require`
+take the value `on`; `.from` and `.to` take a year. Only the year of a date
+is honoured. What each modifier actually does is measured in "How a search
+criterion is applied" below.
 
 ## `f.recordType` codes, verified
 
@@ -435,13 +441,148 @@ default. `loose=True` turns it off when ranking by similarity is what you
 want. A filter that silently does not filter is the surprising behaviour,
 which is why the safe reading is the default.
 
+## How a search criterion is applied
+
+Measured live on 2026-10-06 against the website search, with John Smith and
+with Smith in Arkansas, all criteria required (`m.queryRequireDefault=on`).
+`search_records` reports these rules back, per criterion, in its `filters`.
+
+**A required criterion leaves out only a record that contradicts it.** A
+record that does not give the field at all stays in. "John Smith born 1850"
+matched 1,676,326; the Birth Year facet put only 171,054 of them in any
+century, so 1.5 million gave no birth year. Of 5,887,737 John Smiths, a
+spouse surname of "Jones" matched 4,266,296 and one of "Xyzzyqq" 4,259,584:
+what either left out was the records naming some other spouse, and the
+records naming none stayed in.
+
+**Without `.exact`:**
+
+| Criterion | Matches | Evidence |
+| --- | --- | --- |
+| A year | Five years either side. A christening counts as a birth and a burial as a death. | John Smith born 1850 and giving a year: 171,054 = born 1845-1855 exactly. Smith died 1870 and giving a year in the 1800s: 279,673 = died 1865-1875 exactly. Smith married 1880, in the 1800s: 407,012 = 1875-1885 exactly. A burial alone in 1900 matched a death year of 1900. |
+| A given name | Spelling variants, and the name as a middle name. | Smiths born in 1850: "Jon" matched as many as "John", 17,104; "David John Smith" was a hit for John. |
+| A surname | Spelling variants. | "Smyth", born in 1850: 176,495 without exact, 1,752 with. |
+| A place | Far beyond the place. A word that is not a place FamilySearch knows is dropped. | Smith with a residence of "White, Arkansas": 3,968,744, of which 28,460 lived in Arkansas and 9,570 in White County. "Xyzzyqq, Arkansas" matched as many as "Arkansas". |
+
+**With `.exact`, the record must give the field, and it must match:**
+
+| Criterion | Matches | Evidence |
+| --- | --- | --- |
+| A year | That year only. | 17,104, every one born 1850; `.exact` on `q.birthLikeDate=1850` and on `.from=1850&.to=1850` gave the same 17,104. Without `.exact`, `.from`/`.to` still let in the records giving no year: 1,434,967. |
+| A given name | The whole given name as spelled. | "John" 6,017, against 17,104 without; "John William" 98. |
+| A place | Every place FamilySearch knows by those words, at any level. | Smith, "White, Arkansas": 10,566. The Residence Place facet put 9,570 in White County and the rest in Phillips, Newton, Searcy, Polk and other counties, each of which has a White Township. "Xyzzyqq, Arkansas" still matched as many as "Arkansas" (369,151). "Saline District, Cherokee Nation, Indian Territory" matched nothing, where "Cherokee Nation, Indian Territory" matched 1,506: the index gives the nation, never the district. |
+
+Under `loose` (no `m.queryRequireDefault`) the criteria rank rather than
+filter: John Smith matched 62,242,889, as many as Smith alone, and adding a
+birth year changed nothing.
+
+**A place can be held to its county or state by the place facet.** Asked
+for with `c.residencePlace1=on&c.residencePlace2=on`, the facet nests a
+region (`United States of America`), a state or country (`Arkansas`) and a
+county (`White`), each bucket counting the hits there and carrying the
+filter that selects it, e.g. `f.residencePlace2=10,Arkansas,White`. Sent
+back, that filter returned 9,570, exactly the bucket's count. A fourth
+level (`c.residencePlace3`) is a 400; the year facets stop at the decade
+(`c.birthLikeDate2` is a 400). The same facets exist for `birthLikePlace`,
+`deathLikePlace` and `marriageLikePlace`. With `exact`, `search_records`
+finds the bucket naming the caller's county or state and asks again with its
+filter; without it, it reports how many hits are in that place.
+
+Asking for the facets made no difference beyond the noise in a search that
+took five to nine seconds.
+
+## Paging the website search
+
+The response's `index` says where its page starts, and that is the only
+dependable sign of which page came back. On 2026-10-06 an offset of 1,001
+was answered from index 1,001 in one minute and from index **0** a few
+minutes later: the first page again, with no error. Offsets of 1,500 and
+above did the same, or answered 400. So `search_records` checks `index`
+against the offset it asked for, and refuses a page it was not asked for
+rather than passing the first page off as the next. It refuses an offset
+over 4,999 without asking.
+
 ## The catalogue has no search endpoint
 
-`/platform/records/collections` pages at roughly ninety entries with no
-query parameter, so a title search means holding the whole list: 3,443
-collections across about 38 pages, around ninety seconds. It is cached in
-memory and on disk for thirty days; `search_collections(refresh=True)`
-rebuilds it.
+`/platform/records/collections` takes no query, so a title search means
+holding the whole list. Verified live on 2026-10-06:
+
+- **A page is a window of 100 slots**, holding the collections visible in
+  it: between 78 and 100 of them, never more. `count=200` at `start=0`
+  returned the same 91 as `count=100`. Stepping `start` by 100 from 0 found
+  3,828 collections in 42 windows, no window repeating another, then empty
+  windows from `start=4200`. Every page also repeats the container the
+  collections sit in (`sd_c`), which is not a collection.
+- **There is no total.** The listing carries no `results`, no `links` and
+  no count in any header, under any of the three Accept types it serves
+  (the Atom type is a 406). The
+  records root (`/platform/collections/records`) carries none either. The
+  website's collection list (`/service/search/hr/v2/collections`, a browser
+  User-Agent and the token) reports `results: 3507`, but that is a
+  different set from the API's 3,828 with every combination of its flags
+  tried, so it cannot check a walk.
+- **The walk used to step by what came back.** It asked for 200, stepped
+  `start` by the number of entries returned (the container included), and
+  stopped at the first page with nothing new. A full page made it step
+  101 and skip a collection: on 2026-10-06 that walk found 3,826, missing
+  2467808 and 5000242. A cache written by it once held 3,443 of 3,827 and
+  was trusted for a month, because nothing recorded how its walk had ended.
+- **Each collection's id is in its `about`.** The listing names a
+  collection `sd_c_2110820`, an id local to the document. The collection
+  route and the search filter both answer that form with a 400; `2110820`
+  works.
+
+`search_collections` now steps by 100 and stops after two empty windows in
+a row, or, incomplete, at its 80-page limit or at a window repeating one
+already read. Only a complete walk is cached, on disk for thirty days, with
+its format version, time and page count; any other cache is walked again.
+Every result reports the catalogue's size, age and completeness. A walk
+takes about a hundred seconds. `search_collections(refresh=True)` rebuilds
+it.
+
+## Browsing waypoints
+
+Verified live on 2026-10-06 on "Tennessee, Probate Court Books, 1795-1927"
+(1909088), whose images are not indexed, and with and without a token: the
+waypoint routes answer the same either way.
+
+- **A waypoint needs its collection.** `GET /platform/records/waypoints/{id}`
+  answers 400 "Required request parameter 'cc'" without `cc={collection}`.
+  The records root's own link template says as much:
+  `/platform/records/waypoints/{wid}{?cc,count,start}`.
+- **Under the wrong collection** the same waypoint answered 404 one time and
+  200 with nothing in it (`results: 0`, `start=-1`) the next.
+- **The response describes a node, its parents and its children.** The
+  document's `description` names the node (`#src_1`); each child's
+  `componentOf` points at it; the node's points up through the county to
+  the collection. The `sd_`/`src_` ids are local to the document. The id to
+  descend by is inside each child's `about`, and a volume's has a comma:
+  `M6QS-124:179638101,179638102`.
+- **A volume lists its images** as `DigitalArtifact` descriptions whose
+  `about` holds a `3:1:` (or `3:2:`) ark. `links.self.results` counts the
+  children. With no `count`, a volume of 1,007 images answered 1,000; `start`
+  and `count` page it.
+- **A collection with nothing to browse** answers its waypoints with 404,
+  the same as a collection that does not exist. Its description tells them
+  apart: 1909088 has `links.waypoints` and a `DigitalArtifact` content count
+  of 628,641; "Iowa, County Death Records, 1880-1992" (2110820) has neither.
+
+## A record's facts carry a value
+
+Verified live on 2026-10-06 on Tennessee death index personas of 1911 and an
+1880 census persona. A fact such as a marital status, a race or an
+occupation holds its content in `value` ("Single", "Stock Broker"), not in a
+date or place. On a record, a fact also carries indexed `fields` of its own,
+and so do its `date` and `place`: each value is typed `Original` (labelled
+`..._ORIG`, as the indexer transcribed it: "S") or `Interpreted`. The
+`date.original` and `place.original` a fact shows are FamilySearch's
+reading, which can differ from the transcription: a death place written
+"Paducah, Kentucky" is shown as "Paducah, McCracken, Kentucky, United
+States", and a date written with the month as a number is shown with its
+name. A birth year with no `_ORIG` date was worked out, for example from an
+age (`PR_BIR_YEAR_EST`).
+`get_record` reports `value`, and `original` by label, for every fact; a
+fact with nothing in it is marked `sent_empty`.
 
 ## Tree profiles, as `compare_person` reads them
 

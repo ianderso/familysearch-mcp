@@ -1,0 +1,155 @@
+{
+ "description": "#sd_c_1909088",
+ "sourceDescriptions": [
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1909088/waypoints",
+   "componentOf": {
+    "description": "#sd_cr_1909088"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Probate",
+     "spatial": {
+      "description": "#place_1-57",
+      "original": "Tennessee, United States"
+     },
+     "temporal": {
+      "formal": "+1795/+1927",
+      "original": "1795/1927"
+     }
+    }
+   ],
+   "id": "sd_c_1909088",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/1909088/waypoints"
+    ]
+   },
+   "links": {
+    "self": {
+     "href": "https://api.familysearch.org/platform/records/collections/1909088/waypoints?start=0&count=1000",
+     "results": 89
+    }
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1909088",
+   "id": "sd_cr_1909088",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-YWP:179637801?cc=1909088",
+   "componentOf": {
+    "description": "#sd_c_1909088"
+   },
+   "id": "sd_3",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-YWP:179637801?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "anderson",
+   "titleLabel": {
+    "lang": "en",
+    "value": "County"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Anderson"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-136:179632901?cc=1909088",
+   "componentOf": {
+    "description": "#sd_c_1909088"
+   },
+   "id": "sd_4",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-136:179632901?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "bedford",
+   "titleLabel": {
+    "lang": "en",
+    "value": "County"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Bedford"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-BP8:179637701?cc=1909088",
+   "componentOf": {
+    "description": "#sd_c_1909088"
+   },
+   "id": "sd_5",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-BP8:179637701?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "benton",
+   "titleLabel": {
+    "lang": "en",
+    "value": "County"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Benton"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-Y68:179635201?cc=1909088",
+   "componentOf": {
+    "description": "#sd_c_1909088"
+   },
+   "id": "sd_6",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-Y68:179635201?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "blount",
+   "titleLabel": {
+    "lang": "en",
+    "value": "County"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Blount"
+    }
+   ]
+  }
+ ]
+}

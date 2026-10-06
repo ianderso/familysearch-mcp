@@ -16,11 +16,14 @@ from familysearch_mcp.client import BROWSER_UA, CATALOG_URL, DAS_HOST, FULLTEXT_
 from tests import live_check
 from tests.live_check import (
     BOGUS_TOKEN,
+    BROWSABLE,
     CATALOG,
     COLLECTION,
     PLACE,
     SAMPLE_IMAGE,
     TREE_PERSON,
+    UNBROWSABLE,
+    WAYPOINT,
     ZERO_PADDED_DGS,
     LiveCheck,
 )
@@ -55,16 +58,92 @@ def _hit(persona: str, collection: str) -> dict:
     }
 
 
+#: The place filter for White County, Arkansas, as the place facet gives it.
+WHITE_COUNTY = "10,Arkansas,White"
+
+
+def _year_total(params) -> int:
+    """John Smith born 1850, as measured on 2026-10-06."""
+    if params.get("q.birthLikeDate.exact") == "on":
+        span = (params.get("q.birthLikeDate.from"), params.get("q.birthLikeDate.to"))
+        return 171_054 if span == ("1845", "1855") else 17_104
+    if "f.birthLikeDate0" in params:
+        return 171_054
+    return 1_676_326
+
+
+def _residence_facet() -> dict:
+    county = {
+        "displayName": "White",
+        "count": 9_570,
+        "params": f"c.residencePlace2=on&f.residencePlace2={WHITE_COUNTY}",
+    }
+    state = {
+        "displayName": "Arkansas",
+        "count": 10_566,
+        "params": "c.residencePlace2=on&f.residencePlace1=10,Arkansas",
+        "facets": [county],
+    }
+    region = {
+        "displayName": "United States of America",
+        "count": 10_566,
+        "params": "c.residencePlace1=on&f.residencePlace0=10",
+        "facets": [state],
+    }
+    return {"displayName": "Residence Place", "params": "c.residencePlace0=on", "facets": [region]}
+
+
 def _search(request: httpx.Request) -> httpx.Response:
     """The website search: token and browser User-Agent, or no answer."""
     if not request.headers.get("Authorization"):
         return httpx.Response(401)
     if request.headers.get("User-Agent") != BROWSER_UA:
         return httpx.Response(403)
-    code = request.url.params.get("f.recordType")
+    params = request.url.params
+    code = params.get("f.recordType")
     total = 100_000 if code is None else 1_000 + 10 * int(code)
+    body: dict = {"index": int(params.get("offset", 0))}
+    if "q.birthLikeDate" in params or "q.birthLikeDate.from" in params:
+        total = _year_total(params)
+    if params.get("q.residencePlace"):
+        total = 9_570 if params.get("f.residencePlace2") == WHITE_COUNTY else 10_566
+        body["facets"] = [_residence_facet()]
+    body.update(results=total, entries=[_hit("PERSONA-1", f"Collection {code}")])
+    return httpx.Response(200, json=body)
+
+
+#: The collection listing: a window of 100 slots, the next one repeating none.
+WINDOWS = {None: ["11", "12"], "100": ["13"]}
+
+
+def _collections(request: httpx.Request) -> httpx.Response:
+    ids = WINDOWS.get(request.url.params.get("start"), [])
     return httpx.Response(
-        200, json={"results": total, "entries": [_hit("PERSONA-1", f"Collection {code}")]}
+        200,
+        json={
+            "sourceDescriptions": [
+                {"id": f"sd_c_{i}", "about": f"{API}/platform/records/collections/{i}"} for i in ids
+            ]
+        },
+    )
+
+
+def _waypoint(request: httpx.Request) -> httpx.Response:
+    """A waypoint: 400 without its collection, its children with it."""
+    if request.url.params.get("cc") != BROWSABLE:
+        return httpx.Response(
+            400, json={"errors": [{"message": "Required request parameter 'cc'"}]}
+        )
+    child = f"{API}/platform/records/waypoints/M6QS-124:1,2?cc={BROWSABLE}"
+    return httpx.Response(
+        200,
+        json={
+            "description": "#src_1",
+            "sourceDescriptions": [
+                {"id": "src_1", "titles": [{"value": "Grundy"}]},
+                {"id": "sd_2", "about": child, "componentOf": {"description": "#src_1"}},
+            ],
+        },
     )
 
 
@@ -145,6 +224,14 @@ def _image(request: httpx.Request, *, withheld: bool = False) -> httpx.Response:
     return httpx.Response(200, json={"links": rels})
 
 
+#: A fact as a record carries one: its value, and what the indexer wrote.
+MARRIED = {
+    "type": "http://gedcomx.org/MaritalStatus",
+    "value": "Married",
+    "fields": [{"values": [{"labelId": "PR_MARITAL_STATUS_ORIG", "text": "M"}]}],
+}
+
+
 @pytest.fixture
 def documented_api():
     """FamilySearch as API-NOTES.md describes it."""
@@ -157,8 +244,13 @@ def documented_api():
         mock.get(f"{API}/platform/places/description/{PLACE}").mock(
             return_value=httpx.Response(200, json={})
         )
-        mock.get(f"{API}/platform/records/collections").mock(
-            return_value=httpx.Response(200, json={})
+        mock.get(f"{API}/platform/records/collections").mock(side_effect=_collections)
+        mock.get(f"{API}/platform/records/waypoints/{WAYPOINT}").mock(side_effect=_waypoint)
+        mock.get(f"{API}/platform/records/collections/{UNBROWSABLE}").mock(
+            return_value=httpx.Response(200, json={"collections": [{"title": "Iowa"}]})
+        )
+        mock.get(f"{API}/platform/records/collections/{UNBROWSABLE}/waypoints").mock(
+            return_value=httpx.Response(404, json={})
         )
         mock.get(f"{API}/platform/records/collections/{COLLECTION}").mock(
             return_value=httpx.Response(
@@ -185,7 +277,9 @@ def documented_api():
             return_value=httpx.Response(
                 200,
                 json={
-                    "persons": [{"names": [{"nameForms": [{"fullText": "A"}]}]}],
+                    "persons": [
+                        {"names": [{"nameForms": [{"fullText": "A"}]}], "facts": [MARRIED]}
+                    ],
                     "fields": [{"values": [{"labelId": "EVENT_PLACE", "text": "Somewhere"}]}],
                     "sourceDescriptions": [
                         {
@@ -406,3 +500,77 @@ async def test_a_catalog_entry_without_its_films_is_a_failure(documented_api):
     live = await _run(TOKEN)
     failed = {o.name for o in live.outcomes if o.status == "FAIL"}
     assert "catalog: a token with a browser User-Agent gets the entry and its films" in failed
+
+
+async def test_a_waypoint_that_opens_without_its_collection_is_reported(documented_api):
+    """Not a breakage, but browse_waypoints' refusal would then be needless."""
+    documented_api.get(f"{API}/platform/records/waypoints/{WAYPOINT}").mock(
+        return_value=httpx.Response(200, json={})
+    )
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "waypoints: a waypoint without its collection gets 400" in failed
+    assert "waypoints: with its collection, it lists children by waypoint id" in failed
+
+
+async def test_catalogue_windows_that_overlap_are_a_failure(documented_api):
+    """The walk steps by 100; were windows to overlap, the notes would be wrong."""
+
+    def overlapping(request: httpx.Request) -> httpx.Response:
+        start = request.url.params.get("start")
+        ids = ["12", "13"] if start == "100" else WINDOWS.get(start, [])
+        listed = [{"about": f"{API}/platform/records/collections/{i}"} for i in ids]
+        return httpx.Response(200, json={"sourceDescriptions": listed})
+
+    documented_api.get(f"{API}/platform/records/collections").mock(side_effect=overlapping)
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "catalogue: the window at start=100 repeats nothing from start=0" in failed
+
+
+async def test_a_year_window_that_changed_is_a_failure(documented_api):
+    """search_records says "within 5 years"; if FamilySearch widened it, that is wrong."""
+
+    def wider(request: httpx.Request) -> httpx.Response:
+        response = _search(request)
+        params = request.url.params
+        if "f.birthLikeDate0" in params and response.status_code == 200:
+            return httpx.Response(200, json={**response.json(), "results": 250_000})
+        return response
+
+    documented_api.get(SEARCH_URL).mock(side_effect=wider)
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "search: a year without exact matches 5 years either side" in failed
+
+
+async def test_a_county_filter_that_stopped_holding_is_a_failure(documented_api):
+    """search_records holds an exact place to its county with this filter."""
+
+    def ignores_it(request: httpx.Request) -> httpx.Response:
+        response = _search(request)
+        if request.url.params.get("f.residencePlace2") and response.status_code == 200:
+            return httpx.Response(200, json={**response.json(), "results": 10_566})
+        return response
+
+    documented_api.get(SEARCH_URL).mock(side_effect=ignores_it)
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "search: an exact place matches its namesakes, and the county filter holds it" in failed
+
+
+async def test_a_record_fact_without_its_value_is_a_failure(documented_api):
+    """get_record reports the value and the original; the notes say they are sent."""
+    documented_api.get(f"{API}/platform/records/personas/PERSONA-1").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "persons": [{"facts": [{"type": "http://gedcomx.org/MaritalStatus"}]}],
+                "fields": [{"values": [{"labelId": "EVENT_PLACE", "text": "Somewhere"}]}],
+                "sourceDescriptions": [{"resourceType": "http://gedcomx.org/Record"}],
+            },
+        )
+    )
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "get_record: a fact carries its value and what the indexer wrote" in failed

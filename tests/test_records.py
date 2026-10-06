@@ -153,11 +153,20 @@ async def test_exact_matching_is_applied_to_names_when_asked_for(authenticated):
 
 
 @respx.mock
-async def test_exact_matching_is_not_applied_to_a_date(authenticated):
-    """A date is not a spelling; an exact modifier on one is meaningless."""
+async def test_exact_matching_is_applied_to_a_year_too(authenticated):
+    """On a year, exact means that year only, and a record giving none is left out.
+
+    It was left off the years in the belief that it meant nothing there.
+    Measured live 2026-10-06, John Smith born 1850: without it 1,676,326
+    hits, of which 171,054 gave a birth year, every one in 1845-1855; with
+    it 17,104, all born in 1850. Reported from real use as "exact
+    constrained the names but not the birth year".
+    """
     route = respx.get(SEARCH).mock(return_value=httpx.Response(200, json={}))
     await call_tool("search_records", surname="Pettibone", birth_year=1751, exact=True)
-    assert "q.birthLikeDate.exact" not in route.calls.last.request.url.params
+    params = route.calls.last.request.url.params
+    assert params["q.birthLikeDate"] == "1751"
+    assert params["q.birthLikeDate.exact"] == "on"
 
 
 @respx.mock
@@ -391,11 +400,12 @@ async def test_reading_a_record_negotiates_gedcomx_not_atom(authenticated, recor
 
 
 @respx.mock
-async def test_paging_past_the_api_ceiling_is_clamped(authenticated):
-    """FamilySearch rejects an offset over 4999; clamping beats a 400."""
+async def test_paging_past_the_ceiling_is_refused_not_clamped(authenticated):
+    """A clamp answered offset 90,000 with results 4,999 on, as if they were 90,000 on."""
     route = respx.get(SEARCH).mock(return_value=httpx.Response(200, json={}))
-    await call_tool("search_records", surname="Pettibone", offset=90000)
-    assert route.calls.last.request.url.params["offset"] == "4999"
+    out = await call_tool("search_records", surname="Pettibone", offset=90000)
+    assert out["error"] == "offset_out_of_range"
+    assert not route.called
 
 
 async def test_no_tool_reading_a_person_answers_without_a_token():
@@ -419,3 +429,15 @@ async def test_collection_catalogue_tools_are_anonymous():
     """Scoping a search should not require credentials a caller may not have."""
     catalogue_tools = {"get_collection", "search_collections", "get_collection_fields"}
     assert catalogue_tools <= server.ANONYMOUS_TOOLS
+
+
+@pytest.mark.parametrize("tool_name", ["get_collection", "get_collection_fields"])
+@respx.mock
+async def test_a_collection_id_in_the_old_sd_c_form_reads_the_collection(authenticated, tool_name):
+    """search_collections used to hand out ``sd_c_2178``; FamilySearch answers that 400."""
+    route = respx.get(f"{HOST}/platform/records/collections/2178").mock(
+        return_value=httpx.Response(200, json={"collections": [{"title": "Connecticut"}]})
+    )
+    out = await call_tool(tool_name, collection_id="sd_c_2178")
+    assert route.called
+    assert "2178" in (out.get("id"), out.get("collection_id"))

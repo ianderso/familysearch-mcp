@@ -1,0 +1,116 @@
+{
+ "collections": [
+  {
+   "content": [
+    {
+     "completeness": 0.0,
+     "count": 6,
+     "resourceType": "http://gedcomx.org/Record"
+    },
+    {
+     "completeness": 0.0,
+     "count": 5,
+     "resourceType": "http://gedcomx.org/Person"
+    },
+    {
+     "completeness": 1.0,
+     "count": 628641,
+     "resourceType": "http://gedcomx.org/DigitalArtifact#FamilySearch"
+    }
+   ],
+   "lang": "en_US",
+   "size": 628647,
+   "title": "Tennessee, Probate Court Books, 1795-1927"
+  }
+ ],
+ "description": "#1909088",
+ "links": {
+  "waypoints": {
+   "href": "https://api.familysearch.org/platform/records/collections/1909088/waypoints"
+  }
+ },
+ "sourceDescriptions": [
+  {
+   "about": "https://www.familysearch.org/platform/records/collections/1909088",
+   "citations": [
+    {
+     "value": "\"Tennessee, Probate Court Books, 1795-1927.\" Images. <i>FamilySearch</i>. http://FamilySearch.org : 3 December 2024. County courthouses, Tennessee."
+    }
+   ],
+   "componentOf": {
+    "description": "#1909088_c",
+    "descriptionId": "1909088_c"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Probate",
+     "spatial": {
+      "description": "#place_374",
+      "original": "Tennessee, United States",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1795/+1927",
+      "original": "1795/1927"
+     }
+    },
+    {
+     "recordType": "http://gedcomx.org/Probate",
+     "spatial": {
+      "description": "#place_10703539",
+      "original": "United States, Tennessee",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1795/+1927",
+      "original": "1795/1927"
+     }
+    }
+   ],
+   "descriptions": [
+    {
+     "lang": "en_US",
+     "value": "This collection includes waypoints and images of probate court records from Tennessee counties. The records were kept in bound volumes."
+    }
+   ],
+   "id": "1909088",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/platform/records/collections/1909088"
+    ]
+   },
+   "mediaType": "image/jpeg",
+   "modified": 1700225570561,
+   "resourceType": "http://gedcomx.org/Collection",
+   "rights": [
+    "http://familysearch.org/records/permissionGroup/FamilySearch"
+   ],
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://www.familysearch.org/platform/records/collections",
+   "id": "1909088_c",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/platform/records/collections"
+    ]
+   },
+   "resourceType": "http://familysearch.org/types/resources/Container"
+  }
+ ]
+}

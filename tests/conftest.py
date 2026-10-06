@@ -453,6 +453,9 @@ LOCAL_VALIDATION_ERRORS = frozenset(
         "not_configured",
         "no_claims",
         "possibly_living",
+        "collection_required",
+        "conflicting_collection",
+        "offset_out_of_range",
     }
 )
 

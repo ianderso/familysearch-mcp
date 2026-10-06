@@ -1,0 +1,110 @@
+{
+ "description": "#sd_c",
+ "id": "1",
+ "sourceDescriptions": [
+  {
+   "about": "https://www.familysearch.org/platform/records/collections",
+   "id": "sd_c",
+   "resourceType": "http://familysearch.org/types/resources/Container"
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/2300675",
+   "id": "sd_c_2300675",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Washington, Applications for Enrollment and Adoption of Washington Indians, 1911-1919"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/3748258",
+   "id": "sd_c_3748258",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Fiji, Indian Death Records, 1899-1922"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/3753637",
+   "id": "sd_c_3753637",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Fiji, Plantation Register of Indian Immigrants, 1879-1919"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/3714671",
+   "id": "sd_c_3714671",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Indiana, Bartholomew, Columbus, Garland Brook Cemetery Interment Records, ca.1885-ca.2000"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1674814",
+   "id": "sd_c_1674814",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Indiana, Births and Christenings, 1773-1933"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/2469543",
+   "id": "sd_c_2469543",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Indiana, Church Marriages, 1780-1993"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/2790248",
+   "id": "sd_c_2790248",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Indiana, Church Records, 1743-1966"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1916244",
+   "id": "sd_c_1916244",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Mexico, México, Civil Registration, 1861-1941"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1837908",
+   "id": "sd_c_1837908",
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Mexico, México, Catholic Church Records, 1567-1970"
+    }
+   ]
+  }
+ ]
+}

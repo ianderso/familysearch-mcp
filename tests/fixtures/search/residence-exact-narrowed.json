@@ -1,0 +1,233 @@
+{
+ "results": 9231,
+ "index": 0,
+ "entries": [
+  {
+   "id": "XXXX-YY0",
+   "score": 3.13,
+   "confidence": 5,
+   "content": {
+    "gedcomx": {
+     "persons": [
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Female"
+       },
+       "facts": [
+        {
+         "value": "White",
+         "type": "http://gedcomx.org/Race"
+        },
+        {
+         "value": "Married",
+         "type": "http://gedcomx.org/MaritalStatus"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "White, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        },
+        {
+         "date": {
+          "original": "July 1873"
+         },
+         "place": {
+          "original": "Arkansas"
+         },
+         "type": "http://gedcomx.org/Birth"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "White, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Ezra Pettibone"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Male"
+       },
+       "facts": [
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "Negro Hill & Red River Townships West Point town, White, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "Negro Hill & Red River Townships West Point town, White, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        },
+        {
+         "date": {
+          "original": "Nov 1872"
+         },
+         "place": {
+          "original": "Mississippi"
+         },
+         "type": "http://gedcomx.org/Birth"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Lydia Pettibone"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "sourceDescriptions": [
+      {
+       "resourceType": "http://gedcomx.org/Collection",
+       "about": "https://www.familysearch.org/service/cds/recapi/collections/1325221",
+       "titles": [
+        {
+         "lang": "en-US",
+         "value": "United States, Census, 1900"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "XXXX-YY1",
+   "score": 3.13,
+   "confidence": 5,
+   "content": {
+    "gedcomx": {
+     "persons": [
+      {
+       "principal": true,
+       "facts": [
+        {
+         "date": {
+          "original": "1840"
+         },
+         "place": {
+          "original": "White, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Amos Thackeray"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "sourceDescriptions": [
+      {
+       "resourceType": "http://gedcomx.org/Collection",
+       "about": "https://www.familysearch.org/service/cds/recapi/collections/1786457",
+       "titles": [
+        {
+         "lang": "en-US",
+         "value": "United States, Census, 1840"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "facets": [
+  {
+   "count": 9231,
+   "displayCount": "9,231",
+   "displayName": "Residence Place",
+   "facets": [
+    {
+     "count": 9231,
+     "displayCount": "9,231",
+     "displayName": "United States of America",
+     "facets": [
+      {
+       "count": 9231,
+       "displayCount": "9,231",
+       "displayName": "Arkansas",
+       "facets": [
+        {
+         "count": 9231,
+         "displayCount": "9,231",
+         "displayName": "White",
+         "facets": [],
+         "params": "c.residencePlace2=on&f.residencePlace2=10,Arkansas,White"
+        }
+       ],
+       "params": "c.residencePlace2=on&f.residencePlace1=10,Arkansas"
+      }
+     ],
+     "params": "c.residencePlace1=on&f.residencePlace0=10"
+    }
+   ],
+   "params": "c.residencePlace0=on"
+  },
+  {
+   "count": 9231,
+   "displayCount": "9,231",
+   "displayName": "recordType",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "0",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=0"
+    },
+    {
+     "count": 1006,
+     "displayCount": "1,006",
+     "displayName": "1",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=1"
+    },
+    {
+     "count": 1613,
+     "displayCount": "1,613",
+     "displayName": "2",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=2"
+    }
+   ],
+   "params": "c.recordType=on"
+  }
+ ]
+}

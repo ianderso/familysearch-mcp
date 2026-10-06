@@ -1,0 +1,174 @@
+{
+ "description": "#src_1",
+ "links": {
+  "self": {
+   "href": "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=1909088&start=0",
+   "results": 14
+  }
+ },
+ "sourceDescriptions": [
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=1909088",
+   "componentOf": {
+    "description": "#src_2"
+   },
+   "id": "src_1",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Grundy"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1909088/waypoints",
+   "componentOf": {
+    "description": "#src_3"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Probate",
+     "spatial": {
+      "description": "#place_1-57",
+      "original": "Tennessee, United States"
+     },
+     "temporal": {
+      "formal": "+1795/+1927",
+      "original": "1795/1927"
+     }
+    }
+   ],
+   "id": "src_2",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/1909088/waypoints"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1909088",
+   "id": "src_3",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-124:179638101,179638102?cc=1909088",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_4",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-124:179638101,179638102?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "bonds, letters, 0000000000001901-0000000000001948",
+   "titleLabel": {
+    "lang": "en",
+    "value": "Volume Title and Year"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Bonds, Letters, 1901-1948"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6Q3-ZWL:179638101,179673801?cc=1909088",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_5",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6Q3-ZWL:179638101,179673801?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "bonds, letters, 0000000000001948-0000000000001968, vol. 0000000000000003",
+   "titleLabel": {
+    "lang": "en",
+    "value": "Volume Title and Year"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Bonds, Letters, 1948-1968, Vol. 03"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6Q3-JNG:179638101,179698201?cc=1909088",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_6",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6Q3-JNG:179638101,179698201?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "bonds, letters, 0000000000001961-0000000000001968, vol. 0000000000000001",
+   "titleLabel": {
+    "lang": "en",
+    "value": "Volume Title and Year"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Bonds, Letters, 1961-1968, Vol. 01"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6Q3-VWL:179638101,179701001?cc=1909088",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_7",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6Q3-VWL:179638101,179701001?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "sortKey": "claims against insolvent estates, 0000000000001865-0000000000001895",
+   "titleLabel": {
+    "lang": "en",
+    "value": "Volume Title and Year"
+   },
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Claims against insolvent estates, 1865-1895"
+    }
+   ]
+  }
+ ]
+}

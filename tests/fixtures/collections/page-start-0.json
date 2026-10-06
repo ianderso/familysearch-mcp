@@ -1,0 +1,186 @@
+{
+ "description": "#sd_c",
+ "id": "1",
+ "sourceDescriptions": [
+  {
+   "about": "https://www.familysearch.org/platform/records/collections",
+   "id": "sd_c",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/platform/records/collections"
+    ]
+   },
+   "resourceType": "http://familysearch.org/types/resources/Container"
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/4496122",
+   "citations": [
+    {
+     "value": "\"Россия, Тобольск, Метрические книги, 1722-1930\", Database. <i>FamilySearch</i>. https://familysearch.org : 31 December 2025."
+    }
+   ],
+   "componentOf": {
+    "description": "#sd_c",
+    "descriptionId": "sd_c"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Vital",
+     "spatial": {
+      "description": "#place_389592",
+      "original": "Tobolsk, Russian Empire",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1722/+1930",
+      "original": "1722/1930"
+     }
+    }
+   ],
+   "descriptions": [
+    {
+     "lang": "en",
+     "value": "Birth, baptism, marriage, death, and burial records taken from metrical books kept by the churches in the Tobolsk region of Russia. These records were acquired from the State Archives of Tobolsk Region, Russia."
+    }
+   ],
+   "id": "sd_c_4496122",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/4496122"
+    ]
+   },
+   "mediaType": "image/jpeg",
+   "modified": 1767141091688,
+   "resourceType": "http://gedcomx.org/Collection",
+   "rights": [
+    "http://familysearch.org/records/permissionGroup/FamilySearch"
+   ],
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Russia, Tobolsk, Church Books, 1722-1930"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/5000050",
+   "citations": [
+    {
+     "value": "\"Россия, Тула, Метрический книги, 1722-1936\", Database. <i>FamilySearch</i>. https://familysearch.org : 8 August 2026."
+    }
+   ],
+   "componentOf": {
+    "description": "#sd_c",
+    "descriptionId": "sd_c"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Vital",
+     "spatial": {
+      "description": "#place_2946",
+      "original": "Tula, Russia",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1722/+1936",
+      "original": "1722/1936"
+     }
+    }
+   ],
+   "descriptions": [
+    {
+     "lang": "en",
+     "value": "Birth, baptism, marriage, death, and burial records taken from metrical books kept by the churches in the Tula Region of Russia. These records were acquired from the State Archives of Tula Region, Russia."
+    }
+   ],
+   "id": "sd_c_5000050",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/5000050"
+    ]
+   },
+   "mediaType": "image/jpeg",
+   "modified": 1786178435313,
+   "resourceType": "http://gedcomx.org/Collection",
+   "rights": [
+    "http://familysearch.org/records/permissionGroup/FamilySearch"
+   ],
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Russia, Tula, Church Books, 1722-1936"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/2556017",
+   "citations": [
+    {
+     "value": "\"한국 지역 역사, 655-1935.\" Images. <i>FamilySearch</i>. http://FamilySearch.org : accessed 2026. Citing 국립중앙도서관 [National Library of Korea, Seoul]."
+    }
+   ],
+   "componentOf": {
+    "description": "#sd_c",
+    "descriptionId": "sd_c"
+   },
+   "coverage": [
+    {
+     "recordType": "http://familysearch.org/types/records/Miscellaneous",
+     "spatial": {
+      "description": "#place_6118214",
+      "original": "Korea",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceSetID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+0655/+1935",
+      "original": "655/1935"
+     }
+    }
+   ],
+   "descriptions": [
+    {
+     "lang": "en",
+     "value": "A collection of local history from Korea. This collection is being published as images become available."
+    }
+   ],
+   "id": "sd_c_2556017",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/2556017"
+    ]
+   },
+   "links": {
+    "waypoints": {
+     "href": "https://api.familysearch.org/platform/records/collections/2556017/waypoints"
+    }
+   },
+   "mediaType": "image/jpeg",
+   "modified": 1745533895748,
+   "resourceType": "http://gedcomx.org/Collection",
+   "rights": [
+    "http://familysearch.org/records/permissionGroup/FamilySearch"
+   ],
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Korea, Local History, 655-1935"
+    }
+   ]
+  }
+ ]
+}

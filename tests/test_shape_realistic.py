@@ -46,9 +46,18 @@ def test_a_fact_with_no_date_still_shapes(gedcomx_messy_person):
 
 
 def test_a_fact_with_neither_date_nor_place_still_shapes(gedcomx_messy_person):
-    """A bare Death type is how the tree records 'he died, we know no more'."""
+    """A bare Death type is how the tree records 'he died, we know no more'.
+
+    It is marked as sent empty, so a reader knows nothing was dropped.
+    """
     death = person(gedcomx_messy_person)["facts"][2]
-    assert death == {"type": "Death", "date": None, "place": None}
+    assert death == {
+        "type": "Death",
+        "value": None,
+        "date": None,
+        "place": None,
+        "sent_empty": True,
+    }
 
 
 def test_a_redacted_living_person_says_so(gedcomx_living_person):

@@ -1,0 +1,12 @@
+{
+ "status": 404,
+ "body": {
+  "errors": [
+   {
+    "code": 404,
+    "label": "Not Found",
+    "message": "Failure in upstream call: FailureToGetWayPoints (upstream 404)"
+   }
+  ]
+ }
+}
