@@ -1,0 +1,155 @@
+{
+ "results": 62242990,
+ "index": 0,
+ "entries": [
+  {
+   "id": "XXXX-YY0",
+   "score": 1.8218,
+   "confidence": 5,
+   "content": {
+    "gedcomx": {
+     "persons": [
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Female"
+       },
+       "facts": [
+        {
+         "date": {
+          "original": "29 Nov 1832"
+         },
+         "place": {
+          "original": "Appingedam, Groningen, Nederland"
+         },
+         "type": "http://gedcomx.org/Birth"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Ezra Pettibone"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "principal": false,
+       "facts": [
+        {
+         "date": {
+          "original": "1797"
+         },
+         "type": "http://gedcomx.org/Birth"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Lydia Pettibone"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "sourceDescriptions": [
+      {
+       "resourceType": "http://gedcomx.org/Collection",
+       "about": "https://www.familysearch.org/service/cds/recapi/collections/2704829",
+       "titles": [
+        {
+         "lang": "en-US",
+         "value": "Netherlands, Archival Indexes, Vital Records, 1600-2000"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "XXXX-YY1",
+   "score": 1.8218,
+   "confidence": 5,
+   "content": {
+    "gedcomx": {
+     "persons": [
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Male"
+       },
+       "facts": [
+        {
+         "date": {
+          "original": "17 Dec 1660"
+         },
+         "place": {
+          "original": "Utrecht, Nederland"
+         },
+         "type": "http://gedcomx.org/Burial"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Amos Thackeray"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "sourceDescriptions": [
+      {
+       "resourceType": "http://gedcomx.org/Collection",
+       "about": "https://www.familysearch.org/service/cds/recapi/collections/2704829",
+       "titles": [
+        {
+         "lang": "en-US",
+         "value": "Netherlands, Archival Indexes, Vital Records, 1600-2000"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "facets": [
+  {
+   "count": 62242990,
+   "displayCount": "62,242,990",
+   "displayName": "recordType",
+   "facets": [
+    {
+     "count": 7252099,
+     "displayCount": "7,252,099",
+     "displayName": "0",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=0"
+    },
+    {
+     "count": 7452110,
+     "displayCount": "7,452,110",
+     "displayName": "1",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=1"
+    },
+    {
+     "count": 16921851,
+     "displayCount": "16,921,851",
+     "displayName": "2",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=2"
+    }
+   ],
+   "params": "c.recordType=on"
+  }
+ ]
+}

@@ -94,15 +94,15 @@ FamilySearch's Places API answers anonymously.
 
 | Tool | Needs a token | Purpose |
 | --- | --- | --- |
-| `search_records` | yes | Search historical records by name, life events, parents, spouse, record type or collection. Every criterion filters. Returns one hit per record, with the others named on it. |
+| `search_records` | yes | Search historical records by name, life events, parents, spouse, record type or collection. Every criterion filters, and the result says which FamilySearch applied exactly, relaxed or ignored. Returns one hit per record, with the others named on it. |
 | `get_record` | yes | Read one indexed record in full: every person on it and the labelled fields behind each. |
 | `get_record_image` | yes | Find the document image a record came from, or the film number when no image was published. |
 | `get_records_on_image` | yes | Every record indexed from one image. A census page carries forty people. |
 | `fulltext_search` | yes | Search the handwriting-recognised text of page images, mostly deeds, wills, probate and court files, for a name or phrase anywhere on the page. A machine reading: open the image and cite that. |
-| `search_collections` | no | Find a record collection by title, with its coverage. |
+| `search_collections` | no | Find a record collection by the words of its title, with its coverage, and how big and how old the cached catalogue is. |
 | `get_collection` | no | Read one collection: what it covers and how much of it there is. |
 | `get_collection_fields` | no | Decode a collection's indexed field codes (`PR_FTHR_NAME` → "Father's Name"). |
-| `browse_waypoints` | no | Browse a collection's volumes and films, to reach pages the index never covered. |
+| `browse_waypoints` | no | Browse a collection's places, volumes and images, to reach pages the index never covered. |
 | `get_catalog_entry` | yes | Read a FamilySearch Catalog entry: title, authors, places, notes, and each film or DGS with its description, image count and whether you can view it. `contains` narrows an entry of thousands to the volume or case you want. |
 
 ### Page images
@@ -180,10 +180,16 @@ description.
   not the microfilm number; a film may be restricted or never digitised;
   and a description is a cataloguer's summary, so read the images and cite
   them.
-- **Search criteria filter.** FamilySearch treats a search term as a ranking
-  hint unless told otherwise, so adding a death year to a name search only
-  reorders it. This server asks for every criterion to match; `loose=True`
-  goes back to ranking.
+- **Search criteria filter, loosely unless `exact`.** FamilySearch treats a
+  search term as a ranking hint unless told otherwise, so adding a death
+  year to a name search only reorders it. This server asks for every
+  criterion to match; `loose=True` goes back to ranking. Even required, a
+  criterion leaves out only a record that contradicts it: a record giving
+  no birth year still matches "born 1850", and a year matches five either
+  side. `exact=True` makes each one present and matching, and holds a place
+  to the county or state named. Every result's `filters` says how each
+  criterion was applied, so a nil result can be read as the negative it
+  is, or is not.
 - **Tokens expire, and a refreshed one is picked up.** A token lasts about an
   hour. On a 401 the server re-reads `FS_ACCESS_TOKEN` from the env file and
   retries once, so refreshing the file is enough. `auth_status` reports

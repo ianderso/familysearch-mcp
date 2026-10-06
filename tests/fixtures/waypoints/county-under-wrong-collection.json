@@ -1,0 +1,81 @@
+{
+ "description": "#src_1",
+ "links": {
+  "prev": {
+   "href": "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=2110820&start=0"
+  },
+  "self": {
+   "href": "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=2110820&start=-1",
+   "results": 0
+  }
+ },
+ "sourceDescriptions": [
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=2110820",
+   "componentOf": {
+    "description": "#src_2"
+   },
+   "id": "src_1",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=2110820"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Grundy"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/2110820/waypoints",
+   "componentOf": {
+    "description": "#src_3"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Death",
+     "spatial": {
+      "description": "#place_1-51",
+      "original": "Iowa, United States"
+     },
+     "temporal": {
+      "formal": "+1880/+1992",
+      "original": "1880/1992"
+     }
+    }
+   ],
+   "id": "src_2",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/2110820/waypoints"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Iowa, County Death Records, 1880-1992"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/2110820",
+   "id": "src_3",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/2110820"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Iowa, County Death Records, 1880-1992"
+    }
+   ]
+  }
+ ]
+}

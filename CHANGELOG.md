@@ -8,6 +8,83 @@ adding one is a minor release.
 
 ## [Unreleased]
 
+### Added
+
+- `search_records` results carry `filters`: each criterion given, under
+  `exact`, `relaxed` or `ignored`, with how FamilySearch applied it, as
+  measured live and set out in [docs/API-NOTES.md](docs/API-NOTES.md). A
+  required criterion leaves out only a record that contradicts it, so a
+  record that gives no birth year still matches "born 1850"; without
+  `exact` a year matches five either side. For a place it also says how
+  many hits are in the county or state named. A nil result can now be
+  bounded.
+- `search_collections` results carry `catalogue`: how many collections the
+  catalogue holds, when it was fetched, how old it is and whether the walk
+  that built it was complete.
+- `browse_waypoints` takes `offset`. FamilySearch lists at most 1,000
+  children per call, and a longer volume was cut short with no sign.
+  Results give `child_total` and `next_offset`.
+
+### Fixed
+
+- `browse_waypoints` could not descend: FamilySearch answers a waypoint
+  without its collection with 400 "Required request parameter 'cc'", and
+  none was sent, even when `collection_id` was given. It is sent now, taken
+  from a waypoint URL when one is given, and a waypoint without a
+  collection is refused locally. A volume's id holds a comma, which was
+  refused as an invalid id.
+- `browse_waypoints` listed each child by an id local to the response
+  (`sd_3`), which no route takes, and listed a waypoint's own parents as its
+  children. Children are now the entries that point at the node, each with
+  the id to descend by.
+- A collection with nothing to browse answered `browse_waypoints` with an
+  unexplained 404. It now says so (`not_browsable`) and where its images
+  are reached instead. A waypoint asked for under the wrong collection,
+  which FamilySearch answers with a 404 or with an empty 200, says that.
+- Facts lost their `value`: a marital status, race or occupation came back
+  with a type and nothing else, in `get_record`, the search hits and the
+  tree tools. Every fact now carries `value`. On a record each also carries
+  `original`, what the indexer transcribed, by field label ("S" for
+  "Single"). A fact FamilySearch sent with nothing in it is marked
+  `sent_empty`, and `get_record` says so.
+- `search_records` with `exact` held the names but not the years: `.exact`
+  was never sent on a date. It is sent on every criterion now, and on a
+  year it means that year, on a record that gives one.
+- `search_records` with `exact` let a place match every place of that name:
+  "White, Arkansas" also found the White townships of other counties. The
+  search is now asked again with FamilySearch's own filter for the county
+  or state named, found in the search's place facet.
+- `search_records` passed off the first page as a later one: FamilySearch
+  sometimes answers an offset past about 1,000 with the first page again,
+  and says so only in the answer's `index`. That is now checked, and such
+  an answer is refused (`offset_ignored`). An offset over 4,999 is refused
+  (`offset_out_of_range`) rather than clamped.
+- `search_collections` matched a query word anywhere in a title, so
+  "Indian" listed the Indiana collections first. Each word must now match a
+  whole word of the title, allowing a plural ending and ignoring accents;
+  titles where a word matches only inside another follow, marked
+  `partial_match`.
+- `search_collections` returned ids such as `sd_c_2110820`, which no route
+  and no search filter takes. It returns `2110820`, and every tool taking
+  a collection id accepts the old form.
+- The collection catalogue's walk stepped by the number of entries each
+  page returned, and skipped a collection after every full page: 3,826 of
+  3,828 on 2026-10-06. A walk that ended early was cached and trusted for
+  thirty days with nothing to say so; one such cache held 3,443 of 3,827.
+  The walk now steps by FamilySearch's window of 100, ends after two empty
+  windows, and is cached only when complete. A cache written by an earlier
+  release is walked again, once.
+
+### Changed
+
+- `browse_waypoints` lists a volume or range as `{waypoint_id, title}` and
+  an image as `{position, image_ark}`, in place of `{id, title, kind,
+  about}`, and results add `collection_id`, `path` (the titles from the
+  collection down), `child_total`, `offset` and `next_offset`.
+- `search_collections` reports the catalogue's size under
+  `catalogue.collections` instead of `collections_searched`, and adds
+  `matched_whole_words`.
+
 ## [1.2.0] — 2026-10-06
 
 ### Added

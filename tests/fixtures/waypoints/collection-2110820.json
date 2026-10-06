@@ -1,0 +1,123 @@
+{
+ "collections": [
+  {
+   "content": [
+    {
+     "completeness": 0.54,
+     "count": 853719,
+     "resourceType": "http://gedcomx.org/Record"
+    },
+    {
+     "completeness": 0.54,
+     "count": 1490204,
+     "resourceType": "http://gedcomx.org/Person"
+    }
+   ],
+   "lang": "en",
+   "size": 853719,
+   "title": "Iowa, County Death Records, 1880-1992"
+  }
+ ],
+ "description": "#2110820",
+ "sourceDescriptions": [
+  {
+   "about": "https://www.familysearch.org/platform/records/collections/2110820",
+   "citations": [
+    {
+     "value": "\"Iowa, County Death Records, 1880-1992.\" Database. <i>FamilySearch</i>. http://FamilySearch.org : 16 December 2025. Citing offices of county clerk from various counties.   "
+    }
+   ],
+   "componentOf": {
+    "description": "#2110820_c",
+    "descriptionId": "2110820_c"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Death",
+     "spatial": {
+      "description": "#place_364",
+      "original": "Iowa, United States",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1880/+1992",
+      "original": "1880/1992"
+     }
+    },
+    {
+     "recordType": "http://familysearch.org/types/records/Miscellaneous",
+     "spatial": {
+      "description": "#place_364",
+      "original": "United States, Iowa",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1880/+1992",
+      "original": "1880/1992"
+     }
+    },
+    {
+     "recordType": "http://gedcomx.org/Vital",
+     "spatial": {
+      "description": "#place_364",
+      "original": "United States, Iowa",
+      "qualifiers": [
+       {
+        "name": "http://familysearch.org/v1/PlaceIdType",
+        "value": "PlaceRepID"
+       }
+      ]
+     },
+     "temporal": {
+      "formal": "+1880/+1992",
+      "original": "1880/1992"
+     }
+    }
+   ],
+   "descriptions": [
+    {
+     "lang": "en",
+     "value": "Compilation of county death records. The collection contains indexes, death records, certificates, registers, etc. for 98 of the 99 counties."
+    }
+   ],
+   "id": "2110820",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/platform/records/collections/2110820"
+    ]
+   },
+   "mediaType": "image/jpeg",
+   "modified": 1765830996604,
+   "resourceType": "http://gedcomx.org/Collection",
+   "rights": [
+    "http://familysearch.org/records/permissionGroup/FamilySearch"
+   ],
+   "titles": [
+    {
+     "lang": "en",
+     "value": "Iowa, County Death Records, 1880-1992"
+    }
+   ]
+  },
+  {
+   "about": "https://www.familysearch.org/platform/records/collections",
+   "id": "2110820_c",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/platform/records/collections"
+    ]
+   },
+   "resourceType": "http://familysearch.org/types/resources/Container"
+  }
+ ]
+}

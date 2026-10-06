@@ -2,6 +2,7 @@
   "auth_status": [],
   "browse_waypoints": [
     "collection_id",
+    "offset",
     "waypoint_id"
   ],
   "compare_person": [

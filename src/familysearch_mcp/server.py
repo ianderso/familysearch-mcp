@@ -30,8 +30,10 @@ import json
 import logging
 import re
 import time
+import unicodedata
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, unquote, urlsplit
 
 import httpx
 from mcp.server import MCPServer
@@ -57,6 +59,7 @@ from .shape import (
     FILM_LABELS,
     catalog_entry,
     catalog_items,
+    catalogue_collections,
     change_entries,
     collection,
     collection_descriptions,
@@ -71,6 +74,7 @@ from .shape import (
     pedigree,
     person,
     person_sources,
+    place_buckets,
     places,
     record_fields,
     record_persons,
@@ -147,6 +151,8 @@ class _State:
         #: entries across ~40 pages and changes rarely, so walking it on
         #: every search would cost minutes for no benefit.
         self.catalogue: list[dict] | None = None
+        #: When the catalogue was walked, and whether the walk was complete.
+        self.catalogue_meta: dict = {}
 
     async def client_(self) -> FamilySearchClient:
         """Return the client, building it on first use."""
@@ -160,10 +166,18 @@ class _State:
 
 state = _State()
 
-#: Pages of the collection catalogue to walk before giving up. The API
-#: returns roughly ninety per page, so this covers about 7,000 collections --
-#: twice the 3,443 counted on 2026-09-23. A catalogue that outgrew it would
-#: be cut short silently, so it is logged.
+#: Slots in one page of the collection catalogue. A page is a window of 100
+#: slots holding the collections visible in it, 78 to 100 of them, and a
+#: larger ``count`` is cut to 100. Verified live 2026-10-06: count=200 at
+#: start=0 answered the same 91 as count=100, and stepping start by 100 from
+#: 0 found 3,828 collections in 42 windows with none repeated, then empty
+#: windows. The walk used to step by the number a page returned, so it
+#: re-read the end of most pages and skipped a collection after a full one.
+CATALOGUE_PAGE = 100
+
+#: Pages of the collection catalogue to walk before giving up: 8,000 slots,
+#: against 4,124 in use on 2026-10-06. A walk that reaches it is incomplete
+#: and is reported as such, never cached.
 CATALOGUE_PAGE_LIMIT = 80
 
 #: Tools that answer with no credentials configured: the gazetteer, the
@@ -332,6 +346,24 @@ def _id(value: str, parameter: str) -> str:
             f"':', '.' and '_' -- not {value!r}."
         )
     return cleaned
+
+
+def _collection_id(value: str, parameter: str = "collection_id") -> str:
+    """Return a collection id, accepting the ``sd_c_`` form as well.
+
+    Earlier releases of ``search_collections`` returned ids such as
+    ``sd_c_2110820``, which no route accepts: the collection is ``2110820``.
+    Callers holding the old form are still understood.
+
+    Raises
+    ------
+    InvalidIdError
+        If ``value`` cannot be an id.
+    """
+    cleaned = value.strip()
+    if cleaned.startswith("sd_c_"):
+        cleaned = cleaned[len("sd_c_") :]
+    return _id(cleaned, parameter)
 
 
 def _error(exc: Exception) -> dict:
@@ -620,6 +652,67 @@ _RELATIONSHIP_CRITERIA = frozenset(
 )
 
 
+#: What each kind of criterion is, by tool parameter.
+_CRITERION_KIND = {
+    "given": "given",
+    "surname": "surname",
+    "birth_year": "year",
+    "death_year": "year",
+    "marriage_year": "year",
+    "birth_place": "place",
+    "death_place": "place",
+    "marriage_place": "place",
+    "residence_place": "place",
+    **{name: "relative" for name in _RELATIONSHIP_CRITERIA},
+}
+
+#: How the website search applies a required criterion, by kind and by
+#: whether ``.exact`` was sent. Measured live on 2026-10-06 with John Smith
+#: and Arkansas places (docs/API-NOTES.md, "How a search criterion is applied"):
+#:
+#: - A required criterion leaves out only a record that contradicts it. A
+#:   record that gives no birth year, no residence or no spouse stays in:
+#:   "born 1850" matched 1,676,326, of which 171,054 gave a birth year.
+#: - Without exact, a year matches five years either side (171,054 is
+#:   exactly the count for 1845-1855), a name its variants ("Jon" found as
+#:   many as "John", and "David John" too), and a place far beyond itself
+#:   ("Xyzzyqq, Arkansas" found as many as "Arkansas").
+#: - With exact, the field must be there and match: 17,104 born in 1850
+#:   exactly; a given name as the whole name ("John" 6,017, not "John
+#:   William"). A place still matches every place FamilySearch knows by
+#:   those words: "White, Arkansas" found 10,566, of which 9,570 lived in
+#:   White County and the rest in White townships of other counties.
+_APPLIED = {
+    ("given", True): "as spelled, the whole given name",
+    ("given", False): "spelling variants match, and it may be a middle name",
+    ("surname", True): "as spelled",
+    ("surname", False): "spelling variants match",
+    ("relative", True): "as spelled; the record must name that relative",
+    ("relative", False): (
+        "spelling variants match, and a record naming no such relative is not left out"
+    ),
+    ("year", True): (
+        "that year only, a christening counting as a birth and a burial as a "
+        "death; a record giving no year is left out"
+    ),
+    ("year", False): (
+        "within 5 years either way, a christening counting as a birth and a "
+        "burial as a death; a record giving no year is not left out"
+    ),
+    ("place", True): (
+        "any place FamilySearch knows by these words, such as a township of that "
+        "name in another county; a word it does not recognise is dropped"
+    ),
+    ("place", False): (
+        "widened far beyond the place, a word FamilySearch does not recognise is "
+        "dropped, and a record giving no such place is not left out"
+    ),
+}
+
+#: Said of every criterion when ``loose`` is set.
+_LOOSE = "loose: ranks the results; a record need not match it"
+
+
 def _record_query(values: dict, *, exact: bool, require: bool = True) -> dict:
     """Build the record-search query parameters from tool arguments.
 
@@ -628,8 +721,11 @@ def _record_query(values: dict, *, exact: bool, require: bool = True) -> dict:
     values : dict
         Tool arguments keyed by the names in :data:`_RECORD_CRITERIA`.
     exact : bool
-        Whether to add the ``.exact`` modifier to every name and place term.
-        FamilySearch's search fuzzes names by default.
+        Whether to add the ``.exact`` modifier to every term, the years
+        included: on a year it means that year only, and a record that gives
+        none is left out (see :data:`_APPLIED`). Earlier releases left it off
+        the years, and a search asked to be exact still matched five years
+        either side.
     require : bool, optional
         Require every criterion to match rather than merely favour it.
 
@@ -644,7 +740,7 @@ def _record_query(values: dict, *, exact: bool, require: bool = True) -> dict:
         if value in (None, "", 0):
             continue
         params[term] = value
-        if exact and not term.endswith(("Date",)):
+        if exact:
             params[f"{term}.exact"] = "on"
     if params and require:
         # Without this every criterion is a SCORING hint, not a filter:
@@ -654,6 +750,98 @@ def _record_query(values: dict, *, exact: bool, require: bool = True) -> dict:
         # surprising behaviour, so this is the default.
         params["m.queryRequireDefault"] = "on"
     return params
+
+
+#: The furthest offset asked of the website search; the API host's search
+#: documented 4,999, and the website's answered 4,900 and beyond with a 400
+#: on 2026-10-06. Short of that it is not dependable: the same day, offsets
+#: from 1,001 up answered from index 1,001 in one minute and with the FIRST
+#: page again, index 0 and no error, in the next. So every answer's
+#: ``index`` is checked against the offset asked for, and a page it was not
+#: asked for is refused rather than passed off as the next one. Earlier
+#: releases clamped silently and never checked.
+SEARCH_OFFSET_MAX = 4999
+
+#: Ways a place is written that name the United States, the region the
+#: search's place facet calls "United States of America".
+_US_NAMES = frozenset({"united states", "united states of america", "usa", "us", "u.s.", "u.s.a."})
+
+#: Words dropped from the end of a jurisdiction's name before comparing it
+#: with the facet's, which says "White" for White County.
+_JURISDICTION_SUFFIX = re.compile(r"\s+(?:county|co\.?|parish)$")
+
+
+def _jurisdiction(name: str) -> str:
+    """A place name as the place facet writes it, for comparison."""
+    return _JURISDICTION_SUFFIX.sub("", " ".join(name.lower().split()))
+
+
+def _locate_place(rows: list[dict], place: str) -> tuple[dict | None, int]:
+    """Find the facet bucket for the jurisdiction a caller's place names.
+
+    The place facet goes no deeper than a county, and names each level as
+    FamilySearch standardises it. ``"Beebe, White, Arkansas"`` is found
+    as White County; the town below it is not a level of the facet.
+
+    Parameters
+    ----------
+    rows : list of dict
+        :func:`shape.place_buckets` for the criterion's term.
+    place : str
+        The place as the caller wrote it.
+
+    Returns
+    -------
+    tuple of (dict or None, int)
+        The bucket, or None when the place is not one of the jurisdictions
+        the hits carry; and how many of the caller's parts lie below it.
+    """
+    parts = [_jurisdiction(p) for p in place.split(",") if p.strip()]
+    regions = {_jurisdiction(r["names"][0]) for r in rows if len(r["names"]) == 1}
+    region = None
+    if parts and parts[-1] in _US_NAMES:
+        region = "united states of america"
+        parts.pop()
+    elif parts and parts[-1] in regions:
+        region = parts.pop()
+    best: dict | None = None
+    depth = 0
+    for level in (1, 2):
+        if len(parts) < level:
+            break
+        wanted = [region, *parts[::-1][:level]] if region else parts[::-1][:level]
+        found = [
+            r
+            for r in rows
+            if len(r["names"]) == level + 1
+            and [_jurisdiction(n) for n in (r["names"] if region else r["names"][1:])] == wanted
+        ]
+        if len(found) != 1:
+            break
+        best, depth = found[0], level
+    if best is None and region and not parts:
+        found = [r for r in rows if len(r["names"]) == 1 and _jurisdiction(r["names"][0]) == region]
+        best = found[0] if len(found) == 1 else None
+    return best, len(parts) - depth
+
+
+def _jurisdiction_label(row: dict) -> str:
+    """A facet bucket's names, innermost first, as a place is written."""
+    names = [n for n in row["names"] if n]
+    deduplicated = [n for i, n in enumerate(names) if i == 0 or n != names[i - 1]]
+    return ", ".join(reversed(deduplicated))
+
+
+def _where(rows: list[dict], limit: int = 3) -> str:
+    """The jurisdictions holding most hits, at the deepest level reported."""
+    deepest = max((len(r["names"]) for r in rows), default=0)
+    top = sorted((r for r in rows if len(r["names"]) == deepest), key=lambda r: -r["count"])
+    return ", ".join(f"{_jurisdiction_label(r)} ({r['count']:,})" for r in top[:limit])
+
+
+def _place_term(name: str) -> str:
+    """The facet term for a place criterion: ``residence_place`` -> ``residencePlace``."""
+    return _RECORD_CRITERIA[name].removeprefix("q.")
 
 
 def _normalise_ark(ark: str) -> str:
@@ -752,30 +940,33 @@ async def search_records(
     exact: bool = Field(
         default=False,
         description=(
-            "Require names and places to match exactly. Off by default, "
-            "because indexed spellings vary and fuzzy matching is usually "
-            "what you want. Turn it on when a common name returns noise."
+            "Require every criterion to be on the record and to match: names "
+            "as spelled, years exactly, places within the county or state "
+            "named where FamilySearch's place filter can find it. Off by "
+            "default, because spellings and dates vary. Turn it on to bound "
+            "a negative or cut noise."
         ),
     ),
     count: int = Field(default=20, description="Maximum results to return (1-100)."),
-    offset: int = Field(default=0, description="Results to skip, for paging."),
+    offset: int = Field(
+        default=0,
+        description="Results to skip, for paging. Past about 1,000 FamilySearch "
+        "often stops paging; that is reported, not answered with page one.",
+    ),
 ) -> dict:
     """Search historical records by name, events, relatives, type or collection.
 
-    Beyond a person's own name and dates, two kinds of criteria matter:
+    Relationship criteria find a man by his wife's or father's name when his
+    own was misindexed. Scoping to a record type or one collection searches
+    one register instead of the whole archive.
 
-    Relationship criteria. Searching for a man by his wife's or his father's
-    name is how you find him when his own name was misindexed, mis-spelled
-    or abbreviated to an initial. An indexer who mangled "Chesebrough" often
-    got the wife's "Mary" right.
+    Every criterion filters, loosely: a record lacking that field still
+    matches, names match variants, years match within 5, places widen. With
+    exact, each must be on the record and match. The result's filters says
+    which criteria were applied exactly, relaxed or ignored, and how: read
+    it before calling a nil result a negative.
 
-    Scoping. Restricting to a record type or a single collection turns a
-    search of the whole archive into a search of one register, which is what
-    you want once you know which register should hold the entry.
-
-    Pass at least one name. Everything else narrows.
-
-    Requires an access token.
+    Pass at least one name. Requires an access token.
     """
     try:
         supplied = {
@@ -803,7 +994,16 @@ async def search_records(
                     "criteria would return the whole index."
                 ),
             }
+        if not 0 <= offset <= SEARCH_OFFSET_MAX:
+            return {
+                "error": "offset_out_of_range",
+                "message": (
+                    f"offset must be 0 to {SEARCH_OFFSET_MAX}: FamilySearch serves "
+                    "no result past that. Narrow the search instead."
+                ),
+            }
         params = _record_query(supplied, exact=exact, require=not loose)
+        exact_filters: dict[str, str] = {}
         # ``f.collectionId`` is documented in FamilySearch's filter terms.
         # ``f.recordType`` is not -- the resource that would document it is
         # behind a login wall -- but it works: all eight codes were verified
@@ -824,25 +1024,42 @@ async def search_records(
                     ),
                 }
             params["f.recordType"] = str(code)
+            exact_filters["record_type"] = f"{record_type.strip().lower()} records only"
         if collection_id.strip():
-            params["f.collectionId"] = collection_id.strip()
+            params["f.collectionId"] = _collection_id(collection_id)
+            exact_filters["collection_id"] = "this collection only"
 
         # Always ask for the record-type facet. It is the only way a caller
         # learns which codes exist in its own results, since FamilySearch
         # publishes no mapping for them.
         params["c.recordType"] = "on"
+        # And for each place given, where the hits are: the facet is how a
+        # place is held to the county or state named (see _APPLIED).
+        places = [n for n, k in _CRITERION_KIND.items() if k == "place" and supplied[n]]
+        if not loose:
+            for name in places:
+                params[f"c.{_place_term(name)}1"] = "on"
+                params[f"c.{_place_term(name)}2"] = "on"
 
         params["count"] = max(1, min(count, 100))
-        # FamilySearch caps paging at an offset of 4999.
         if offset:
-            params["offset"] = max(0, min(offset, 4999))
+            params["offset"] = offset
 
         client = await state.client_()
         payload = await client.search(params)
+        report = _applied(supplied, exact=exact, loose=loose)
+        report["exact"].update(exact_filters)
+        if unpaged := _unpaged(payload, offset):
+            return unpaged
+        if places and not loose:
+            payload = await _hold_places(client, params, payload, supplied, places, exact, report)
+            if unpaged := _unpaged(payload, offset):
+                return unpaged
         hits = search_hits(payload)
         return {
             "returned": len(hits),
             "total": payload.get("results"),
+            "filters": report,
             "record_type_facet": record_type_facet(payload),
             "criteria_used": sorted(k for k, v in supplied.items() if v),
             "relationship_criteria_used": sorted(
@@ -852,6 +1069,112 @@ async def search_records(
         }
     except Exception as exc:  # noqa: BLE001 - surfaced as structured error
         return _error(exc)
+
+
+def _unpaged(payload: dict, offset: int) -> dict | None:
+    """Refuse an answer that starts somewhere other than the offset asked for.
+
+    See :data:`SEARCH_OFFSET_MAX`: FamilySearch sometimes answers a deep
+    offset with the first page again, saying so only in ``index``.
+    """
+    index = payload.get("index")
+    if not isinstance(index, int) or index == offset:
+        return None
+    return {
+        "error": "offset_ignored",
+        "message": (
+            f"Asked for results from {offset}, FamilySearch answered from {index}: "
+            "it did not page that far this time. Narrow the search, or try again later."
+        ),
+    }
+
+
+def _applied(supplied: dict, *, exact: bool, loose: bool) -> dict:
+    """Say how FamilySearch applies each criterion given, from :data:`_APPLIED`.
+
+    Places are left to :func:`_hold_places`, which needs the hits.
+
+    Returns
+    -------
+    dict
+        ``{"exact", "relaxed", "ignored"}``, each criterion to how.
+    """
+    report: dict[str, dict[str, str]] = {"exact": {}, "relaxed": {}, "ignored": {}}
+    for name, value in supplied.items():
+        if value in (None, "", 0):
+            continue
+        if loose:
+            report["ignored"][name] = _LOOSE
+            continue
+        kind = _CRITERION_KIND[name]
+        if kind != "place":
+            report["exact" if exact else "relaxed"][name] = _APPLIED[(kind, exact)]
+    return report
+
+
+async def _hold_places(
+    client: FamilySearchClient,
+    params: dict,
+    payload: dict,
+    supplied: dict,
+    places: list[str],
+    exact: bool,
+    report: dict,
+) -> dict:
+    """Report where the hits are for each place, and with exact keep them there.
+
+    FamilySearch matches a place by its words, so an exact "White, Arkansas"
+    also finds the White townships of other counties. The search's place
+    facet names each hit's county and state as FamilySearch standardised
+    them, and each bucket carries the filter that selects it. With exact,
+    the search is asked again with the filter for the jurisdiction the
+    caller named, which holds the place to that county or state. Verified
+    live 2026-10-06: ``f.residencePlace2=10,Arkansas,White`` returned the
+    9,570 of 10,566 who lived in White County.
+
+    Returns
+    -------
+    dict
+        The payload to report: the narrowed search's, or the first.
+    """
+    total = payload.get("results") or 0
+    narrowing: dict[str, str] = {}
+    for name in places:
+        rows = place_buckets(payload, _place_term(name))
+        found, below = _locate_place(rows, supplied[name])
+        how = _APPLIED[("place", exact)]
+        if found is None and exact and not total:
+            # Measured 2026-10-06: an exact "Saline District, Cherokee
+            # Nation, Indian Territory" found nothing, where "Cherokee
+            # Nation, Indian Territory" found 1,506 -- the index gives only
+            # the nation.
+            report["exact"][name] = (
+                f"{how}. Nothing matched, and a record giving only a coarser "
+                "place (the state, the nation) cannot match a finer one"
+            )
+            continue
+        if found is None:
+            where = _where(rows)
+            report["relaxed"][name] = how + (
+                f"; the hits giving one are mostly in {where}" if where else ""
+            )
+            continue
+        label = _jurisdiction_label(found)
+        if not exact:
+            report["relaxed"][name] = f"{how}; {found['count']:,} of {total:,} hits are in {label}"
+            continue
+        elsewhere = total - found["count"]
+        if elsewhere > 0:
+            key, value = found["filter"]
+            narrowing[key] = value
+        report["exact"][name] = (
+            f"within {label}, by FamilySearch's place filter"
+            + ("; below that, by its words (an unrecognised word is dropped)" if below else "")
+            + (f"; {elsewhere:,} hits elsewhere were left out" if elsewhere > 0 else "")
+        )
+    if not narrowing:
+        return payload
+    return await client.search({**params, **narrowing})
 
 
 #: Facet filters the full-text service accepts back, by parameter name.
@@ -983,7 +1306,7 @@ async def fulltext_search(
         if group:
             params["q.groupName"] = group
         if collection_id.strip():
-            params["f.collectionId"] = _id(collection_id, "collection_id")
+            params["f.collectionId"] = _collection_id(collection_id)
         for entry in filters:
             for part in entry.strip().split("&"):
                 if not _FULLTEXT_FILTER.fullmatch(part.strip()):
@@ -1042,6 +1365,11 @@ async def get_record(
     witness, the enumerator's spelling, the age that contradicts the
     birth year.
 
+    Each fact gives its value, date and place as FamilySearch reads them, and
+    under original what the indexer transcribed ("M" for "Married"). A date
+    or place with no original was supplied by FamilySearch, such as a birth
+    year worked out from an age.
+
     This is still the index, not the document. Use get_record_image to reach
     what was actually written.
 
@@ -1059,13 +1387,23 @@ async def get_record(
         people = record_persons(payload)
         if not people:
             return {"error": "not_found", "message": f"No record {ark}."}
-        return {
+        out = {
             "ark": ark,
             "persons": people,
             "record_fields": record_fields(payload),
             "sources": source_descriptions(payload),
             "links": links(payload),
         }
+        empty = sorted(
+            {f["type"] or "?" for p in people for f in p["facts"] if f.get("sent_empty")}
+        )
+        if empty:
+            out["note"] = (
+                f"FamilySearch sent these facts with nothing in them: {', '.join(empty)}. "
+                "This server passes on every value it is sent; the index holds no "
+                "more, so read the image."
+            )
+        return out
     except Exception as exc:  # noqa: BLE001 - surfaced as structured error
         return _error(exc)
 
@@ -1155,38 +1493,105 @@ CATALOGUE_CACHE = Path.home() / ".cache" / "familysearch-mcp" / "collections.jso
 
 #: How long a cached catalogue is trusted. New collections are published
 #: steadily but not daily, and a stale entry costs a missed search rather
-#: than a wrong answer.
+#: than a wrong answer. Every result says how old the catalogue is.
 CATALOGUE_MAX_AGE = 30 * 24 * 3600
 
+#: The cache's format. A cache in any other, including every one written
+#: before the walk was fixed, is walked again rather than trusted.
+CATALOGUE_CACHE_VERSION = 2
 
-def _read_catalogue_cache() -> list[dict] | None:
-    """Return the cached catalogue if it exists and is not too old."""
+
+def _read_catalogue_cache() -> tuple[list[dict], dict] | None:
+    """Return the cached catalogue and its walk, if complete and not too old.
+
+    Reported from real use: a cache holding 3,443 of 3,827 collections was
+    trusted for a month, because nothing recorded that its walk had stopped
+    short. A cache now says whether its walk reached the end, and one that
+    does not say so is not used.
+    """
     try:
         raw = json.loads(CATALOGUE_CACHE.read_text())
     except (OSError, ValueError):
         return None
-    if time.time() - float(raw.get("fetched_at", 0)) > CATALOGUE_MAX_AGE:
+    if not isinstance(raw, dict) or raw.get("version") != CATALOGUE_CACHE_VERSION:
+        return None
+    if raw.get("complete") is not True:
+        return None
+    fetched = raw.get("fetched_at")
+    if not isinstance(fetched, (int, float)) or time.time() - fetched > CATALOGUE_MAX_AGE:
         return None
     entries = raw.get("collections")
-    return entries if isinstance(entries, list) and entries else None
+    if not isinstance(entries, list) or not entries:
+        return None
+    return entries, {"fetched_at": fetched, "complete": True, "pages": raw.get("pages")}
 
 
-def _write_catalogue_cache(entries: list[dict]) -> None:
-    """Persist the catalogue, ignoring a cache that cannot be written."""
+def _write_catalogue_cache(entries: list[dict], meta: dict) -> None:
+    """Persist a complete catalogue, ignoring a cache that cannot be written."""
+    if not meta.get("complete"):
+        return
     try:
         CATALOGUE_CACHE.parent.mkdir(parents=True, exist_ok=True)
-        CATALOGUE_CACHE.write_text(json.dumps({"fetched_at": time.time(), "collections": entries}))
+        CATALOGUE_CACHE.write_text(
+            json.dumps({"version": CATALOGUE_CACHE_VERSION, **meta, "collections": entries})
+        )
     except OSError:
         pass
+
+
+async def _walk_catalogue(client: FamilySearchClient) -> tuple[list[dict], dict]:
+    """Walk the catalogue a window of :data:`CATALOGUE_PAGE` slots at a time.
+
+    FamilySearch reports no total, so the end is two empty windows in a row.
+    A window that repeats one already read means ``start`` was ignored, and
+    the walk stops there, incomplete.
+
+    Returns
+    -------
+    tuple of (list of dict, dict)
+        The collections, and the walk: ``fetched_at``, ``complete``,
+        ``pages`` and, when incomplete, why it ended.
+    """
+    collected: list[dict] = []
+    seen: set[str] = set()
+    empty = 0
+    ended = f"stopped at the {CATALOGUE_PAGE_LIMIT}-page limit"
+    pages = 0
+    for pages in range(1, CATALOGUE_PAGE_LIMIT + 1):
+        payload = await client.get(
+            "/platform/records/collections",
+            count=CATALOGUE_PAGE,
+            start=(pages - 1) * CATALOGUE_PAGE or None,
+        )
+        page = catalogue_collections(payload)
+        if not page:
+            empty += 1
+            if empty == 2:
+                ended = ""
+                break
+            continue
+        empty = 0
+        fresh = [c for c in page if c.get("id") not in seen]
+        if not fresh:
+            ended = f"page {pages} repeated one already read"
+            break
+        seen.update(c.get("id") for c in fresh)
+        collected.extend(fresh)
+    meta: dict = {"fetched_at": time.time(), "complete": not ended, "pages": pages}
+    if ended:
+        meta["ended"] = ended
+        logger.warning("catalogue walk incomplete with %d collections: %s", len(collected), ended)
+    return collected, meta
 
 
 async def _collection_catalogue(refresh: bool = False) -> list[dict]:
     """Return the whole collection catalogue, fetching it at most once.
 
     FamilySearch offers no search over the catalogue, so a title match means
-    holding the list. It pages at roughly ninety entries and runs to a few
-    thousand, which takes about a minute and a half -- far too slow to repeat
-    per query, so it is cached in memory and on disk.
+    holding the list. It runs to a few thousand and takes about two minutes
+    to walk -- far too slow to repeat per query, so a complete walk is cached
+    in memory and on disk. An incomplete one is kept for this session only,
+    and :data:`state.catalogue_meta` says so.
 
     Parameters
     ----------
@@ -1202,33 +1607,76 @@ async def _collection_catalogue(refresh: bool = False) -> list[dict]:
         if state.catalogue is not None:
             return state.catalogue
         if cached := _read_catalogue_cache():
-            state.catalogue = cached
-            return cached
+            state.catalogue, state.catalogue_meta = cached
+            return state.catalogue
 
     client = await state.client_()
-    collected: list[dict] = []
-    seen: set[str] = set()
-    start = 0
-    for _ in range(CATALOGUE_PAGE_LIMIT):
-        payload = await client.get("/platform/records/collections", count=200, start=start or None)
-        page = collection_descriptions(payload)
-        fresh = [c for c in page if c.get("id") not in seen]
-        if not fresh:
-            break
-        seen.update(c.get("id") for c in fresh)
-        collected.extend(fresh)
-        start += len(page)
-    else:
-        logger.warning(
-            "catalogue walk stopped at the %d-page limit with %d collections; "
-            "raise CATALOGUE_PAGE_LIMIT",
-            CATALOGUE_PAGE_LIMIT,
-            len(collected),
-        )
-    state.catalogue = collected
-    _write_catalogue_cache(collected)
-    logger.info("catalogue cached: %d collections", len(collected))
+    collected, meta = await _walk_catalogue(client)
+    state.catalogue, state.catalogue_meta = collected, meta
+    _write_catalogue_cache(collected, meta)
+    logger.info("catalogue walked: %d collections in %d pages", len(collected), meta["pages"])
     return collected
+
+
+def _catalogue_report(size: int) -> dict:
+    """The catalogue's size, age and completeness, for a result."""
+    meta = state.catalogue_meta
+    fetched = meta.get("fetched_at")
+    out: dict = {"collections": size, "complete": bool(meta.get("complete"))}
+    if isinstance(fetched, (int, float)):
+        out["fetched"] = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(fetched))
+        out["age_days"] = round((time.time() - fetched) / 86400, 1)
+    if not out["complete"]:
+        out["warning"] = (
+            f"The catalogue walk {meta.get('ended') or 'did not finish'}, so a "
+            "collection may be missing. refresh=true walks it again."
+        )
+    return out
+
+
+def _fold(text: str) -> str:
+    """Lower-case text without its accents, so "Mexico" finds "México"."""
+    decomposed = unicodedata.normalize("NFKD", text or "")
+    return "".join(c for c in decomposed if not unicodedata.combining(c)).lower()
+
+
+#: A word of a title or a query: letters and digits.
+_TITLE_WORD = re.compile(r"[^\W_]+")
+
+
+def _word_match(word: str, title_words: list[str]) -> str | None:
+    """How one query word matches a title: "whole", "part" or not at all.
+
+    A whole word may differ by a plural ending, so "record" finds "Records".
+    Anything else is a part: "Indian" inside "Indiana".
+    """
+    forms = {word, f"{word}s", f"{word}es", word.removesuffix("s"), word.removesuffix("es")}
+    if any(w in forms for w in title_words):
+        return "whole"
+    if any(word in w for w in title_words):
+        return "part"
+    return None
+
+
+def _title_matches(catalogue: list[dict], query: str) -> tuple[list[dict], list[dict]]:
+    """Split the catalogue into titles matching every word whole, and the rest that match.
+
+    Reported from real use: "Indian" listed the Indiana collections first,
+    because a query word matched anywhere inside the title.
+    """
+    words = _TITLE_WORD.findall(_fold(query))
+    whole: list[dict] = []
+    part: list[dict] = []
+    for entry in catalogue:
+        if not words:
+            whole.append(entry)
+            continue
+        title_words = _TITLE_WORD.findall(_fold(entry.get("title") or ""))
+        kinds = [_word_match(w, title_words) for w in words]
+        if None in kinds:
+            continue
+        (part if "part" in kinds else whole).append(entry)
+    return whole, part
 
 
 @_tool()
@@ -1244,45 +1692,40 @@ async def search_collections(
     refresh: bool = Field(
         default=False,
         description="Re-fetch the catalogue rather than use the cached copy. "
-        "Takes about ninety seconds; only needed when looking for a "
-        "collection published since the cache was built.",
+        "Takes about two minutes; needed when looking for a collection "
+        "published since the catalogue was fetched, or when it is incomplete.",
     ),
 ) -> dict:
     """Find a record collection, so a search can be scoped to one.
 
-    A collection is one register, census or index -- "Connecticut Church
-    Records, 1630-1920" rather than the whole archive. Once you know which
-    collection should hold an entry, scoping search_records to its
-    id turns a fishing expedition into a lookup, and turns a nil result into
+    A collection is one register, census or index. Scoping search_records to
+    its id turns a fishing expedition into a lookup, and a nil result into
     something that means anything.
 
-    Each result carries a coverage statement: which record types, which
-    place, which years. Read it. A collection covering 1850 to 1900 cannot
-    answer a question about 1840, and the difference between "no record
-    exists" and "I searched a collection that could not contain it" is the
-    whole of the reasoning.
+    Each result carries a coverage statement: record types, place, years.
+    Read it: a collection covering 1850 to 1900 cannot answer for 1840.
 
-    There is no collection search, so this matches your words against every
-    collection's title. The first call reads the whole list, several
-    requests, and caches it.
+    Every word must match a whole word of the title; titles where one only
+    matches inside a word ("Indian" in "Indiana") follow, marked. The first
+    call reads the whole catalogue and caches it; catalogue says how many
+    collections it holds and how old it is.
 
     Works without a token.
     """
     try:
         catalogue = await _collection_catalogue(refresh=refresh)
-        words = [w for w in query.lower().split() if w]
-        found = [
-            entry
-            for entry in catalogue
-            if not words or all(w in (entry.get("title") or "").lower() for w in words)
-        ]
+        whole, part = _title_matches(catalogue, query)
         limit = max(1, min(count, 200))
+        shown = whole[:limit] + [
+            {**entry, "partial_match": True} for entry in part[: max(0, limit - len(whole))]
+        ]
         return {
             "query": query,
-            "collections_searched": len(catalogue),
-            "matched": len(found),
-            "returned": min(len(found), limit),
-            "collections": found[:limit],
+            "catalogue": _catalogue_report(len(catalogue)),
+            "matched": len(whole) + len(part),
+            "matched_whole_words": len(whole),
+            "returned": len(shown),
+            "collections": shown,
         }
     except Exception as exc:  # noqa: BLE001 - surfaced as structured error
         return _error(exc)
@@ -1306,10 +1749,9 @@ async def get_collection(
     Works without a token.
     """
     try:
+        cid = _collection_id(collection_id)
         client = await state.client_()
-        payload = await client.get(
-            f"/platform/records/collections/{_id(collection_id, 'collection_id')}"
-        )
+        payload = await client.get(f"/platform/records/collections/{cid}")
         found = payload.get("collections") or []
         if not found:
             return {
@@ -1318,7 +1760,7 @@ async def get_collection(
             }
         return {
             **collection(found[0]),
-            "id": collection_id.strip(),
+            "id": cid,
             "coverage": collection_descriptions(payload),
             "links": links(found[0]),
         }
@@ -1730,52 +2172,204 @@ async def get_place_children(
         return _error(exc)
 
 
+#: A waypoint id: letters and digits, a colon, then one or more numbers
+#: joined by commas, e.g. ``M6QS-124:179638101,179638102``. The comma is
+#: why the general id check is not used.
+_WAYPOINT = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*:[0-9]+(?:,[0-9]+)*")
+
+
+def _waypoint_ref(value: str) -> tuple[str, str]:
+    """Return a waypoint id and the collection given with it, if any.
+
+    Accepts the bare id, or a URL that carries it: the API's
+    ``.../records/waypoints/{id}?cc={collection}``, or a page address with
+    ``wc={id}&cc={collection}``.
+
+    Returns
+    -------
+    tuple of (str, str)
+        The waypoint id, and the collection id from the URL or "".
+
+    Raises
+    ------
+    InvalidIdError
+        If no waypoint id can be found in ``value``.
+    """
+    cleaned = value.strip()
+    waypoint, collection = cleaned, ""
+    if cleaned.startswith("https://"):
+        parts = urlsplit(cleaned)
+        query = parse_qs(parts.query)
+        collection = (query.get("cc") or [""])[0]
+        if "/waypoints/" in parts.path:
+            waypoint = unquote(parts.path.split("/waypoints/", 1)[1])
+        else:
+            waypoint = (query.get("wc") or [""])[0]
+    if not _WAYPOINT.fullmatch(waypoint):
+        raise InvalidIdError(
+            "waypoint_id must be a waypoint id such as 'M6QS-124:179638101,179638102', "
+            f"as browse_waypoints lists it, or a URL holding one; not {value!r}."
+        )
+    return waypoint, _collection_id(collection) if collection else ""
+
+
+async def _not_browsable(client: FamilySearchClient, collection_id: str) -> dict:
+    """Explain a collection whose waypoints are not found.
+
+    A collection with nothing to browse answers its waypoints with 404,
+    exactly as a collection that does not exist does. Its own description
+    tells them apart: a browsable one links to its ``waypoints``. Verified
+    live 2026-10-06: 1909088 (probate books, images only) carries the link;
+    2110820 (Iowa county deaths, indexed records) does not, and its
+    waypoints are a 404.
+    """
+    try:
+        payload = await client.get(f"/platform/records/collections/{collection_id}")
+    except FamilySearchApiError as exc:
+        if exc.status in (400, 404):
+            return {"error": "not_found", "message": f"No collection {collection_id}."}
+        raise
+    found = payload.get("collections") or []
+    if not found:
+        return {"error": "not_found", "message": f"No collection {collection_id}."}
+    title = collection(found[0]).get("title")
+    if "waypoints" in links(payload):
+        return {
+            "error": "not_found",
+            "status": 404,
+            "message": (
+                f"FamilySearch lists waypoints for collection {collection_id} ({title}) "
+                "but did not answer them. Try again."
+            ),
+        }
+    return {
+        "error": "not_browsable",
+        "collection_id": collection_id,
+        "title": title,
+        "message": (
+            f"Collection {collection_id} ({title}) has no images to browse: "
+            "FamilySearch lists no waypoints for it. Its images, where there are "
+            "any, are reached from a record (get_record_image) or through the "
+            "Catalog (get_catalog_entry)."
+        ),
+    }
+
+
+#: Children asked for per page of a waypoint: what FamilySearch answers
+#: with no count. Verified live 2026-10-06: a volume of 1,007 images
+#: answered 1,000, and its self link counted all 1,007.
+_WAYPOINT_PAGE = 1000
+
+
 @_tool()
 async def browse_waypoints(
     collection_id: str = Field(
         default="",
-        description="Collection id to browse from the top, e.g. '1916078'.",
+        description="Collection id to browse, e.g. '1916078'. Needed to descend too.",
     ),
     waypoint_id: str = Field(
         default="",
-        description="Waypoint id to browse one level further down. Take it "
-        "from a previous call's children.",
+        description="A child's waypoint_id, to browse one level further down. "
+        "Pass the collection_id it was listed under with it.",
+    ),
+    offset: int = Field(
+        default=0,
+        description="Children to skip: a volume lists at most 1,000 images per call.",
     ),
 ) -> dict:
-    """Browse a collection's structure — its volumes, date ranges and films.
+    """Browse a collection's structure — its places, volumes and images.
 
-    The way to reach a page the index never covered. Indexing is incomplete
-    across most of the archive, so a record you cannot find by searching may
-    still be sitting on an image you can browse to: collection, then volume
-    or date range, then film, then pages.
+    The way to reach a page the index never covered: collection, then
+    county, volume or date range, then images. An image's ark opens with
+    get_image_links.
 
-    Works without a token. Pass a collection_id to start, then a waypoint_id
-    from the children to descend.
+    Start with a collection_id. To descend, pass a child's waypoint_id and
+    the same collection_id: FamilySearch refuses a waypoint without its
+    collection. A collection with nothing to browse says so.
+
+    Works without a token.
     """
     try:
-        descending = bool(waypoint_id.strip())
-        if not descending and not collection_id.strip():
+        waypoint, from_url = _waypoint_ref(waypoint_id) if waypoint_id.strip() else ("", "")
+        collection_id_ = _collection_id(collection_id) if collection_id.strip() else ""
+        if from_url and collection_id_ and from_url != collection_id_:
+            return {
+                "error": "conflicting_collection",
+                "message": (
+                    f"waypoint_id names collection {from_url} and collection_id "
+                    f"{collection_id_}. Pass the one the waypoint was listed under."
+                ),
+            }
+        collection_id_ = collection_id_ or from_url
+        if not waypoint and not collection_id_:
             return {
                 "error": "no_target",
                 "message": "Pass a collection_id to start browsing, or a waypoint_id to descend.",
             }
-        node = (
-            _id(waypoint_id, "waypoint_id") if descending else _id(collection_id, "collection_id")
-        )
-        path = (
-            f"/platform/records/waypoints/{node}"
-            if descending
-            else f"/platform/records/collections/{node}/waypoints"
-        )
+        if waypoint and not collection_id_:
+            # Verified live 2026-10-06: the waypoint route answers 400
+            # "Required request parameter 'cc'" without its collection.
+            return {
+                "error": "collection_required",
+                "message": (
+                    "FamilySearch needs the collection to open a waypoint. Pass "
+                    "the collection_id the waypoint was listed under with it."
+                ),
+            }
+        start = max(0, offset)
         client = await state.client_()
-        payload = await client.get(path, accept=FS_JSON)
-        children = waypoints(payload, None if descending else node)
-        return {
-            "node": node,
-            "level": "waypoint" if descending else "collection",
+        try:
+            if waypoint:
+                payload = await client.get(
+                    f"/platform/records/waypoints/{waypoint}",
+                    accept=FS_JSON,
+                    cc=collection_id_,
+                    count=_WAYPOINT_PAGE,
+                    start=start or None,
+                )
+            else:
+                payload = await client.get(
+                    f"/platform/records/collections/{collection_id_}/waypoints",
+                    accept=FS_JSON,
+                    count=_WAYPOINT_PAGE,
+                    start=start or None,
+                )
+        except FamilySearchApiError as exc:
+            if exc.status != 404:
+                raise
+            if not waypoint:
+                return await _not_browsable(client, collection_id_)
+            return {
+                "error": "not_found",
+                "message": (
+                    f"No waypoint {waypoint} in collection {collection_id_}. A "
+                    "waypoint opens only with the collection it was listed under."
+                ),
+            }
+        node = waypoints(payload, start)
+        children = node["children"]
+        total = node["total"]
+        following = start + len(children)
+        out = {
+            "collection_id": collection_id_,
+            "waypoint_id": waypoint or None,
+            "title": node["title"],
+            "path": node["path"],
+            "child_total": total if total is not None else following,
+            "offset": start,
             "child_count": len(children),
+            "next_offset": following if total is not None and following < total else None,
             "children": children,
         }
+        if waypoint and not children and total == 0:
+            # Verified live 2026-10-06: a waypoint asked for under another
+            # collection answers 200 with nothing in it, not an error.
+            out["message"] = (
+                f"FamilySearch lists nothing under this waypoint in collection "
+                f"{collection_id_}. That is also how it answers a waypoint asked "
+                "for under the wrong collection: check collection_id."
+            )
+        return out
     except Exception as exc:  # noqa: BLE001 - surfaced as structured error
         return _error(exc)
 
@@ -1957,15 +2551,13 @@ async def get_collection_fields(
     Works without a token.
     """
     try:
+        cid = _collection_id(collection_id)
         client = await state.client_()
-        payload = await client.get(
-            f"/platform/records/collections/{_id(collection_id, 'collection_id')}",
-            accept=FS_JSON,
-        )
+        payload = await client.get(f"/platform/records/collections/{cid}", accept=FS_JSON)
         fields = collection_field_labels(payload)
         entry = (payload.get("collections") or [{}])[0]
         return {
-            "collection_id": collection_id.strip(),
+            "collection_id": cid,
             "title": entry.get("title"),
             "record_count": entry.get("size"),
             "field_count": len(fields),

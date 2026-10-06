@@ -42,12 +42,15 @@ from familysearch_mcp.config import HOSTS, load_config, token_from_env_file
 from familysearch_mcp.server import _NODE_NAME, RECORD_TYPE_CODES
 from familysearch_mcp.shape import (
     catalog_items,
+    catalogue_collections,
     collection_field_labels,
     links,
+    place_buckets,
     record_fields,
     record_persons,
     search_hits,
     source_descriptions,
+    waypoints,
 )
 
 #: A collection with a published field dictionary: the 1880 US census.
@@ -80,6 +83,15 @@ CATALOG = "3154151"
 #: A DGS number that starts with zeros: a French parish register film, from
 #: catalog 104590.
 ZERO_PADDED_DGS = "008126335"
+
+#: A browsable collection of unindexed images: "Tennessee, Probate Court
+#: Books, 1795-1927", and in it the waypoint for Grundy County.
+BROWSABLE = "1909088"
+WAYPOINT = "M6QS-12W:179638101"
+
+#: A collection of indexed records with nothing to browse: "Iowa, County
+#: Death Records, 1880-1992".
+UNBROWSABLE = "2110820"
 
 
 @dataclass
@@ -335,6 +347,18 @@ class LiveCheck:
             f"fields, {len(sources)} source descriptions, "
             f"{len(artifacts)} DigitalArtifact",
         )
+        facts = [f for p in people for f in p["facts"]]
+        valued = [f for f in facts if f.get("value") and f.get("original")]
+        self.record(
+            "get_record: a fact carries its value and what the indexer wrote",
+            bool(valued),
+            f"{len(valued)} of {len(facts)} facts; e.g. "
+            + (
+                f"{valued[0]['type']} {valued[0]['value']!r} {valued[0]['original']}"
+                if valued
+                else "none"
+            ),
+        )
 
     async def thin_image_document(self) -> None:
         """The image resource leaves out its image links instead of saying 401.
@@ -587,13 +611,129 @@ class LiveCheck:
         """Ask the storage host about one image group, as the server does."""
         return await self.get(f"{DAS_HOST}/dgs:{dgs}", accept="application/json", token=self.token)
 
+    async def waypoint_routes(self) -> None:
+        """A waypoint opens only with its collection; an unbrowsable collection has no link."""
+        path = f"/platform/records/waypoints/{WAYPOINT}"
+        await self.expect_status(
+            "waypoints: a waypoint without its collection gets 400",
+            400,
+            await self.get(path, accept=FS_JSON),
+        )
+        response = await self.get(path, accept=FS_JSON, params={"cc": BROWSABLE})
+        node = waypoints(_json(response))
+        ids = [c.get("waypoint_id") or "" for c in node["children"]]
+        self.record(
+            "waypoints: with its collection, it lists children by waypoint id",
+            response.status_code == 200 and bool(ids) and all(":" in i for i in ids),
+            f"HTTP {response.status_code}: {node['title']!r}, {len(ids)} children, "
+            f"first {ids[0] if ids else None!r}",
+        )
+        described = _json(await self.get(f"/platform/records/collections/{UNBROWSABLE}"))
+        listed = await self.get(f"/platform/records/collections/{UNBROWSABLE}/waypoints")
+        self.record(
+            "waypoints: a collection with nothing to browse has no waypoints link, and 404s",
+            "waypoints" not in (described.get("links") or {}) and listed.status_code == 404,
+            f"links {sorted(described.get('links') or {})}; waypoints HTTP {listed.status_code}",
+        )
+
+    async def catalogue_windows(self) -> None:
+        """The catalogue pages in windows of 100 slots, none repeating another."""
+        path = "/platform/records/collections"
+
+        async def ids(**params) -> list[str]:
+            return [
+                c["id"] for c in catalogue_collections(_json(await self.get(path, params=params)))
+            ]
+
+        first = await ids(count=100)
+        larger = await ids(count=200)
+        following = await ids(count=100, start=100)
+        self.record(
+            "catalogue: count above 100 returns the same window as 100",
+            bool(first) and larger == first,
+            f"count=100 gave {len(first)}, count=200 gave {len(larger)}",
+        )
+        self.record(
+            "catalogue: the window at start=100 repeats nothing from start=0",
+            bool(following) and not set(first) & set(following),
+            f"{len(following)} collections, {len(set(first) & set(following))} repeated",
+        )
+
+    async def search_criteria(self) -> None:
+        """How a year and a place are applied, which search_records reports."""
+        names = (
+            "search: a year without exact matches 5 years either side",
+            "search: exact on a year means that year, on a record giving one",
+            "search: an exact place matches its namesakes, and the county filter holds it",
+            "search: a page past the first answers from the offset asked",
+        )
+        if not self.token:
+            for name in names:
+                self.skip(name, "no token")
+            return
+        base = {"q.givenName": "John", "q.surname": SURNAME, "m.queryRequireDefault": "on"}
+
+        async def total(**params) -> int:
+            return _json(await self.search({**base, **params, "count": 1})).get("results") or 0
+
+        dated = await total(**{"q.birthLikeDate": "1850", "f.birthLikeDate0": "1800"})
+        window = await total(
+            **{"q.birthLikeDate.from": "1845", "q.birthLikeDate.to": "1855"},
+            **{"q.birthLikeDate.exact": "on"},
+        )
+        self.record(
+            names[0],
+            dated > 0 and dated == window,
+            f"born 1850 and giving a year {dated:,}; born 1845-1855 exactly {window:,}",
+        )
+        loose = await total(**{"q.birthLikeDate": "1850"})
+        exact = await total(**{"q.birthLikeDate": "1850", "q.birthLikeDate.exact": "on"})
+        that_year = await total(
+            **{"q.birthLikeDate.from": "1850", "q.birthLikeDate.to": "1850"},
+            **{"q.birthLikeDate.exact": "on"},
+        )
+        self.record(
+            names[1],
+            0 < exact == that_year < loose,
+            f"exact {exact:,}; 1850-1850 exactly {that_year:,}; without exact {loose:,}",
+        )
+        place = {
+            "q.surname": SURNAME,
+            "q.residencePlace": "White, Arkansas",
+            "q.residencePlace.exact": "on",
+            "m.queryRequireDefault": "on",
+            "c.residencePlace1": "on",
+            "c.residencePlace2": "on",
+            "count": 1,
+        }
+        named = _json(await self.search(place))
+        county = [
+            r
+            for r in place_buckets(named, "residencePlace")
+            if r["names"][1:] == ["Arkansas", "White"]
+        ]
+        held = _json(await self.search({**place, **dict([county[0]["filter"]])})) if county else {}
+        self.record(
+            names[2],
+            bool(county)
+            and 0 < (held.get("results") or 0) < (named.get("results") or 0)
+            and held.get("results") == county[0]["count"],
+            f"by its words {named.get('results') or 0:,}; White County bucket "
+            f"{county[0]['count'] if county else 'absent'}; filtered {held.get('results')}",
+        )
+        paged = _json(await self.search({"q.surname": SURNAME, "count": 1, "offset": 20}))
+        self.record(names[3], paged.get("index") == 20, f"index {paged.get('index')!r}")
+
     async def run(self) -> None:
         """Run every check. The record read supplies the image checks' ark."""
         steps: list[Callable[[], Awaitable[None]]] = [
             self.anonymous_routes,
+            self.waypoint_routes,
+            self.catalogue_windows,
             self.current_user,
             self.search_user_agent,
             self.record_types,
+            self.search_criteria,
             self.record_shape,
             self.thin_image_document,
             self.tree_person,

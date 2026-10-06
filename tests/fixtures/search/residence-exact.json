@@ -1,0 +1,321 @@
+{
+ "results": 10225,
+ "index": 0,
+ "entries": [
+  {
+   "id": "XXXX-YY0",
+   "score": 3.13,
+   "confidence": 5,
+   "content": {
+    "gedcomx": {
+     "persons": [
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Male"
+       },
+       "facts": [
+        {
+         "date": {
+          "original": "Dec 1874"
+         },
+         "place": {
+          "original": "Arkansas"
+         },
+         "type": "http://gedcomx.org/Birth"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "White Township, Polk, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        },
+        {
+         "value": "Single",
+         "type": "http://gedcomx.org/MaritalStatus"
+        },
+        {
+         "value": "White",
+         "type": "http://gedcomx.org/Race"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Ezra Pettibone"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Female"
+       },
+       "facts": [
+        {
+         "date": {
+          "original": "Jan 1853"
+         },
+         "place": {
+          "original": "Texas"
+         },
+         "type": "http://gedcomx.org/Birth"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "White Township, Polk, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Lydia Pettibone"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "sourceDescriptions": [
+      {
+       "resourceType": "http://gedcomx.org/Collection",
+       "about": "https://www.familysearch.org/service/cds/recapi/collections/1325221",
+       "titles": [
+        {
+         "lang": "en-US",
+         "value": "United States, Census, 1900"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "XXXX-YY1",
+   "score": 3.13,
+   "confidence": 5,
+   "content": {
+    "gedcomx": {
+     "persons": [
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Male"
+       },
+       "facts": [
+        {
+         "value": "Married",
+         "type": "http://gedcomx.org/MaritalStatus"
+        },
+        {
+         "value": "White",
+         "type": "http://gedcomx.org/Race"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "White Township, Pike, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        },
+        {
+         "date": {
+          "original": "November 1861"
+         },
+         "place": {
+          "original": "Alabama"
+         },
+         "type": "http://gedcomx.org/Birth"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Amos Thackeray"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "principal": true,
+       "gender": {
+        "type": "http://gedcomx.org/Female"
+       },
+       "facts": [
+        {
+         "date": {
+          "original": "June 1865"
+         },
+         "place": {
+          "original": "Arkansas"
+         },
+         "type": "http://gedcomx.org/Birth"
+        },
+        {
+         "date": {
+          "original": "1900"
+         },
+         "place": {
+          "original": "White Township, Pike, Arkansas, United States"
+         },
+         "type": "http://gedcomx.org/Census"
+        }
+       ],
+       "names": [
+        {
+         "nameForms": [
+          {
+           "fullText": "Abigail Thackeray"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "sourceDescriptions": [
+      {
+       "resourceType": "http://gedcomx.org/Collection",
+       "about": "https://www.familysearch.org/service/cds/recapi/collections/1325221",
+       "titles": [
+        {
+         "lang": "en-US",
+         "value": "United States, Census, 1900"
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "facets": [
+  {
+   "count": 10225,
+   "displayCount": "10,225",
+   "displayName": "Residence Place",
+   "facets": [
+    {
+     "count": 166,
+     "displayCount": "166",
+     "displayName": "United Kingdom and Ireland",
+     "facets": [
+      {
+       "count": 164,
+       "displayCount": "164",
+       "displayName": "England",
+       "facets": [],
+       "params": "c.residencePlace2=on&f.residencePlace1=9,England"
+      }
+     ],
+     "params": "c.residencePlace1=on&f.residencePlace0=9"
+    },
+    {
+     "count": 16495,
+     "displayCount": "16,495",
+     "displayName": "United States of America",
+     "facets": [
+      {
+       "count": 10225,
+       "displayCount": "10,225",
+       "displayName": "Arkansas",
+       "facets": [
+        {
+         "count": 1392,
+         "displayCount": "1,392",
+         "displayName": "Newton",
+         "facets": [],
+         "params": "c.residencePlace2=on&f.residencePlace2=10,Arkansas,Newton"
+        },
+        {
+         "count": 1411,
+         "displayCount": "1,411",
+         "displayName": "Phillips",
+         "facets": [],
+         "params": "c.residencePlace2=on&f.residencePlace2=10,Arkansas,Phillips"
+        },
+        {
+         "count": 1215,
+         "displayCount": "1,215",
+         "displayName": "Searcy",
+         "facets": [],
+         "params": "c.residencePlace2=on&f.residencePlace2=10,Arkansas,Searcy"
+        },
+        {
+         "count": 9231,
+         "displayCount": "9,231",
+         "displayName": "White",
+         "facets": [],
+         "params": "c.residencePlace2=on&f.residencePlace2=10,Arkansas,White"
+        }
+       ],
+       "params": "c.residencePlace2=on&f.residencePlace1=10,Arkansas"
+      },
+      {
+       "count": 502,
+       "displayCount": "502",
+       "displayName": "Texas",
+       "facets": [
+        {
+         "count": 2,
+         "displayCount": "2",
+         "displayName": "Lamar",
+         "facets": [],
+         "params": "c.residencePlace2=on&f.residencePlace2=10,Texas,Lamar"
+        }
+       ],
+       "params": "c.residencePlace2=on&f.residencePlace1=10,Texas"
+      }
+     ],
+     "params": "c.residencePlace1=on&f.residencePlace0=10"
+    }
+   ],
+   "params": "c.residencePlace0=on"
+  },
+  {
+   "count": 10225,
+   "displayCount": "10,225",
+   "displayName": "recordType",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "0",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=0"
+    },
+    {
+     "count": 1009,
+     "displayCount": "1,009",
+     "displayName": "1",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=1"
+    },
+    {
+     "count": 1613,
+     "displayCount": "1,613",
+     "displayName": "2",
+     "facets": [],
+     "params": "c.recordType=on&f.recordType=2"
+    }
+   ],
+   "params": "c.recordType=on"
+  }
+ ]
+}

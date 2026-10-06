@@ -1,0 +1,427 @@
+{
+ "persons": [
+  {
+   "extracted": true,
+   "facts": [
+    {
+     "date": {
+      "fields": [
+       {
+        "type": "http://gedcomx.org/Date",
+        "values": [
+         {
+          "id": "351eb19c-8d5c-4831-95f0-b466770310a1",
+          "labelId": "EVENT_DATE_ORIG",
+          "text": "16 Jul 1911",
+          "type": "http://gedcomx.org/Original"
+         },
+         {
+          "attribution": {
+           "contributor": {
+            "resource": "http://treatment/StandardsDateTreatment/ver/2"
+           },
+           "modified": 1580149596790
+          },
+          "id": "2343fd37-634b-4616-8fb4-6745e65ac69d",
+          "labelId": "EVENT_DATE",
+          "resource": "+1911-07-16",
+          "text": "16 Jul 1911",
+          "type": "http://gedcomx.org/Interpreted"
+         }
+        ]
+       },
+       {
+        "type": "http://gedcomx.org/Month",
+        "values": [
+         {
+          "attribution": {
+           "contributor": {
+            "resource": "http://treatment/StandardsDateTreatment/ver/2"
+           },
+           "modified": 1580149596790
+          },
+          "id": "75185022-8b86-4700-a590-69787d148b01",
+          "labelId": "EVENT_MONTH",
+          "text": "7",
+          "type": "http://gedcomx.org/Interpreted"
+         }
+        ]
+       },
+       {
+        "type": "http://gedcomx.org/Day",
+        "values": [
+         {
+          "attribution": {
+           "contributor": {
+            "resource": "http://treatment/StandardsDateTreatment/ver/2"
+           },
+           "modified": 1580149596790
+          },
+          "id": "556dc7cc-35af-4638-8ed6-95bfeef51326",
+          "labelId": "EVENT_DAY",
+          "text": "16",
+          "type": "http://gedcomx.org/Interpreted"
+         }
+        ]
+       },
+       {
+        "type": "http://gedcomx.org/Year",
+        "values": [
+         {
+          "attribution": {
+           "contributor": {
+            "resource": "http://treatment/StandardsDateTreatment/ver/2"
+           },
+           "modified": 1580149596790
+          },
+          "id": "eb3cf03b-edf5-4a4b-af05-6ca486d02cc4",
+          "labelId": "EVENT_YEAR",
+          "text": "1911",
+          "type": "http://gedcomx.org/Interpreted"
+         }
+        ]
+       }
+      ],
+      "formal": "+1911-07-16",
+      "original": "16 Jul 1911"
+     },
+     "fields": [
+      {
+       "type": "http://familysearch.org/types/fields/EventType",
+       "values": [
+        {
+         "id": "f5a23b1d-d7c8-4d67-8df4-a04ec635fbdc",
+         "labelId": "EVENT_TYPE",
+         "text": "Death",
+         "type": "http://gedcomx.org/Interpreted"
+        }
+       ]
+      }
+     ],
+     "place": {
+      "description": "#place_4123935",
+      "fields": [
+       {
+        "type": "http://gedcomx.org/Place",
+        "values": [
+         {
+          "id": "e939e754-226b-46a5-801d-469caa11d937",
+          "labelId": "EVENT_PLACE_SUP",
+          "text": "Tennessee, United States",
+          "type": "http://gedcomx.org/Interpreted",
+          "qualifiers": [
+           {
+            "name": "http://familysearch.org/types/qualifiers/Info",
+            "value": "SUP"
+           }
+          ]
+         },
+         {
+          "id": "b64a239b-b72b-400d-acc2-a6903f6b4da4",
+          "labelId": "EVENT_PLACE_ORIG",
+          "text": "Paducah, Kentucky",
+          "type": "http://gedcomx.org/Original"
+         },
+         {
+          "attribution": {
+           "contributor": {
+            "resource": "http://treatment/LocalityTreatment/ver/1"
+           },
+           "modified": 1580149596832
+          },
+          "confidence": "http://confidence/96",
+          "id": "5f728274-6d3c-4f13-8dc0-69bbffe84694",
+          "labelId": "EVENT_PLACE",
+          "resource": "https://www.familysearch.org/platform/places/description/4123935",
+          "text": "Paducah, McCracken, Kentucky, United States",
+          "type": "http://gedcomx.org/Interpreted",
+          "qualifiers": [
+           {
+            "name": "StdQualifier",
+            "value": "1010, 1013"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "original": "Paducah, McCracken, Kentucky, United States"
+     },
+     "primary": true,
+     "type": "http://gedcomx.org/Death"
+    },
+    {
+     "fields": [
+      {
+       "type": "http://gedcomx.org/Ethnicity",
+       "values": [
+        {
+         "id": "06e1ed89-5052-4f6e-9086-87dd31417080",
+         "labelId": "PR_ETHNICITY_ORIG",
+         "text": "American",
+         "type": "http://gedcomx.org/Original"
+        }
+       ]
+      }
+     ],
+     "type": "http://gedcomx.org/Ethnicity",
+     "value": "American"
+    },
+    {
+     "fields": [
+      {
+       "type": "http://gedcomx.org/MaritalStatus",
+       "values": [
+        {
+         "id": "e3858758-d58b-4c24-8cba-703425671790",
+         "labelId": "PR_MARITAL_STATUS_ORIG",
+         "text": "S",
+         "type": "http://gedcomx.org/Original"
+        },
+        {
+         "attribution": {
+          "contributor": {
+           "resource": "http://treatment/CvMaritalStatusTreatment/ver/2"
+          },
+          "modified": 1580149596800
+         },
+         "id": "d0de09df-987c-4718-aafc-c6f38a70d130",
+         "labelId": "PR_MARITAL_STATUS",
+         "resource": "http://ws.cv.standards.service.prod.us-east-1.prod.fslocal.org:80/cv/terms/103333",
+         "text": "Single",
+         "type": "http://gedcomx.org/Interpreted"
+        }
+       ]
+      }
+     ],
+     "type": "http://gedcomx.org/MaritalStatus",
+     "value": "Single"
+    },
+    {
+     "fields": [
+      {
+       "type": "http://gedcomx.org/Race",
+       "values": [
+        {
+         "id": "c107372f-e4b6-4b1c-9fd4-ddaf3fc9621c",
+         "labelId": "PR_RACE_OR_COLOR_ORIG",
+         "text": "Colored",
+         "type": "http://gedcomx.org/Original"
+        }
+       ]
+      }
+     ],
+     "type": "http://gedcomx.org/Race",
+     "value": "Colored"
+    },
+    {
+     "date": {
+      "fields": [
+       {
+        "type": "http://familysearch.org/types/fields/YearEst",
+        "values": [
+         {
+          "attribution": {
+           "contributor": {
+            "resource": "http://treatment/EstBirthYearTreatment/ver/2"
+           },
+           "modified": 1580149596830
+          },
+          "id": "802d496c-b4df-4c1a-9e2d-b784ec0fcfbf",
+          "labelId": "PR_BIR_YEAR_EST",
+          "resource": "+1910",
+          "text": "1910",
+          "type": "http://gedcomx.org/Interpreted"
+         }
+        ]
+       }
+      ],
+      "formal": "+1910",
+      "original": "1910"
+     },
+     "place": {
+      "fields": [
+       {
+        "type": "http://gedcomx.org/Place",
+        "values": [
+         {
+          "id": "2150e7f0-3a5a-456c-be90-bd1794b399d9",
+          "labelId": "PR_BIR_PLACE_ORIG",
+          "text": "Union City, Tenn.",
+          "type": "http://gedcomx.org/Original"
+         }
+        ]
+       }
+      ],
+      "original": "Union City, Tenn."
+     },
+     "type": "http://gedcomx.org/Birth"
+    }
+   ],
+   "fields": [
+    {
+     "type": "http://gedcomx.org/Age",
+     "values": [
+      {
+       "id": "f7331871-7f4c-4523-81ed-6b5af35b7b20",
+       "labelId": "NOTE_PR_AGE_ORIG",
+       "text": "1y",
+       "type": "http://gedcomx.org/Original",
+       "qualifiers": [
+        {
+         "name": "http://familysearch.org/types/qualifiers/Info",
+         "value": "NOTE"
+        }
+       ]
+      },
+      {
+       "id": "0f141542-136f-4459-a93e-266273b84e93",
+       "labelId": "PR_AGE_ORIG",
+       "text": "1",
+       "type": "http://gedcomx.org/Original"
+      },
+      {
+       "attribution": {
+        "contributor": {
+         "resource": "http://treatment/AgeTreatment/ver/1"
+        },
+        "modified": 1580149596807
+       },
+       "id": "08f4c6b4-d1e4-4b27-b29b-6e5db1e4da1f",
+       "labelId": "PR_AGE",
+       "resource": "P1Y",
+       "text": "1",
+       "type": "http://gedcomx.org/Interpreted"
+      }
+     ]
+    }
+   ],
+   "gender": {
+    "fields": [
+     {
+      "type": "http://gedcomx.org/Gender",
+      "values": [
+       {
+        "id": "f73e54c9-7a4b-446c-923c-3db776634568",
+        "labelId": "PR_SEX_CODE_ORIG",
+        "text": "Female",
+        "type": "http://gedcomx.org/Original"
+       }
+      ]
+     }
+    ],
+    "type": "http://gedcomx.org/Female"
+   },
+   "id": "PERSON-1",
+   "links": {
+    "persona": {
+     "href": "https://familysearch.org/ark:/61903/1:1:XXXX-YYY"
+    }
+   },
+   "names": [
+    {
+     "nameForms": [
+      {
+       "fields": [
+        {
+         "type": "http://gedcomx.org/Name",
+         "values": [
+          {
+           "attribution": {
+            "contributor": {
+             "resource": "http://treatment/NameTreatment/ver/1"
+            },
+            "modified": 1580149596790
+           },
+           "labelId": "PR_NAME_ORIG",
+           "text": "Thankful Pettibone",
+           "type": "http://gedcomx.org/Original"
+          },
+          {
+           "attribution": {
+            "contributor": {
+             "resource": "http://treatment/NameTreatment/ver/1"
+            },
+            "modified": 1580149596800
+           },
+           "id": "ec5d3154-f362-4a9b-89db-5cc595f75706",
+           "labelId": "PR_NAME",
+           "text": "Thankful Pettibone",
+           "type": "http://gedcomx.org/Interpreted"
+          }
+         ]
+        }
+       ],
+       "fullText": "Thankful Pettibone",
+       "parts": [
+        {
+         "fields": [
+          {
+           "type": "http://gedcomx.org/Given",
+           "values": [
+            {
+             "id": "a51758aa-ab8d-4c86-8466-2e0fe9b25d24",
+             "labelId": "PR_NAME_GN_ORIG",
+             "text": "Thankful",
+             "type": "http://gedcomx.org/Original"
+            },
+            {
+             "attribution": {
+              "contributor": {
+               "resource": "http://treatment/NameTreatment/ver/1"
+              },
+              "modified": 1580149596800
+             },
+             "id": "88da0345-94ca-454a-9271-4a5717d28d3a",
+             "labelId": "PR_NAME_GN",
+             "text": "Thankful",
+             "type": "http://gedcomx.org/Interpreted"
+            }
+           ]
+          }
+         ],
+         "type": "http://gedcomx.org/Given",
+         "value": "Thankful"
+        },
+        {
+         "fields": [
+          {
+           "type": "http://gedcomx.org/Surname",
+           "values": [
+            {
+             "id": "9714eba2-76eb-4785-8d65-e75fde0c2d9f",
+             "labelId": "PR_NAME_SURN_ORIG",
+             "text": "Pettibone",
+             "type": "http://gedcomx.org/Original"
+            },
+            {
+             "attribution": {
+              "contributor": {
+               "resource": "http://treatment/NameTreatment/ver/1"
+              },
+              "modified": 1580149596800
+             },
+             "id": "742c3e76-70d5-4308-990f-9b73fb75c967",
+             "labelId": "PR_NAME_SURN",
+             "text": "Pettibone",
+             "type": "http://gedcomx.org/Interpreted"
+            }
+           ]
+          }
+         ],
+         "type": "http://gedcomx.org/Surname",
+         "value": "Pettibone"
+        }
+       ]
+      }
+     ],
+     "type": "http://gedcomx.org/BirthName"
+    }
+   ],
+   "principal": true
+  }
+ ],
+ "fields": [],
+ "sourceDescriptions": [],
+ "links": {}
+}

@@ -1,0 +1,160 @@
+{
+ "description": "#src_1",
+ "links": {
+  "next": {
+   "href": "https://api.familysearch.org/platform/records/waypoints/M6QS-124:179638101,179638102?cc=1909088&start=3&count=3"
+  },
+  "dzTemplate": {
+   "template": "https://sg30p0.familysearch.org/service/records/storage/deepzoomcloud/dz/v1/{id}/{image}"
+  },
+  "self": {
+   "href": "https://api.familysearch.org/platform/records/waypoints/M6QS-124:179638101,179638102?cc=1909088&start=0&count=3",
+   "results": 576
+  },
+  "dasTemplate": {
+   "template": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/{id}/{image}"
+  }
+ },
+ "sourceDescriptions": [
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-124:179638101,179638102?cc=1909088",
+   "componentOf": {
+    "description": "#src_2"
+   },
+   "id": "src_1",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-124:179638101,179638102?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Bonds, Letters, 1901-1948"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=1909088",
+   "componentOf": {
+    "description": "#src_3"
+   },
+   "id": "src_2",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/waypoints/M6QS-12W:179638101?cc=1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Grundy"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1909088/waypoints",
+   "componentOf": {
+    "description": "#src_4"
+   },
+   "coverage": [
+    {
+     "recordType": "http://gedcomx.org/Probate",
+     "spatial": {
+      "description": "#place_1-57",
+      "original": "Tennessee, United States"
+     },
+     "temporal": {
+      "formal": "+1795/+1927",
+      "original": "1795/1927"
+     }
+    }
+   ],
+   "id": "src_3",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/1909088/waypoints"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://api.familysearch.org/platform/records/collections/1909088",
+   "id": "src_4",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://api.familysearch.org/platform/records/collections/1909088"
+    ]
+   },
+   "resourceType": "http://gedcomx.org/Collection",
+   "titles": [
+    {
+     "lang": "en_US",
+     "value": "Tennessee, Probate Court Books, 1795-1927"
+    }
+   ]
+  },
+  {
+   "about": "https://www.familysearch.org/ark:/61903/3:1:S7WF-SR8W-59?cc=1909088&wc=M6QS-124%3A179638101%2C179638102",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_5",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/ark:/61903/3:1:S7WF-SR8W-59?cc=1909088&wc=M6QS-124%3A179638101%2C179638102"
+    ]
+   },
+   "links": {
+    "thumbnail-200": {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/3:1:S7WF-SR8W-59/thumb_p200.jpg"
+    }
+   },
+   "resourceType": "http://gedcomx.org/DigitalArtifact"
+  },
+  {
+   "about": "https://www.familysearch.org/ark:/61903/3:1:37SQ-293M-JV9?cc=1909088&wc=M6QS-124%3A179638101%2C179638102",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_6",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/ark:/61903/3:1:37SQ-293M-JV9?cc=1909088&wc=M6QS-124%3A179638101%2C179638102"
+    ]
+   },
+   "links": {
+    "thumbnail-200": {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/3:1:37SQ-293M-JV9/thumb_p200.jpg"
+    }
+   },
+   "resourceType": "http://gedcomx.org/DigitalArtifact"
+  },
+  {
+   "about": "https://www.familysearch.org/ark:/61903/3:1:37SQ-293M-CQ9?cc=1909088&wc=M6QS-124%3A179638101%2C179638102",
+   "componentOf": {
+    "description": "#src_1"
+   },
+   "id": "sd_7",
+   "identifiers": {
+    "http://gedcomx.org/Primary": [
+     "https://www.familysearch.org/ark:/61903/3:1:37SQ-293M-CQ9?cc=1909088&wc=M6QS-124%3A179638101%2C179638102"
+    ]
+   },
+   "links": {
+    "thumbnail-200": {
+     "href": "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2/3:1:37SQ-293M-CQ9/thumb_p200.jpg"
+    }
+   },
+   "resourceType": "http://gedcomx.org/DigitalArtifact"
+  }
+ ]
+}
