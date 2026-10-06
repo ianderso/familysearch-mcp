@@ -24,6 +24,7 @@ confirmed by live probing instead, and a comment beside the code says when.
 
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 import logging
@@ -54,10 +55,13 @@ from .compare import EventClaim, NameClaim, RelativeClaim
 from .config import AuthRequiredError, Config, ConfigError, load_config
 from .shape import (
     FILM_LABELS,
+    catalog_entry,
+    catalog_items,
     change_entries,
     collection,
     collection_descriptions,
     collection_field_labels,
+    description_matches,
     fulltext_facets,
     fulltext_hits,
     jurisdiction_chain,
@@ -206,10 +210,9 @@ TREE_TOOLS: set[str] = set()
 #: The failure mode this exists for is not a wrong answer. It is a caller
 #: treating a profile as settled because a tool returned it calmly.
 TREE_CAVEAT = (
-    "The FamilySearch shared tree is community-edited: anyone can change "
-    "this profile, and conflations of two same-named people are common. "
-    "What this returns is a hint about where to look, not evidence. Follow "
-    "it to an underlying record and cite that instead.\n\n"
+    "The shared tree is community-edited: anyone can change a profile, and "
+    "conflations of same-named people are common. This is a hint where to "
+    "look, not evidence: follow it to a record and cite that.\n\n"
     "Requires an access token."
 )
 
@@ -1259,10 +1262,9 @@ async def search_collections(
     exists" and "I searched a collection that could not contain it" is the
     whole of the reasoning.
 
-    FamilySearch offers no search over the catalogue, so this walks it and
-    matches your words against the titles. The catalogue runs to thousands of
-    collections and the API pages it in blocks of roughly ninety, so this
-    makes several calls the first time; the result is cached.
+    There is no collection search, so this matches your words against every
+    collection's title. The first call reads the whole list, several
+    requests, and caches it.
 
     Works without a token.
     """
@@ -1355,7 +1357,7 @@ async def get_person_relatives(
     whether a profile is the person you are looking for. A family that does
     not fit -- a child born before the marriage, a wife with the wrong
     surname, parents twenty years too young -- is the usual first sign of a
-    conflation of two same-named people.
+    conflation.
     """
     try:
         pid = _id(person_id, "person_id")
@@ -1529,8 +1531,7 @@ async def get_person_changes(
     This is how you judge what you are looking at. A profile assembled in
     one sitting last month by one contributor is a different kind of claim
     from one built over years by several. A name or a parent that changed
-    recently, with no reason given, is where a conflation of two same-named
-    people usually enters.
+    recently, with no reason given, is where a conflation usually enters.
 
     Each entry carries the contributor, the timestamp, what changed and any
     reason they typed.
@@ -1779,6 +1780,136 @@ async def browse_waypoints(
         return _error(exc)
 
 
+#: Said with every catalog entry, because each is a mistake the entry invites.
+CATALOG_CAUTIONS = [
+    "A catalog entry describes holdings: what the library has and roughly "
+    "what each film covers. It is not the record. Open the images, read the "
+    "page, and cite the image by DGS and image number.",
+    "viewable is for this account, now. A restricted film may be open only at "
+    "a FamilySearch center or affiliate library, or not at all; one with no "
+    "dgs was never digitised and is read on microfilm or at the custodian.",
+    "A DGS number is not the microfilm number. get_film_image and "
+    "fulltext_search(image_group=...) take the DGS, nine digits with its "
+    "zeros; the film number is for the microfilm. On a film holding several "
+    "items, the item starts at first_image.",
+    "Descriptions are cataloguers' summaries, some marked preliminary: a case "
+    "may be filed under another box, number or year, so look at neighbouring "
+    "items before concluding it is not there.",
+]
+
+#: The most films one call returns. Each costs a request for its image count.
+_CATALOG_PAGE_MAX = 50
+
+#: Image-count requests in flight at once.
+_IMAGE_GROUP_CONCURRENCY = 4
+
+
+def _catalog_id(value: str) -> str:
+    """Return a catalog number, refusing anything but digits.
+
+    Raises
+    ------
+    InvalidIdError
+        If ``value`` is not a catalog number.
+    """
+    cleaned = value.strip()
+    if not cleaned.isdigit():
+        raise InvalidIdError(
+            f"catalog_id must be a catalog number, digits only, e.g. '3154151'; not {value!r}."
+        )
+    return cleaned
+
+
+async def _with_image_count(client: FamilySearchClient, item: dict) -> dict:
+    """Add whether this account can view a film, and how many images it holds."""
+    if not item.get("dgs"):
+        return {**item, "viewable": False, "access": "not digitised"}
+    try:
+        status, body = await client.image_group(item["dgs"])
+    except httpx.HTTPError:
+        # One film's answer lost; the entry and the other films still stand.
+        status, body = 0, {}
+    if status == 200:
+        count = body.get("childCount")
+        extra = {"image_count": count} if isinstance(count, int) else {}
+        return {**item, **extra, "viewable": True, "access": "viewable"}
+    if status == 403:
+        return {**item, "viewable": False, "access": "restricted for this account"}
+    if status == 404:
+        return {**item, "viewable": False, "access": "no images found"}
+    return {**item, "viewable": None, "access": f"unknown (HTTP {status or 'error'})"}
+
+
+@_tool()
+async def get_catalog_entry(
+    catalog_id: str = Field(
+        description="Catalog number, digits only, e.g. '3154151' from "
+        "familysearch.org/search/catalog/3154151."
+    ),
+    contains: str = Field(
+        default="",
+        description=(
+            "Keep only items whose description holds every word, e.g. 'Box 12' "
+            "or '#250 1885'. Case is ignored; a number matches whole (250 is "
+            "not 1250) or inside a span (1885 matches 1880-1890)."
+        ),
+    ),
+    count: int = Field(
+        default=20, description="Items to return (1-50); each costs a request for its image count."
+    ),
+    offset: int = Field(default=0, description="Matching items to skip, for paging."),
+) -> dict:
+    """Read a FamilySearch Catalog entry: title, authors, places, notes, and its films.
+
+    The Catalog lists the library's holdings. An entry for a county's
+    probate files or deed books lists each film or DGS (digital image group)
+    with a description: volume, case numbers, years. Some run to thousands,
+    so use contains. Each item returned gives its image count and whether
+    this account can view it; open a page with get_film_image(dgs, image).
+
+    An entry describes holdings, not a record: cite the image you read. Some
+    films are restricted or were never digitised. A DGS number is not the
+    microfilm number.
+
+    Requires an access token.
+    """
+    try:
+        cid = _catalog_id(catalog_id)
+        client = await state.client_()
+        source = await client.catalog_entry(cid)
+        if not source:
+            return {"error": "not_found", "message": f"No catalog entry {cid}."}
+        items = catalog_items(source)
+        words = contains.split()
+        matched = [i for i in items if description_matches(i["description"], words)]
+        start = max(0, offset)
+        page = matched[start : start + max(1, min(count, _CATALOG_PAGE_MAX))]
+
+        gate = asyncio.Semaphore(_IMAGE_GROUP_CONCURRENCY)
+
+        async def probe(item: dict) -> dict:
+            async with gate:
+                return await _with_image_count(client, item)
+
+        shown = await asyncio.gather(*(probe(item) for item in page))
+        following = start + len(page)
+        return {
+            "catalog_id": cid,
+            "url": f"https://www.familysearch.org/search/catalog/{cid}",
+            **catalog_entry(source),
+            "items_total": len(items),
+            "items_matched": len(matched),
+            "contains": words,
+            "offset": start,
+            "returned": len(shown),
+            "next_offset": following if following < len(matched) else None,
+            "items": shown,
+            "cautions": CATALOG_CAUTIONS,
+        }
+    except Exception as exc:  # noqa: BLE001 - surfaced as structured error
+        return _error(exc)
+
+
 @_tool()
 async def get_records_on_image(
     image_ark: str = Field(description="A DigitalArtifact ark, e.g. '3:1:33SQ-G5LD-93NY'."),
@@ -1973,16 +2104,13 @@ async def get_film_image(
 ) -> dict:
     """Reach a page image by film and image number instead of by ark.
 
-    Citations often name a film and an image rather than an ark — those are
-    the `FS_DIGITAL_FILM_NBR` and `FS_IMAGE_NBR` fields on an indexed record,
-    and `get_record_image` reports them. This addresses the image directly on
-    the storage host, where `get_image_links` cannot help because there is no
-    ark to look up.
+    Citations often name a film (DGS) and an image rather than an ark:
+    get_record_image reports them for an indexed record, and
+    get_catalog_entry lists a volume's DGS numbers and image counts.
 
-    Checks the thumbnail first and says plainly whether the image exists, so
-    a wrong film or image number is a clear answer rather than a URL that
-    fails later. The thumbnail is readable without a token; the full page
-    needs one.
+    Checks the thumbnail first, so a wrong film or image number is a clear
+    answer, not a URL that fails later. The thumbnail needs no token; the
+    full page does.
     """
     try:
         film = film_number.strip()

@@ -491,6 +491,8 @@ def _value_for(name: str, spec: dict):
         return "https://sg30p0.familysearch.org/service/records/sample.jpg"
     if "collection_id" in lowered:
         return "1417683"
+    if "catalog_id" in lowered:
+        return "3154151"
     if "place_id" in lowered:
         return "442"
     if lowered.endswith("year") or lowered.startswith("year"):

@@ -1,0 +1,467 @@
+{
+ "source": {
+  "note": [
+   {
+    "text": "Digital capture of original records at the Furnas County Courthouse, Beaver City, Nebraska.",
+    "type": "LOC",
+    "seq": 1
+   },
+   {
+    "note_link": {
+     "text": "<strong><font color=\"red\">This is a preliminary description provided to allow immediate online access. Images have not been reviewed.</font></strong>"
+    },
+    "text": "<strong><font color=\"red\">This is a preliminary description provided to allow immediate online access. Images have not been reviewed.</font></strong>",
+    "type": "PRLIM",
+    "seq": 2
+   }
+  ],
+  "film_note": [
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063174,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 179 #541 - Pettibone A. Thackeray, 1806-1906"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063175,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 179 #619 - Chesebrough Ezra, 1807-1908"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063176,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "NO_ACC",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 179 #642 - Lydia B. Amos, 1808-1908"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063177,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "NO_ACC",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 179 #649 - Abigail C. Hezekiah - Minor, 1808-1908"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063173,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "NO_ACC",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 179 #634 - Prudence Obadiah, 1809-1909"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063178,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "NO_ACC",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 179 #684 - Thankful D. Jedidiah, 1809-1909"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106063025,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "NO_ACC",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 138 - Estate of Mehitable A. Zebulon, 1869-1996"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106184935,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "NO_ACC",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, General Index to Estates in Furnas County, 1870-2001"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106201742,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Summaries, Furnas County Court Magistrate - Cancellation of Probate Summaries, 1872-1940"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075078,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Keziah E. Elnathan, Submit F. Elnathan Asahel A. Elnathan - Guardianship, 1873-1873"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075250,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 218 -Experience Ebenezer Huldah Guardianship, 1873-1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075083,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Thankful G. Josiah, 1874-1874"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075289,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 230 - Lovina Phineas, 1874-1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075081,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Sophronia Barzillai Tryphena - Guardianship, 1876"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075084,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Ichabod Philura, 1876-1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075074,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Thankful Josiah and Cyrenius Josiah - Guardianship, 1877"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075248,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 218 - Lucretia Bethuel, 1877"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075247,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 218 - Parthenia H. Elihu, 1877"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075073,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Rhoda Zadock, 1877-1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075080,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Desire Ozias Patience - Guardianship, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075077,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Lydia Silas - Guardianship, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075075,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Temperance Gideon Waitstill, Thankful Reuben Waitstill, Charity Hiram Waitstill, Electa Lemuel Waitstill and Mercy Abijah Waitstill, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075089,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Keziah H. Silas - Guardianship, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075079,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Clarissa D. Eliphalet - Guardianship, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075082,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 217 - Thankful Silas - Guardianship, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075262,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 222 - Dorcas A. Jabez, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106075265,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 222 - Remember Silas, 1878"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090970,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Ashbel A. Wealthy, 1879"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090988,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 -Ephraim B. & Prudence I. Lodema Guardianship, 1879"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090972,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Thaddeus J. Orpha, 1879-1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090971,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Nehemiah Achsah, 1879-1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090985,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 -Darius B. Polly, 1879-1889"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090983,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Erastus A. Philena, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090984,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Ithamar Ozias Roxana, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090982,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Simeon Ebenezer Zeruiah, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090986,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Elkanah Jerusha, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090973,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Lyman K. Sabra, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090987,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Experience Zenas, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090974,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Anstress Hosea, Persis Benajah & Eunice Lorenzo Hepzibah Guardianship, 1880"
+   },
+   {
+    "geo_collection": "United States & Canada",
+    "digital_film_no": 106090981,
+    "copy_location_ex": "",
+    "filmno": "",
+    "digital_film_rights": "UNREST",
+    "shelf": "Digital",
+    "location": "Granite Mountain Record Vault",
+    "text": "Probate Records, Box 238 - Calvin Mindwell, 1880"
+   }
+  ],
+  "author": [
+   {
+    "authorno": 918116,
+    "surname": "Nebraska Probate Court (Furnas County)",
+    "fullname": "Nebraska Probate Court (Furnas County)",
+    "type": "Main Author",
+    "display_text": "Nebraska Probate Court (Furnas County)",
+    "seq": 1
+   },
+   {
+    "authorno": 527339,
+    "surname": "Nebraska. County Court (Furnas County)",
+    "fullname": "Nebraska. County Court (Furnas County)",
+    "type": "Repository",
+    "display_text": "Nebraska. County Court (Furnas County)",
+    "seq": 2
+   }
+  ],
+  "subject": {
+   "subjectno": "2075685672",
+   "text": "United States, Nebraska, Furnas - Probate records",
+   "type": "TRACE",
+   "seq": 2,
+   "geo_name": 204383
+  },
+  "display_title": "Nebraska, Furnas County, probate records, 1806-1952",
+  "format": "Manuscript",
+  "language": {
+   "text": "English",
+   "seq": 1
+  },
+  "title": "Nebraska, Furnas County, probate records",
+  "titleno": 3154151,
+  "title_subtitle_sort": "nebraska furna county probate record",
+  "non_file_chars": 0,
+  "media_type": "MAN",
+  "format_addendum": "Manuscript on Digital Images",
+  "publisher": {
+   "date": 2018,
+   "pos": 1,
+   "name": "Digitized by FamilySearch International",
+   "place": "Salt Lake City, Utah",
+   "seq": 1
+  },
+  "inclusive_dates": "1806-1952",
+  "available_online": "Y"
+ }
+}

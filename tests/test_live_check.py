@@ -12,14 +12,16 @@ import httpx
 import pytest
 import respx
 
-from familysearch_mcp.client import BROWSER_UA, FULLTEXT_URL, SEARCH_URL
+from familysearch_mcp.client import BROWSER_UA, CATALOG_URL, DAS_HOST, FULLTEXT_URL, SEARCH_URL
 from tests import live_check
 from tests.live_check import (
     BOGUS_TOKEN,
+    CATALOG,
     COLLECTION,
     PLACE,
     SAMPLE_IMAGE,
     TREE_PERSON,
+    ZERO_PADDED_DGS,
     LiveCheck,
 )
 
@@ -105,6 +107,35 @@ def _fulltext(request: httpx.Request) -> httpx.Response:
     return httpx.Response(200, json={"results": total, "entries": [entry]})
 
 
+#: A catalog entry's films: one anyone may view, one this account may not.
+OPEN_DGS, CLOSED_DGS = "106000001", "106000002"
+
+
+def _catalog(request: httpx.Request) -> httpx.Response:
+    """The catalog entry service: token and browser User-Agent, as search."""
+    if not request.headers.get("Authorization"):
+        return httpx.Response(401)
+    if request.headers.get("User-Agent") != BROWSER_UA:
+        return httpx.Response(403)
+    films = [
+        {"digital_film_no": int(OPEN_DGS), "digital_film_rights": "UNREST", "text": "Box 1"},
+        {"digital_film_no": int(CLOSED_DGS), "digital_film_rights": "NO_ACC", "text": "Box 2"},
+    ]
+    return httpx.Response(200, json={"source": {"display_title": "Probate", "film_note": films}})
+
+
+def _image_group(request: httpx.Request) -> httpx.Response:
+    """The storage host: images for the viewable film, 403 for the other, 404 unpadded."""
+    if not _authorised(request):
+        return httpx.Response(401)
+    dgs = request.url.path.rsplit("dgs:", 1)[1]
+    if dgs == CLOSED_DGS:
+        return httpx.Response(403, json={"message": "Access to artifact denied"})
+    if dgs in (OPEN_DGS, ZERO_PADDED_DGS):
+        return httpx.Response(200, json={"name": dgs, "childCount": 26})
+    return httpx.Response(404, json={"message": f"Artifact Id dgs:{dgs} not found"})
+
+
 def _image(request: httpx.Request, *, withheld: bool = False) -> httpx.Response:
     """The image resource: links only for a good token, never a 401."""
     rels = {"records": {"href": f"{API}/platform/records/images/x/records"}}
@@ -178,6 +209,8 @@ def documented_api():
             return_value=httpx.Response(200, headers={"ETag": ETAG})
         )
         mock.get(FULLTEXT_URL).mock(side_effect=_fulltext)
+        mock.get(f"{CATALOG_URL}/{CATALOG}").mock(side_effect=_catalog)
+        mock.get(url__startswith=f"{DAS_HOST}/dgs:").mock(side_effect=_image_group)
         mock.get(f"{API}/platform/records/images/3:1:FULLTEXT-1").mock(side_effect=_image)
         mock.get(NODE_NAME_URL).mock(
             side_effect=lambda r: httpx.Response(
@@ -348,3 +381,28 @@ async def test_the_token_in_the_file_beats_a_stale_exported_one(
     monkeypatch.setenv("FS_ACCESS_TOKEN", "expired-and-exported")
     assert await live_check.check(WITHHELD_IMAGE) == 0
     assert "probably expired" not in capsys.readouterr().out
+
+
+async def test_a_dgs_answering_without_its_leading_zeros_is_a_failure(documented_api):
+    """get_catalog_entry pads every DGS to nine digits because the host needs it."""
+    unpadded = f"/dgs:{ZERO_PADDED_DGS.lstrip('0')}"
+    documented_api.get(url__startswith=f"{DAS_HOST}/dgs:").mock(
+        side_effect=lambda r: (
+            httpx.Response(200, json={"childCount": 26})
+            if r.url.path.endswith(unpadded)
+            else _image_group(r)
+        )
+    )
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "catalog: a DGS without its leading zeros gets 404 there" in failed
+
+
+async def test_a_catalog_entry_without_its_films_is_a_failure(documented_api):
+    """The films are what get_catalog_entry is for."""
+    documented_api.get(f"{CATALOG_URL}/{CATALOG}").mock(
+        return_value=httpx.Response(200, json={"source": {"display_title": "Probate"}})
+    )
+    live = await _run(TOKEN)
+    failed = {o.name for o in live.outcomes if o.status == "FAIL"}
+    assert "catalog: a token with a browser User-Agent gets the entry and its films" in failed

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 from urllib.parse import urlsplit
@@ -127,6 +128,8 @@ class FamilySearchClient:
     def __init__(self, config: Config):
         self._config = config
         self._http = httpx.AsyncClient(base_url=config.base_url, timeout=config.timeout)
+        #: Catalog entries read recently, by environment and id, with when.
+        self._catalog: dict[tuple[str, str], tuple[float, dict]] = {}
 
     def _reload_token(self) -> bool:
         """Pick up a token refreshed on disk since this process started.
@@ -326,12 +329,83 @@ class FamilySearchClient:
         """
         return await self._website(FULLTEXT_URLS, params, "Full-text search")
 
-    async def _website(self, urls: dict[str, str], params: dict, what: str) -> dict:
-        """GET one of the website's search services with the token.
+    async def catalog_entry(self, catalog_id: str) -> dict:
+        """Read one FamilySearch Catalog entry from the website's service.
 
-        Both services take the API's bearer token, but only alongside a
-        browser User-Agent: the token alone gets 403 and the User-Agent
-        alone gets 401.
+        An entry for a county's probate files can list thousands of films and
+        weigh most of a megabyte, and a caller narrowing it asks several
+        times in a row, so an entry is kept for :data:`CATALOG_CACHE_SECONDS`.
+
+        Parameters
+        ----------
+        catalog_id : str
+            The catalog's title number, digits only.
+
+        Returns
+        -------
+        dict
+            The entry's ``source`` object: title, authors, notes, subjects
+            and ``film_note``, one per film or DGS. Empty if there is none.
+
+        Raises
+        ------
+        AuthRequiredError
+            If no token is configured.
+        FamilySearchApiError
+            On any status of 400 or above; 404 for an unknown id.
+        """
+        key = (self._config.environment, catalog_id)
+        cached = self._catalog.get(key)
+        if cached and time.monotonic() - cached[0] < CATALOG_CACHE_SECONDS:
+            return cached[1]
+        payload = await self._website(CATALOG_URLS, {}, "The catalog", path=f"/{catalog_id}")
+        source = payload.get("source") if isinstance(payload, dict) else None
+        entry = source if isinstance(source, dict) else {}
+        if len(self._catalog) >= CATALOG_CACHE_ENTRIES:
+            self._catalog.pop(min(self._catalog, key=lambda k: self._catalog[k][0]))
+        self._catalog[key] = (time.monotonic(), entry)
+        return entry
+
+    async def image_group(self, dgs: str) -> tuple[int, dict]:
+        """Ask the storage host about one image group (DGS), as this account.
+
+        The group's node answers a token that may see the images with 200
+        and ``childCount``, the number of images; one that may not with 403;
+        an unknown or unpadded number with 404. Verified live 2026-10-05.
+        It needs the token but not a browser User-Agent.
+
+        Parameters
+        ----------
+        dgs : str
+            The DGS number, nine digits with its leading zeros.
+
+        Returns
+        -------
+        tuple of (int, dict)
+            The status, and the decoded body (empty unless it was JSON).
+
+        Raises
+        ------
+        AuthRequiredError
+            If no token is configured.
+        """
+        url = f"{DAS_HOST}/dgs:{dgs}"
+        resp = await self._send(
+            lambda: self._http.get(url, headers=self._headers(url, "application/json"))
+        )
+        try:
+            body = resp.json()
+        except ValueError:
+            body = {}
+        return resp.status_code, body if isinstance(body, dict) else {}
+
+    async def _website(
+        self, urls: dict[str, str], params: dict, what: str, *, path: str = ""
+    ) -> dict:
+        """GET one of the website's services with the token.
+
+        Each takes the API's bearer token, but only alongside a browser
+        User-Agent: the token alone gets 403 and the User-Agent alone 401.
         """
         if not self._config.access_token:
             raise AuthRequiredError(
@@ -340,7 +414,7 @@ class FamilySearchClient:
             )
         clean = {k: v for k, v in params.items() if v is not None}
         # A sandbox token means nothing to the production website.
-        url = urls[self._config.environment]
+        url = urls[self._config.environment] + path
         resp = await self._send(
             lambda: self._http.get(
                 url,
@@ -606,6 +680,26 @@ FULLTEXT_URLS = {
     "production": FULLTEXT_URL,
     "integration": "https://integration.familysearch.org/service/search/fulltext/search",
 }
+
+#: One FamilySearch Catalog entry, as the website's catalog page reads it:
+#: ``{CATALOG_URL}/{catalog_id}``. Found 2026-10-05 in the page's own
+#: scripts. Undocumented, and on the same footing as :data:`SEARCH_URL`:
+#: verified live that day, the token with a browser User-Agent gets 200, the
+#: token alone 403 and the User-Agent alone 401; an unknown id gets 404 with
+#: no body.
+CATALOG_URL = "https://www.familysearch.org/service/search/catalog/item"
+
+#: The same service per environment. The sandbox answers 401 to a browser
+#: User-Agent with no token, as production does -- checked 2026-10-05; not
+#: checked with a sandbox token.
+CATALOG_URLS = {
+    "production": CATALOG_URL,
+    "integration": "https://integration.familysearch.org/service/search/catalog/item",
+}
+
+#: How long a catalog entry is reused, in seconds, and how many are kept.
+CATALOG_CACHE_SECONDS = 600
+CATALOG_CACHE_ENTRIES = 4
 
 #: Storage host serving digital-artifact images.
 DAS_HOST = "https://sg30p0.familysearch.org/service/records/storage/dascloud/das/v2"

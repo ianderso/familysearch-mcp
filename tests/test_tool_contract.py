@@ -28,11 +28,12 @@ README = Path(__file__).parent.parent / "README.md"
 #: Ceiling on the combined tool descriptions, which are sent to the model on
 #: every session. Raise it deliberately, not by accident.
 #:
-#: 25 tools averaging ~540 characters. The tree tools are the long ones and
+#: 28 tools averaging ~550 characters. The tree tools are the long ones and
 #: are meant to be: each carries the shared-tree caveat in full, because a
 #: model choosing a tool sees the description and nothing else. Raised from
 #: 13,500 when the browse tools landed; the average per tool fell, so the
-#: growth was the count rather than prose.
+#: growth was the count rather than prose. Not raised for get_catalog_entry:
+#: the others were trimmed of repetition instead, 15,667 to 14,787.
 DESCRIPTION_BUDGET = 16_000
 
 
@@ -449,6 +450,7 @@ ID_ARGUMENTS = {
     "get_person_changes": "person_id",
     "get_matches": "person_id",
     "compare_person": "person_id",
+    "get_catalog_entry": "catalog_id",
 }
 
 
@@ -460,7 +462,7 @@ async def test_every_id_argument_is_listed_here():
     not part of the path.
     """
     id_names = {"place_id", "within_place_id", "ark", "image_ark", "collection_id"}
-    id_names |= {"waypoint_id", "person_id"}
+    id_names |= {"waypoint_id", "person_id", "catalog_id"}
     taking_ids = {t.name for t in await _tools() if id_names & set(_params(t))}
     assert taking_ids - {"search_records", "fulltext_search"} == set(ID_ARGUMENTS)
 

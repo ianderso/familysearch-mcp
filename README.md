@@ -75,7 +75,7 @@ claude mcp add familysearch -e FS_ENV_FILE=/path/to/familysearch.env -- uvx fami
 
 ## Tools
 
-Twenty-six tools. All of them read; `download_image` also writes the page
+Twenty-eight tools. All of them read; `download_image` also writes the page
 it fetches to a local file.
 
 ### Places
@@ -103,6 +103,7 @@ FamilySearch's Places API answers anonymously.
 | `get_collection` | no | Read one collection: what it covers and how much of it there is. |
 | `get_collection_fields` | no | Decode a collection's indexed field codes (`PR_FTHR_NAME` → "Father's Name"). |
 | `browse_waypoints` | no | Browse a collection's volumes and films, to reach pages the index never covered. |
+| `get_catalog_entry` | yes | Read a FamilySearch Catalog entry: title, authors, places, notes, and each film or DGS with its description, image count and whether you can view it. `contains` narrows an entry of thousands to the volume or case you want. |
 
 ### Page images
 
@@ -170,6 +171,14 @@ description.
   page is what to read and cite. Only some collections and volumes have
   been machine-read, so no result proves nothing. Every word must match
   unless you write OR, because the service otherwise matches any one of
+  them.
+- **The Catalog describes holdings, not records.** `get_catalog_entry`
+  reads the entry the website's catalog page reads, on the same footing as
+  record search. For each film it reports the DGS number, which
+  `get_film_image` and `fulltext_search` take, and asks the image store
+  whether your account may view it and how many images it holds. A DGS is
+  not the microfilm number; a film may be restricted or never digitised;
+  and a description is a cataloguer's summary, so read the images and cite
   them.
 - **Search criteria filter.** FamilySearch treats a search term as a ranking
   hint unless told otherwise, so adding a death year to a name search only

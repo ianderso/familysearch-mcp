@@ -24,11 +24,10 @@ It reads the token the way the server does, runs the anonymous checks
 without one, and skips the rest when there is none or FamilySearch rejects
 it. A FAIL names the claim below that no longer holds.
 
-Last run 2026-10-05 with a fresh token, after `compare_person` and
-full-text search were combined: 34 checks passed and none failed, including
-the three tree-profile checks added for `compare_person` and the five added
-for full-text search and the image name. Before that, on 2026-09-29, 26
-checks passed and none failed.
+Last run 2026-10-06 with a fresh token: 40 checks passed and none failed,
+including the six added for the FamilySearch Catalog. On 2026-10-05, after
+`compare_person` and full-text search were combined, 34 passed and none
+failed; on 2026-09-29, 26.
 Every claim below held — the anonymous routes, the 406 for the wrong Accept
 type, the current-user 401 and 200, the search service's 401 without a token
 and 403 without a browser User-Agent, all eight record-type codes narrowing
@@ -357,6 +356,64 @@ https://www.familysearch.org/service/search/fulltext/search
 
 `tests/live_check.py` re-asks the 401, the 403, the shape, the OR, and the
 image name.
+
+## The FamilySearch Catalog: the website's entry service
+
+The Catalog is the library's catalogue of films and books, not the list of
+record collections that `search_collections` reads. Its route is
+undocumented; it was found on 2026-10-05 by reading the scripts the
+website's catalog page (`/search/catalog/{id}`) loads, and everything below
+was verified live that day.
+
+```
+https://www.familysearch.org/service/search/catalog/item/{catalog_id}
+```
+
+- **The same footing as record search.** The token with a browser
+  `User-Agent` gets 200; the token alone 403 (the firewall page); the
+  User-Agent alone 401. An unknown id gets 404 with no body. The sandbox
+  host answers 401 to a browser User-Agent with no token; it has not been
+  tried with a sandbox token.
+- **A second route exists.** Behind a feature flag the page reads
+  `/search/orchestration/catalog/{id}` instead. It answered 200 with the
+  same entry and a few more fields (each film's `volume` and
+  `inclusive_dates` split out of its text) at twice the size. The server
+  uses the `/service/search/` route, beside the other two.
+- **The response** is `{"source": {...}}`:
+  - `display_title`, `title`, `inclusive_dates`, `format` and
+    `format_addendum`, `available_online` (`Y`);
+  - `author[]`, each with `display_text` and a `type` such as `Main Author`
+    or `Repository`;
+  - `subject`, one object or a list; one tied to the place authority has a
+    `geo_name` and reads "Place - Topic";
+  - `note[]`, whose text can be HTML: the note that a description is
+    preliminary arrives in a red font tag;
+  - `publisher`, `language`, `physical`;
+  - `film_note[]`, one per film or DGS: `digital_film_no` (a number, or a
+    string without its leading zeros), `filmno` (the microfilm number,
+    empty for a born-digital capture), `text`, `items` ("Item 4"),
+    `item_image_start_no`, `digital_film_rights` (`UNREST`, `NO_ACC` or
+    empty), `location` and `shelf`.
+
+  A field holding one value can arrive bare rather than as a list.
+- **Catalog 3154151** (Nebraska, Furnas County, probate records,
+  1806-1952) holds 3,045 films in 815 KB, each one case file with its own
+  DGS: 3,019 marked `UNREST` and 26 `NO_ACC`. The service takes no query
+  for its films, so `get_catalog_entry` filters the decoded entry, and
+  keeps an entry for ten minutes because narrowing one means asking again.
+- **Image counts come from the storage host.** The entry carries none.
+  `GET {DAS_HOST}/dgs:{dgs}` with the token, and no browser User-Agent,
+  answers 200 with `childCount`, the number of images, when this account
+  may view the film; 403 "Access to artifact denied" for a `NO_ACC` film;
+  401 with no token; 404 for an unknown number. The website asks the same
+  question with a POST to `/platform/artifacts/groups/permissions`, which
+  this server does not send.
+- **A DGS keeps its zeros.** `dgs:008126335` answered 200 with 423 images
+  and `dgs:8126335` answered 404. The catalog sends `8126335`, so
+  `get_catalog_entry` pads every DGS to nine digits, as the website does.
+
+`tests/live_check.py` re-asks the 401, the 403, the shape, the image count,
+the 403 for a restricted film and the 404 for an unpadded DGS.
 
 ## A search term is a scoring hint, not a filter
 

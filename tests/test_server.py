@@ -50,6 +50,7 @@ async def test_every_tool_is_registered():
         "browse_waypoints",
         "get_records_on_image",
         "get_film_image",
+        "get_catalog_entry",
     }
 
 

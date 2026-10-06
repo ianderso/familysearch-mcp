@@ -37,6 +37,7 @@ fails any test that opens a real connection, and CI has no token at all.
 | `tests/test_tool_contract.py` | Tests over the tool surface as a client sees it. |
 | `tests/live_check.py` | The one script that talks to the live API, run by hand with a token. Not collected. |
 | `tests/record_tree_fixture.py` | Records a tree profile's responses into `tests/fixtures/tree/`, with every contributor replaced. Run by hand with a token. Not collected. |
+| `tests/record_catalog_fixture.py` | Records a FamilySearch Catalog entry into `tests/fixtures/catalog/`, cut short, with the people its film descriptions name replaced. Run by hand with a token. Not collected. |
 
 ## What a change carries
 
