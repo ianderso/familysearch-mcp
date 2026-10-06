@@ -5,4 +5,4 @@ application; this package ships no client id and never handles a FamilySearch
 password. See ``docs/AUTH.md``.
 """
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
