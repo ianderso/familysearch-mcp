@@ -8,6 +8,8 @@ adding one is a minor release.
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-10-11
+
 ### Added
 
 - `get_catalog_entry` takes `film_number` instead of `catalog_id`: a DGS or
@@ -194,7 +196,8 @@ The first public release.
 - Every tool declares MCP annotations: all read-only except `download_image`,
   which creates a local file.
 
-[Unreleased]: https://github.com/ianderso/familysearch-mcp/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/ianderso/familysearch-mcp/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/ianderso/familysearch-mcp/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ianderso/familysearch-mcp/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ianderso/familysearch-mcp/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/ianderso/familysearch-mcp/compare/v1.0.0...v1.1.0
