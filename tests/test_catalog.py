@@ -287,3 +287,53 @@ def test_the_recorder_replaces_names_and_keeps_what_is_filtered_on():
     assert second.startswith("Probate Records, Box 13 - ")
     assert second.endswith(" - Guardianship, 1891")
     assert first.split(" - ")[1].split(",")[0].split()[0] == second.split(" - ")[1].split()[0]
+
+
+# --------------------------------------------------------------------------- #
+# Finding the entry from a film number
+# --------------------------------------------------------------------------- #
+FILM_SEARCH = json.loads((FIXTURES / "film-search-106063174.json").read_text(encoding="utf-8"))
+FILM_SEARCH_NONE = json.loads((FIXTURES / "film-search-none.json").read_text(encoding="utf-8"))
+SEARCH_URL = "https://www.familysearch.org/service/search/catalog/v3/search"
+
+
+async def test_a_film_number_finds_its_entry_and_keeps_only_that_film(catalog):
+    """Recorded 2026-10-11: the catalog search answers +film_number with the entry."""
+    route = catalog.get(url__startswith=SEARCH_URL).mock(
+        return_value=httpx.Response(200, json=FILM_SEARCH)
+    )
+    out = await call_tool("get_catalog_entry", film_number=VIEWABLE)
+    assert out["catalog_id"] == "3154151"
+    assert out["found_by_film"]["film_number"] == VIEWABLE
+    assert out["found_by_film"]["entries"][0]["catalog_id"] == "3154151"
+    assert [item["dgs"] for item in out["items"]] == [VIEWABLE]
+    sent = route.calls.last.request
+    assert "film_number" in str(sent.url) and sent.headers["user-agent"] == BROWSER_UA
+
+
+async def test_a_film_no_entry_lists_is_not_found(catalog):
+    catalog.get(url__startswith=SEARCH_URL).mock(
+        return_value=httpx.Response(200, json=FILM_SEARCH_NONE)
+    )
+    out = await call_tool("get_catalog_entry", film_number="999999999")
+    assert out["error"] == "not_found" and "999999999" in out["message"]
+
+
+async def test_a_short_film_number_is_padded_and_letters_are_refused(catalog):
+    catalog.get(url__startswith=SEARCH_URL).mock(
+        return_value=httpx.Response(200, json=FILM_SEARCH_NONE)
+    )
+    out = await call_tool("get_catalog_entry", film_number="7529219")
+    assert "007529219" in out["message"]
+    out = await call_tool("get_catalog_entry", film_number="dgs:abc")
+    assert out["error"] == "invalid_id"
+
+
+async def test_catalog_id_and_film_number_together_are_refused(catalog):
+    out = await call_tool("get_catalog_entry", catalog_id="3154151", film_number=VIEWABLE)
+    assert out["error"] == "invalid_id"
+
+
+async def test_neither_catalog_id_nor_film_number_is_refused(catalog):
+    out = await call_tool("get_catalog_entry")
+    assert out["error"] == "invalid_id"

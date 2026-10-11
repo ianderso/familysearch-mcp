@@ -35,6 +35,7 @@
     "catalog_id",
     "contains",
     "count",
+    "film_number",
     "offset"
   ],
   "get_collection": [

@@ -103,7 +103,7 @@ FamilySearch's Places API answers anonymously.
 | `get_collection` | no | Read one collection: what it covers and how much of it there is. |
 | `get_collection_fields` | no | Decode a collection's indexed field codes (`PR_FTHR_NAME` → "Father's Name"). |
 | `browse_waypoints` | no | Browse a collection's places, volumes and images, to reach pages the index never covered. |
-| `get_catalog_entry` | yes | Read a FamilySearch Catalog entry: title, authors, places, notes, and each film or DGS with its description, image count and whether you can view it. `contains` narrows an entry of thousands to the volume or case you want. |
+| `get_catalog_entry` | yes | Read a FamilySearch Catalog entry: title, authors, places, notes, and each film or DGS with its description, image count and whether you can view it. `contains` narrows an entry of thousands to the volume or case you want; `film_number` finds the entry, and the volume, from a bare DGS or microfilm number. |
 
 ### Page images
 

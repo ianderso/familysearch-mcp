@@ -1,0 +1,42 @@
+{
+ "searchHits": [],
+ "facets": [
+  {
+   "count": 0,
+   "displayCount": "0",
+   "displayName": "Year",
+   "facets": [],
+   "params": "c.year0=on"
+  },
+  {
+   "count": 0,
+   "displayCount": "0",
+   "displayName": "Record Type",
+   "facets": [],
+   "params": "c.topic0=on"
+  },
+  {
+   "count": 0,
+   "displayCount": "0",
+   "displayName": "Availability",
+   "facets": [],
+   "params": "c.availability=on"
+  },
+  {
+   "count": 0,
+   "displayCount": "0",
+   "displayName": "Language",
+   "facets": [],
+   "params": "c.language0=on"
+  },
+  {
+   "count": 0,
+   "displayCount": "0",
+   "displayName": "Format",
+   "facets": [],
+   "params": "c.format_facet=on"
+  }
+ ],
+ "offset": 0,
+ "totalHits": 0
+}
