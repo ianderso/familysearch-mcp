@@ -366,6 +366,37 @@ class FamilySearchClient:
         self._catalog[key] = (time.monotonic(), entry)
         return entry
 
+    async def catalog_for_film(self, dgs: str) -> list[dict]:
+        """The Catalog entries that hold one film, by its DGS or microfilm number.
+
+        The website's catalog search takes ``+film_number:<n>`` and answers
+        with each entry that lists the film. Verified live 2026-10-11: a DGS
+        finds its entry (004110393 -> 2770955), and an unknown number answers
+        with no hits rather than an error. It needs the token and a browser
+        User-Agent, as the entry service does.
+
+        Returns
+        -------
+        list of dict
+            ``{"catalog_id", "title"}`` for each entry, in the order given.
+        """
+        payload = await self._website(
+            CATALOG_SEARCH_URLS,
+            {"count": 20, "query": f"+film_number:{dgs}"},
+            "The catalog search",
+        )
+        found = []
+        for hit in payload.get("searchHits") or []:
+            metadata = ((hit or {}).get("metadataHit") or {}).get("metadata") or {}
+            ident = str((metadata.get("identifier") or {}).get("value") or "")
+            number = ident.rsplit("olib:", 1)[-1] if "olib:" in ident else ""
+            if number.isdigit():
+                titles = [
+                    t.get("value", "") for t in metadata.get("title") or [] if isinstance(t, dict)
+                ]
+                found.append({"catalog_id": number, "title": " ".join(t for t in titles if t)})
+        return found
+
     async def image_group(self, dgs: str) -> tuple[int, dict]:
         """Ask the storage host about one image group (DGS), as this account.
 
@@ -695,6 +726,13 @@ CATALOG_URL = "https://www.familysearch.org/service/search/catalog/item"
 CATALOG_URLS = {
     "production": CATALOG_URL,
     "integration": "https://integration.familysearch.org/service/search/catalog/item",
+}
+
+#: The website's catalog search, which finds the entries holding a film:
+#: ``?query=+film_number:<n>``. Found 2026-10-11 in the catalog search page.
+CATALOG_SEARCH_URLS = {
+    "production": "https://www.familysearch.org/service/search/catalog/v3/search",
+    "integration": "https://integration.familysearch.org/service/search/catalog/v3/search",
 }
 
 #: How long a catalog entry is reused, in seconds, and how many are kept.

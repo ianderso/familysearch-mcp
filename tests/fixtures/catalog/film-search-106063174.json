@@ -1,0 +1,147 @@
+{
+ "searchHits": [
+  {
+   "metadataHit": {
+    "metadata": {
+     "coverage": [
+      {
+       "temporal": {}
+      }
+     ],
+     "creator": [
+      "Nebraska Probate Court (Furnas County)",
+      "Nebraska. County Court (Furnas County)"
+     ],
+     "identifier": {
+      "value": "https://www.familysearch.org/service/search/catalog/item/olib:3154151"
+     },
+     "properties": [
+      {
+       "type": "org.familysearch.www.catalog.topic",
+       "value": "Court, Land, and Wills"
+      },
+      {
+       "type": "org.familysearch.www.catalog.topic",
+       "value": "Other"
+      }
+     ],
+     "repositoryCalls": [
+      {
+       "title": "Online"
+      },
+      {
+       "title": "FamilySearch Library"
+      }
+     ],
+     "title": [
+      {
+       "value": "Nebraska, Furnas County, probate records, 1806-1952",
+       "lang": "en-US"
+      }
+     ]
+    },
+    "score": 1.0
+   }
+  }
+ ],
+ "facets": [
+  {
+   "count": 1,
+   "displayCount": "1",
+   "displayName": "Year",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "1800",
+     "facets": [],
+     "params": "c.year1=on&f.year0=1800"
+    },
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "1900",
+     "facets": [],
+     "params": "c.year1=on&f.year0=1900"
+    }
+   ],
+   "params": "c.year0=on"
+  },
+  {
+   "count": 1,
+   "displayCount": "1",
+   "displayName": "Record Type",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "Court, Land, and Wills",
+     "facets": [],
+     "params": "c.topic1=on&f.topic0=Court, Land, and Wills"
+    },
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "Other",
+     "facets": [],
+     "params": "c.topic1=on&f.topic0=Other"
+    }
+   ],
+   "params": "c.topic0=on"
+  },
+  {
+   "count": 1,
+   "displayCount": "1",
+   "displayName": "Availability",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "FamilySearch Library",
+     "facets": [],
+     "params": "c.availability=on&f.availability=FamilySearch Library"
+    },
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "Online",
+     "facets": [],
+     "params": "c.availability=on&f.availability=Online"
+    }
+   ],
+   "params": "c.availability=on"
+  },
+  {
+   "count": 1,
+   "displayCount": "1",
+   "displayName": "Language",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "English",
+     "facets": [],
+     "params": "c.language1=on&f.language0=English"
+    }
+   ],
+   "params": "c.language0=on"
+  },
+  {
+   "count": 1,
+   "displayCount": "1",
+   "displayName": "Format",
+   "facets": [
+    {
+     "count": 1,
+     "displayCount": "1",
+     "displayName": "Manuscript",
+     "facets": [],
+     "params": "c.format_facet=on&f.format_facet=Manuscript"
+    }
+   ],
+   "params": "c.format_facet=on"
+  }
+ ],
+ "offset": 0,
+ "totalHits": 1
+}

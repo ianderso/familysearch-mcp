@@ -462,10 +462,14 @@ LOCAL_VALIDATION_ERRORS = frozenset(
 #: Escape hatch for a tool whose "pass at least one of these" rule cannot be
 #: satisfied from the schema and the parameter names alone.
 #:
-#: **Currently empty, and that is the point**: :func:`valid_args` reaches the
-#: body of every tool unaided. Add an entry only when it stops doing so, and
-#: :func:`assert_reached_body` will tell you which tool needs it.
-ARGUMENT_HINTS: dict[str, dict] = {}
+#: Keep this short: :func:`valid_args` reaches the body of almost every tool
+#: unaided. Add an entry only when it stops doing so, and
+#: :func:`assert_reached_body` will tell you which tool needs it. A tool that
+#: takes one of two identifiers, both optional, needs one named here.
+ARGUMENT_HINTS: dict[str, dict] = {
+    # Either identifier will do; the sweep takes the catalog number.
+    "get_catalog_entry": {"catalog_id": "3154151"},
+}
 
 
 def _value_for(name: str, spec: dict):

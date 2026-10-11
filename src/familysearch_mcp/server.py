@@ -71,6 +71,7 @@ from .shape import (
     links,
     match_hits,
     memories,
+    pad_dgs,
     pedigree,
     person,
     person_sources,
@@ -2437,8 +2438,14 @@ async def _with_image_count(client: FamilySearchClient, item: dict) -> dict:
 @_tool()
 async def get_catalog_entry(
     catalog_id: str = Field(
+        default="",
         description="Catalog number, digits only, e.g. '3154151' from "
-        "familysearch.org/search/catalog/3154151."
+        "familysearch.org/search/catalog/3154151.",
+    ),
+    film_number: str = Field(
+        default="",
+        description="Instead of catalog_id: a DGS or microfilm number. Finds the entry that "
+        "holds the film and returns only that film's item, which names the volume.",
     ),
     contains: str = Field(
         default="",
@@ -2463,19 +2470,47 @@ async def get_catalog_entry(
 
     An entry describes holdings, not a record: cite the image you read. Some
     films are restricted or were never digitised. A DGS number is not the
-    microfilm number.
+    microfilm number. Given only a film number (as an index citation gives
+    it), finds the entry, so a withheld image can be named and ordered.
 
     Requires an access token.
     """
     try:
-        cid = _catalog_id(catalog_id)
         client = await state.client_()
+        found_by: dict | None = None
+        if film_number.strip():
+            if catalog_id.strip():
+                return {
+                    "error": "invalid_id",
+                    "message": "Give catalog_id or film_number, not both.",
+                }
+            film = pad_dgs(film_number)
+            if film is None:
+                raise InvalidIdError(
+                    "film_number must be a DGS or microfilm number, digits only; "
+                    f"not {film_number!r}."
+                )
+            entries = await client.catalog_for_film(film)
+            if not entries:
+                return {
+                    "error": "not_found",
+                    "message": f"No catalog entry lists film {film}.",
+                }
+            cid = entries[0]["catalog_id"]
+            found_by = {"film_number": film, "entries": entries}
+        else:
+            cid = _catalog_id(catalog_id)
         source = await client.catalog_entry(cid)
         if not source:
             return {"error": "not_found", "message": f"No catalog entry {cid}."}
         items = catalog_items(source)
         words = contains.split()
         matched = [i for i in items if description_matches(i["description"], words)]
+        if found_by is not None:
+            film = found_by["film_number"]
+            matched = [
+                i for i in matched if film in (i.get("dgs"), pad_dgs(i.get("film")))
+            ] or matched
         start = max(0, offset)
         page = matched[start : start + max(1, min(count, _CATALOG_PAGE_MAX))]
 
@@ -2490,6 +2525,7 @@ async def get_catalog_entry(
         return {
             "catalog_id": cid,
             "url": f"https://www.familysearch.org/search/catalog/{cid}",
+            **({"found_by_film": found_by} if found_by is not None else {}),
             **catalog_entry(source),
             "items_total": len(items),
             "items_matched": len(matched),

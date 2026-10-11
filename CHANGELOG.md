@@ -8,6 +8,15 @@ adding one is a minor release.
 
 ## [Unreleased]
 
+### Added
+
+- `get_catalog_entry` takes `film_number` instead of `catalog_id`: a DGS or
+  microfilm number, as an index citation often gives it. The website's catalog
+  search finds the entry that lists the film, and only that film's item comes
+  back, so its description names the volume (for a Scottish church register,
+  the National Records of Scotland reference). `catalog_id` is no longer
+  required; one of the two is.
+
 ## [1.3.0] — 2026-10-06
 
 ### Added
